@@ -9,23 +9,23 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Repositories
 {
-    public class UserRepository : CrudBaseRepository<User>, IUserRepository
+    public class UserRepository : CrudEntityBaseRepository<User>, IUserRepository
     {
         public UserRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
         }
 
-        public User GetByEmail(string email)
+        public Task<User> GetByEmailAsync(string email)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<User> GetByName(string name, string surname)
+        public Task<IEnumerable<User>> GetByNameAsync(string name, string surname)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<User> GetByType(string code)
+        public Task<IEnumerable<User>> GetByTypeAsync(string code)
         {
             throw new NotImplementedException();
         }

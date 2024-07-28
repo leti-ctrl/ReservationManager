@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Repositories
 {
-    public class ReservationTypeRepository : TypeBaseRepository<ReservationType>, IReservationTypeRepository
+    public class ReservationTypeRepository : CrudTypeBaseRepository<ReservationType>, IReservationTypeRepository
     {
         public ReservationTypeRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {

@@ -10,34 +10,34 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Repositories.Base
 {
-    public class CrudBaseRepository<T> : RepositoryBase<T>, ICrudRepository<T>
+    public class CrudEntityBaseRepository<T> : RepositoryBase<T>, ICrudEntityRepository<T>
         where T : BaseEntity
     {
-        public CrudBaseRepository(ReservationManagerDbContext dbContext) : base(dbContext)
+        public CrudEntityBaseRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
         }
 
-        public T Create(T entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(int id)
+        public async Task<T> CreateAsync(T entity)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<T> GetAll()
+        public async void DeleteAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public T GetById(int id)
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public T Update(int id, T entity)
+        public async Task<T> GetByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<T> UpdateAsync(int id, T entity)
         {
             throw new NotImplementedException();
         }

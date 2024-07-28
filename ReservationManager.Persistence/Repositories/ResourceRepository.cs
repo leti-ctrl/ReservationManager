@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Repositories
 {
-    public class ResourceRepository : CrudBaseRepository<Resource>, IResourceRepository
+    public class ResourceRepository : CrudEntityBaseRepository<Resource>, IResourceRepository
     {
         public ResourceRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
         }
 
-        public IEnumerable<Resource> GetByType(string code)
+        public Task<IEnumerable<Resource>> GetByTypeAsync(string code)
         {
             throw new NotImplementedException();
         }

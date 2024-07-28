@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Interfaces
 {
-    public interface IReservationRepository : ICrudRepository<Reservation>
+    public interface IReservationRepository : ICrudEntityRepository<Reservation>
     {
-        IEnumerable<Reservation> GetByDay(DateOnly day);
-        IEnumerable<Reservation> GetByResource(int resourceId);
-        IEnumerable<Reservation> GetByUser(int userId);
-        IEnumerable<Reservation> GetByType(string code);
+        Task<IEnumerable<Reservation>> GetByDayAsync(DateOnly day);
+        Task<IEnumerable<Reservation>> GetByResourceAsync(int resourceId);
+        Task<IEnumerable<Reservation>> GetByUserAsync(int userId);
+        Task<IEnumerable<Reservation>> GetByTypeAsync(string code);
     }
 }

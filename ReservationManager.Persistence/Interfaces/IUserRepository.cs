@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Interfaces
 {
-    public interface IUserRepository : ICrudRepository<User>
+    public interface IUserRepository : ICrudEntityRepository<User>
     {
-        User GetByEmail(string email);
-        IEnumerable<User> GetByName(string name, string surname);
-        IEnumerable<User> GetByType(string code);
+        Task<User> GetByEmailAsync(string email);
+        Task<IEnumerable<User>> GetByTypeAsync(string code);
+        Task<IEnumerable<User>> GetByNameAsync(string name, string surname);
     }
 }

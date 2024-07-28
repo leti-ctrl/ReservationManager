@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Interfaces
 {
-    public interface IReservationTypeRepository : ITypeRepository<ReservationType>
+    public interface IReservationTypeRepository : ICrudTypeRepository<ReservationType>
     {
     }
 }

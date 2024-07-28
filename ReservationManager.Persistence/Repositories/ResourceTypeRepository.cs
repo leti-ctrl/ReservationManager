@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Repositories
 {
-    public class ResourceTypeRepository : TypeBaseRepository<ResourceType>, IResourceTypeRepository
+    public class ResourceTypeRepository : CrudTypeBaseRepository<ResourceType>, IResourceTypeRepository
     {
         public ResourceTypeRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {

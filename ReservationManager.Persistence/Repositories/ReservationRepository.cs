@@ -11,28 +11,28 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Repositories
 {
-    public class ReservationRepository : CrudBaseRepository<Reservation>, IReservationRepository
+    public class ReservationRepository : CrudEntityBaseRepository<Reservation>, IReservationRepository
     {
         public ReservationRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
         }
 
-        public IEnumerable<Reservation> GetByDay(DateOnly day)
+        public async Task<IEnumerable<Reservation>> GetByDayAsync(DateOnly day)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Reservation> GetByResource(int resourceId)
+        public async Task<IEnumerable<Reservation>> GetByResourceAsync(int resourceId)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Reservation> GetByType(string code)
+        public async Task<IEnumerable<Reservation>> GetByTypeAsync(string code)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Reservation> GetByUser(int userId)
+        public async Task<IEnumerable<Reservation>> GetByUserAsync(int userId)
         {
             throw new NotImplementedException();
         }

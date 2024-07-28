@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Interfaces.Base
 {
-    public interface ICrudRepository<T> where T : BaseEntity
+    public interface ICrudTypeRepository<T> where T : BaseType
     {
-        IEnumerable<T> GetAll();
-        T GetById(int id);
-        T Create(T entity);
-        T Update(int id,T entity);
-        void Delete(int id);
+        Task<IEnumerable<T>> GetAll();
+        Task<T> CreateAsync(T entity);
+        Task<T> UpdateAsync(int id, T entity);
+        void DeleteAsync(int id);
     }
 }

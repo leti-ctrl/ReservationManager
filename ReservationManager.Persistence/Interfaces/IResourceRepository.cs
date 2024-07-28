@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Interfaces
 {
-    public interface IResourceRepository : ICrudRepository<Resource>
+    public interface IResourceRepository : ICrudEntityRepository<Resource>
     {
-        IEnumerable<Resource> GetByType(string code);
+        Task<IEnumerable<Resource>> GetByTypeAsync(string code);
     }
 }
