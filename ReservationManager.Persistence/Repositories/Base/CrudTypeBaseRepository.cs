@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Repositories.Base
@@ -13,28 +14,42 @@ namespace ReservationManager.Persistence.Repositories.Base
     public class CrudTypeBaseRepository<T> : RepositoryBase<T>, ICrudTypeRepository<T>
         where T : BaseType
     {
+
+        protected readonly ReservationManagerDbContext Context;
+
         public CrudTypeBaseRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
+            Context = dbContext;
         }
 
-        public async Task<T> CreateAsync(T entity)
+        public async Task<T> CreateTypeAsync(T entity, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await base.AddAsync(entity, cancellationToken);
         }
 
-        public async void DeleteAsync(int id)
+        public async void DeleteTypeAsync(int id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var dbEntity = await Context.Set<T>()
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
+            if (dbEntity == null)
+                return;
+            dbEntity.IsDeleted = DateTime.UtcNow;
+            await base.UpdateAsync(dbEntity, cancellationToken);
         }
 
-        public async Task<IEnumerable<T>> GetAll()
+        public async Task<IEnumerable<T>> GetAllTypesAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await Context.Set<T>().ToListAsync(cancellationToken);
         }
 
-        public async Task<T> UpdateAsync(int id, T entity)
+        public async Task<T?> UpdateTypeAsync(T entity, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var getEntity = await base.GetByIdAsync(entity.Id, cancellationToken);
+            if (getEntity == null) return null;
+            var entry = Context.Entry(getEntity);
+            entry.CurrentValues.SetValues(entity);
+            await base.UpdateAsync(getEntity, cancellationToken);
+            return getEntity;
         }
     }
 }

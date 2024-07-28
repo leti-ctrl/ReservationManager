@@ -9,9 +9,9 @@ namespace ReservationManager.Persistence.Interfaces.Base
 {
     public interface ICrudTypeRepository<T> where T : BaseType
     {
-        Task<IEnumerable<T>> GetAll();
-        Task<T> CreateAsync(T entity);
-        Task<T> UpdateAsync(int id, T entity);
-        void DeleteAsync(int id);
+        Task<IEnumerable<T>> GetAllTypesAsync(CancellationToken cancellationToken = default);
+        Task<T> CreateTypeAsync(T entity, CancellationToken cancellationToken = default);
+        Task<T?> UpdateTypeAsync(T entity, CancellationToken cancellationToken = default);
+        void DeleteTypeAsync(int id, CancellationToken cancellationToken = default);
     }
 }
