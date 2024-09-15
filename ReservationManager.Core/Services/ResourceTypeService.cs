@@ -1,5 +1,7 @@
-﻿using ReservationManager.Core.Dtos;
+﻿using Mapster;
+using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
+using ReservationManager.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,24 +12,37 @@ namespace ReservationManager.Core.Services
 {
     public class ResourceTypeService : IResourceTypeService
     {
-        public ResourceTypeDto CreateResourceType(string code)
+        private readonly IResourceTypeRepository _resourceTypeRepository;
+
+        public ResourceTypeService(IResourceTypeRepository resourceTypeRepository)
         {
-            throw new NotImplementedException();
+            _resourceTypeRepository = resourceTypeRepository;
         }
 
-        public void DeleteResourceType(int id)
+        public async Task<ResourceTypeDto> CreateResourceType(string code)
         {
-            throw new NotImplementedException();
+            var newResouceType = await _resourceTypeRepository.CreateTypeAsync(new DomainModel.Meta.ResourceType() { Code = code });
+            return newResouceType.Adapt<ResourceTypeDto>();
         }
 
-        public IEnumerable<ResourceTypeDto> GetAllResourceTypes()
+        public async Task DeleteResourceType(int id)
         {
-            throw new NotImplementedException();
+            await _resourceTypeRepository.DeleteTypeAsync(id);
         }
 
-        public ResourceTypeDto UpdateResourceType(int id, string code)
+        public async Task<IEnumerable<ResourceTypeDto>> GetAllResourceTypes()
         {
-            throw new NotImplementedException();
+            var resourceTypes = await _resourceTypeRepository.GetAllTypesAsync();
+            return resourceTypes.Select(rt => rt.Adapt<ResourceTypeDto>());
+        }
+
+        public async Task<ResourceTypeDto> UpdateResourceType(int id, string code)
+        {
+            var oldResourceType = await _resourceTypeRepository.GetTypeById(id);
+            oldResourceType.Code = code;
+
+            var updated = await _resourceTypeRepository.UpdateTypeAsync(oldResourceType);
+            return updated.Adapt<ResourceTypeDto>();
         }
     }
 }
