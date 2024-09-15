@@ -17,27 +17,45 @@ namespace ReservationManager.API.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<UserTypeDto>>> GetAllUserTypes()
         {
-            throw new NotImplementedException();
+            var result = await _userTypeService.GetAllUserTypes();
+            
+            if(result == null)
+                return NoContent();
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserTypeDto>> CreateUserType(UpsertUserDto user)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserTypeDto>> CreateUserType(string code)
         {
-            throw new NotImplementedException();
+            var result = await _userTypeService.CreateUserType(code);
+            return Ok(result);
         }
 
         [HttpPut]
-        public async Task<ActionResult<UserTypeDto>> UpdateUserType(int id, UpsertUserDto user)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserTypeDto>> UpdateUserType(int id, string newCode)
         {
-            throw new NotImplementedException();
+            var result = await _userTypeService.UpdateUserType(id, newCode);
+            return Ok(result);
         }
 
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteUserType(int id)
         {
-            throw new NotImplementedException();
+            await _userTypeService.DeleteUserType(id);
+            return Accepted();
+
         }
     }
 }

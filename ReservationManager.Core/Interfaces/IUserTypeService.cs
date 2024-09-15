@@ -9,9 +9,9 @@ namespace ReservationManager.Core.Interfaces
 {
     public interface IUserTypeService
     {
-        IEnumerable<UserTypeDto> GetAllUserTypes();
-        UserTypeDto CreateUserType(string code);
-        UserTypeDto UpdateUserType(int id, string userTypeDto);
-        void DeleteUserType(int id);
+        Task<IEnumerable<UserTypeDto>> GetAllUserTypes();
+        Task<UserTypeDto> CreateUserType(string code);
+        Task<UserTypeDto> UpdateUserType(int id, string userTypeDto);
+        Task DeleteUserType(int id);
     }
 }

@@ -1,6 +1,8 @@
-﻿using Ardalis.Specification.EntityFrameworkCore;
+﻿using Ardalis.Specification;
+using Ardalis.Specification.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ReservationManager.DomainModel.Base;
+using ReservationManager.Persistence.Exceptions;
 using ReservationManager.Persistence.Interfaces.Base;
 using System;
 using System.Collections.Generic;
@@ -27,12 +29,13 @@ namespace ReservationManager.Persistence.Repositories.Base
             return await base.AddAsync(entity, cancellationToken);
         }
 
-        public async void DeleteTypeAsync(int id, CancellationToken cancellationToken = default)
+        public async Task DeleteTypeAsync(int id, CancellationToken cancellationToken = default)
         {
             var dbEntity = await Context.Set<T>()
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
             if (dbEntity == null)
-                return;
+                throw new EntityNotFoundException($"Cannot delete Type id: {id}" );
+            
             dbEntity.IsDeleted = DateTime.UtcNow;
             await base.UpdateAsync(dbEntity, cancellationToken);
         }
@@ -40,6 +43,16 @@ namespace ReservationManager.Persistence.Repositories.Base
         public async Task<IEnumerable<T>> GetAllTypesAsync(CancellationToken cancellationToken = default)
         {
             return await Context.Set<T>().ToListAsync(cancellationToken);
+        }
+
+        public async Task<T> GetTypeById(int id, CancellationToken cancellationToken = default)
+        {
+            var entity =  await Context.Set<T>()
+                                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
+
+            if (entity == null)
+                throw new EntityNotFoundException($"Cannot find Type id: {id}");
+            return entity;
         }
 
         public async Task<T?> UpdateTypeAsync(T entity, CancellationToken cancellationToken = default)
