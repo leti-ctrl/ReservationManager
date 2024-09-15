@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using ReservationManager.API.Extensions;
 using ReservationManager.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,10 +7,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+builder.Services.AddProblemDetails(
+    options => ReservationManager.API.Extensions.ConfigurationExtensions.ConfigureProblemDetails(options, builder.Environment)
+);
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<ReservationManagerDbContext>(option => option.UseNpgsql(builder.Configuration.GetConnectionString("ReservationManagerDb")));
+builder.Services.AddDbContext<ReservationManagerDbContext>(option => 
+    option.UseNpgsql(builder.Configuration.GetConnectionString("ReservationManagerDb")));
+
+builder.Services.ConfigureRepositories()
+                .ConfigureServices();
+
 
 var app = builder.Build();
 

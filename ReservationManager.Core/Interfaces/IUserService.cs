@@ -9,7 +9,7 @@ namespace ReservationManager.Core.Interfaces
 {
     public interface IUserService
     {
-        IEnumerable<UserDto> GetAll();
+        IEnumerable<UserDto> GetAllUsers();
         UserDto GetUser(int id);
         UserDto CreateUser(UpsertUserDto userDto);
         UserDto UpdateUser(UserDto userDto);

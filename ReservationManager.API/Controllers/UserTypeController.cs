@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Interfaces;
 
 namespace ReservationManager.API.Controllers
 {
@@ -8,6 +9,13 @@ namespace ReservationManager.API.Controllers
     [ApiController]
     public class UserTypeController : ControllerBase
     {
+        private readonly IUserTypeService _userTypeService;
+
+        public UserTypeController(IUserTypeService userTypeService)
+        {
+            _userTypeService = userTypeService;
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserTypeDto>>> GetAllUserTypes()
         {

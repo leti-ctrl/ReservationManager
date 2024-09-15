@@ -20,7 +20,7 @@ namespace ReservationManager.Core.Services
             throw new NotImplementedException();
         }
 
-        public IEnumerable<UserDto> GetAll()
+        public IEnumerable<UserDto> GetAllUsers()
         {
             throw new NotImplementedException();
         }
