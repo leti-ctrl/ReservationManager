@@ -1,4 +1,5 @@
-﻿using ReservationManager.Core.Interfaces;
+﻿using Microsoft.AspNetCore.Http;
+using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Services;
 using ReservationManager.Persistence.Exceptions;
 using ReservationManager.Persistence.Interfaces;
@@ -42,6 +43,9 @@ namespace ReservationManager.API.Extensions
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
+            opt.IncludeExceptionDetails = (_, _) => !webHostEnvironment.IsProduction();
         }
+
+       
     }
 }

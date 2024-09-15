@@ -1,6 +1,9 @@
+using Hellang.Middleware.ProblemDetails;
 using Microsoft.EntityFrameworkCore;
 using ReservationManager.API.Extensions;
 using ReservationManager.Persistence;
+using ConfigurationExtensions = ReservationManager.API.Extensions.ConfigurationExtensions;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddProblemDetails(
-    options => ReservationManager.API.Extensions.ConfigurationExtensions.ConfigureProblemDetails(options, builder.Environment)
+    options => ConfigurationExtensions.ConfigureProblemDetails(options, builder.Environment)
 );
 
 
