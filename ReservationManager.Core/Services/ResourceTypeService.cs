@@ -2,11 +2,6 @@
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Persistence.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Services
 {
@@ -18,21 +13,12 @@ namespace ReservationManager.Core.Services
         {
             _resourceTypeRepository = resourceTypeRepository;
         }
-
-        public async Task<ResourceTypeDto> CreateResourceType(string code)
-        {
-            var newResouceType = await _resourceTypeRepository.CreateTypeAsync(new DomainModel.Meta.ResourceType() { Code = code });
-            return newResouceType.Adapt<ResourceTypeDto>();
-        }
-
-        public async Task DeleteResourceType(int id)
-        {
-            await _resourceTypeRepository.DeleteTypeAsync(id);
-        }
-
         public async Task<IEnumerable<ResourceTypeDto>> GetAllResourceTypes()
         {
             var resourceTypes = await _resourceTypeRepository.GetAllTypesAsync();
+            if (resourceTypes == null)
+                return Enumerable.Empty<ResourceTypeDto>();
+
             return resourceTypes.Select(rt => rt.Adapt<ResourceTypeDto>());
         }
 
@@ -43,6 +29,17 @@ namespace ReservationManager.Core.Services
 
             var updated = await _resourceTypeRepository.UpdateTypeAsync(oldResourceType);
             return updated.Adapt<ResourceTypeDto>();
+        }
+
+        public async Task<ResourceTypeDto> CreateResourceType(string code)
+        {
+            var newResouceType = await _resourceTypeRepository.CreateTypeAsync(new DomainModel.Meta.ResourceType() { Code = code });
+            return newResouceType.Adapt<ResourceTypeDto>();
+        }
+
+        public async Task DeleteResourceType(int id)
+        {
+            await _resourceTypeRepository.DeleteTypeAsync(id);
         }
     }
 }

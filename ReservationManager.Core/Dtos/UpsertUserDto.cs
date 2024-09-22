@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ReservationManager.Core.Dtos
+﻿namespace ReservationManager.Core.Dtos
 {
-    public class UpsertUserDto 
+    public class UpsertUserDto
     {
         public string Name { get; set; }
         public string Surname { get; set; }

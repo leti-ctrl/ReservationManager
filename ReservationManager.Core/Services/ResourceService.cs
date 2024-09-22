@@ -1,12 +1,5 @@
 ﻿using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Resources;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Services
 {

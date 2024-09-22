@@ -20,6 +20,9 @@ namespace ReservationManager.Core.Services
         public async Task<IEnumerable<ReservationTypeDto>> GetAllReservationType()
         {
             var reservationTypes = await _reservationTypeRepository.GetAllTypesAsync();
+            if (reservationTypes == null)
+                return Enumerable.Empty<ReservationTypeDto>();
+
             return reservationTypes.Select(rt => rt.Adapt<ReservationTypeDto>());
         }
 

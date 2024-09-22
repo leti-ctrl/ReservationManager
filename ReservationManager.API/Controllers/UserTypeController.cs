@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
 
@@ -23,8 +22,8 @@ namespace ReservationManager.API.Controllers
         public async Task<ActionResult<IEnumerable<UserTypeDto>>> GetAllUserTypes()
         {
             var result = await _userTypeService.GetAllUserTypes();
-            
-            if(result == null)
+
+            if (result == null)
                 return NoContent();
             return Ok(result);
         }

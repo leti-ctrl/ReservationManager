@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ReservationManager.DomainModel.Operation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Configurations
 {
@@ -29,7 +24,7 @@ namespace ReservationManager.Persistence.Configurations
 
             builder.Property(x => x.Start)
                 .IsRequired();
-            
+
             builder.Property(x => x.End)
                 .IsRequired();
 
@@ -37,14 +32,14 @@ namespace ReservationManager.Persistence.Configurations
                 .WithMany()
                 .IsRequired()
                 .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.NoAction); 
-            
+                .OnDelete(DeleteBehavior.NoAction);
+
             builder.HasOne(x => x.Resource)
                 .WithMany()
                 .IsRequired()
                 .HasForeignKey(x => x.ResourceId)
-                .OnDelete(DeleteBehavior.NoAction); 
-            
+                .OnDelete(DeleteBehavior.NoAction);
+
             builder.HasOne(x => x.Type)
                 .WithMany()
                 .IsRequired()

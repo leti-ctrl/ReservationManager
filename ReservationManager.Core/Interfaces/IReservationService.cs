@@ -1,9 +1,4 @@
 ﻿using ReservationManager.Core.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Interfaces
 {
@@ -14,6 +9,6 @@ namespace ReservationManager.Core.Interfaces
         ReservationDto CreateReservation(UpsertReservationDto reservation);
         ReservationDto UpdateReservation(UpsertReservationDto reservation);
         void DeleteReservation(int id);
-       
+
     }
 }

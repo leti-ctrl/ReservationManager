@@ -18,7 +18,7 @@ builder.Services.AddProblemDetails(
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<ReservationManagerDbContext>(option => 
+builder.Services.AddDbContext<ReservationManagerDbContext>(option =>
     option.UseNpgsql(builder.Configuration.GetConnectionString("ReservationManagerDb")));
 
 builder.Services.ConfigureRepositories()

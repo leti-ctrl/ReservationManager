@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using ReservationManager.Core.Exceptions;
+﻿using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Services;
 using ReservationManager.Persistence.Exceptions;
@@ -17,7 +16,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IUserTypeService, UserTypeService>();
             services.AddScoped<IResourceTypeService, ResourceTypeService>();
             services.AddScoped<IReservationTypeService, ReservationTypeService>();
-            
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IResourceService, ResourceService>();
             services.AddScoped<IReservationService, ReservationService>();
@@ -48,6 +47,6 @@ namespace ReservationManager.API.Extensions
             opt.IncludeExceptionDetails = (_, _) => !webHostEnvironment.IsProduction();
         }
 
-       
+
     }
 }

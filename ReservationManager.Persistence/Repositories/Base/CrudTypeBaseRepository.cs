@@ -1,15 +1,8 @@
-﻿using Ardalis.Specification;
-using Ardalis.Specification.EntityFrameworkCore;
+﻿using Ardalis.Specification.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ReservationManager.DomainModel.Base;
 using ReservationManager.Persistence.Exceptions;
 using ReservationManager.Persistence.Interfaces.Base;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Repositories.Base
 {
@@ -34,8 +27,8 @@ namespace ReservationManager.Persistence.Repositories.Base
             var dbEntity = await Context.Set<T>()
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
             if (dbEntity == null)
-                throw new EntityNotFoundException($"Cannot delete Type id: {id}" );
-            
+                throw new EntityNotFoundException($"Cannot delete Type id: {id}");
+
             dbEntity.IsDeleted = DateTime.UtcNow;
             await base.UpdateAsync(dbEntity, cancellationToken);
         }
@@ -47,7 +40,7 @@ namespace ReservationManager.Persistence.Repositories.Base
 
         public async Task<T> GetTypeById(int id, CancellationToken cancellationToken = default)
         {
-            var entity =  await Context.Set<T>()
+            var entity = await Context.Set<T>()
                                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
 
             if (entity == null)

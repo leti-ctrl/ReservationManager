@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ReservationManager.DomainModel.Base
+﻿namespace ReservationManager.DomainModel.Base
 {
     public class BaseEntity
     {
