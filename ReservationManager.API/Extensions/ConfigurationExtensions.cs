@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Services;
 using ReservationManager.Persistence.Exceptions;
@@ -40,6 +41,7 @@ namespace ReservationManager.API.Extensions
         public static void ConfigureProblemDetails(ProblemDetailsOptions opt, IHostEnvironment webHostEnvironment)
         {
             opt.MapToStatusCode<EntityNotFoundException>(StatusCodes.Status404NotFound);
+            opt.MapToStatusCode<TimeOnlyException>(StatusCodes.Status400BadRequest);
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);

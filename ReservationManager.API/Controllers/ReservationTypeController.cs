@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using ReservationManager.API.Request.ReservationType;
 using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Interfaces;
 
 namespace ReservationManager.API.Controllers
 {
@@ -8,28 +9,54 @@ namespace ReservationManager.API.Controllers
     [ApiController]
     public class ReservationTypeController : ControllerBase
     {
-        [HttpGet]
+        private readonly IReservationTypeService _reservationTypeService;
+
+        public ReservationTypeController(IReservationTypeService reservationTypeService)
+        {
+            this._reservationTypeService = reservationTypeService;
+        }
+
+        [HttpGet()]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<ReservationTypeDto>>> GetAllReservationTypes()
         {
-            throw new NotImplementedException();
+            var reservationTypes = await _reservationTypeService.GetAllReservationType();
+
+            if (reservationTypes == null)
+                return NoContent();
+            return Ok(reservationTypes);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<ReservationTypeDto>> CreateReservationType(string code, TimeOnly start, TimeOnly end)
+        [HttpPost()]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ReservationTypeDto>> CreateReservationType(ReservationTypeUpsertRequest request)
         {
-            throw new NotImplementedException();
+            var created = await _reservationTypeService.CreateReservationType(request.Code, request.StartTime, request.EndTime);
+            return Ok(created);
         }
 
-        [HttpPut]
-        public async Task<ActionResult<ReservationTypeDto>> UpdateReservationType(int id, ReservationTypeDto reservation)
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<ReservationTypeDto>> UpdateReservationType(int id, ReservationTypeUpsertRequest reservation)
         {
-            throw new NotImplementedException();
+            var updated = await _reservationTypeService.UpdateReservationType(id, reservation.Code, reservation.StartTime, reservation.EndTime);
+            return Ok(updated);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteReservationType(int id)
         {
-            throw new NotImplementedException();
+            await _reservationTypeService.DeleteReservationType(id);
+            return Accepted();
         }
     }
 }

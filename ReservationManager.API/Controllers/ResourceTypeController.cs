@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
 
@@ -9,11 +8,11 @@ namespace ReservationManager.API.Controllers
     [ApiController]
     public class ResourceTypeController : ControllerBase
     {
-        private readonly IResourceTypeService _resourceService;
+        private readonly IResourceTypeService _resourceTypeService;
 
         public ResourceTypeController(IResourceTypeService resourceService)
         {
-            _resourceService = resourceService;
+            _resourceTypeService = resourceService;
         }
 
         [HttpGet()]
@@ -22,7 +21,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<ResourceTypeDto>>> GetAllResourceTypes()
         {
-            var resourceTypes = await _resourceService.GetAllResourceTypes();
+            var resourceTypes = await _resourceTypeService.GetAllResourceTypes();
 
             if(resourceTypes == null) 
                 return NoContent();
@@ -34,7 +33,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ResourceTypeDto>> CreateResourceType(string code)
         {
-            var resourceType = await _resourceService.CreateResourceType(code);
+            var resourceType = await _resourceTypeService.CreateResourceType(code);
             return Ok(resourceType);
         }
 
@@ -44,7 +43,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ResourceTypeDto>> UpdateResourceType(int id, string code)
         {
-            var updated = await _resourceService.UpdateResourceType(id, code);
+            var updated = await _resourceTypeService.UpdateResourceType(id, code);
             return Ok(updated);
         }
 
@@ -53,7 +52,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteResourceType(int id)
         {
-            await _resourceService.DeleteResourceType(id);
+            await _resourceTypeService.DeleteResourceType(id);
             return Accepted();
         }
     }

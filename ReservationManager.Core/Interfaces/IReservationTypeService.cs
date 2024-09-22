@@ -9,9 +9,9 @@ namespace ReservationManager.Core.Interfaces
 {
     public interface IReservationTypeService
     {
-        IEnumerable<ReservationTypeDto> GetAllReservationType();
-        ReservationTypeDto CreateReservationType(string code, TimeOnly start, TimeOnly end);
-        ReservationTypeDto UpdateReservationType(int id, ReservationTypeDto type);
-        void DeleteReservationType(int id);
+        Task<IEnumerable<ReservationTypeDto>> GetAllReservationType();
+        Task<ReservationTypeDto> CreateReservationType(string code, string start, string end);
+        Task<ReservationTypeDto> UpdateReservationType(int id, string code, string start, string end);
+        Task DeleteReservationType(int id);
     }
 }
