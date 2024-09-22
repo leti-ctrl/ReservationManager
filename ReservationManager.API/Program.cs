@@ -1,10 +1,12 @@
 using Hellang.Middleware.ProblemDetails;
+using Mapster;
 using Microsoft.EntityFrameworkCore;
+using ReservationManager.API;
 using ReservationManager.API.Extensions;
 using ReservationManager.Persistence;
 using ConfigurationExtensions = ReservationManager.API.Extensions.ConfigurationExtensions;
 
-
+TypeAdapterConfig.GlobalSettings.Apply(new MapperConfiguration());
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

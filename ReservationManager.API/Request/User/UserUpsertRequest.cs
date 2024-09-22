@@ -1,11 +1,10 @@
-﻿namespace ReservationManager.Core.Dtos
+﻿namespace ReservationManager.API.Request.User
 {
-    public class UserDto
+    public class UserUpsertRequest
     {
-        public int Id { get; set; }
         public required string Name { get; set; }
         public required string Surname { get; set; }
         public required string Email { get; set; }
-        public required UserTypeDto Role { get; set; }
+        public required string Role { get; set; }
     }
 }

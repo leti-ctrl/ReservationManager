@@ -1,38 +1,71 @@
-﻿using ReservationManager.Core.Dtos;
+﻿using Mapster;
+using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
+using ReservationManager.DomainModel.Operation;
+using ReservationManager.Persistence.Exceptions;
+using ReservationManager.Persistence.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Services
 {
     public class UserService : IUserService
     {
-        public UserDto CreateUser(UpsertUserDto userDto)
+        private readonly IUserRepository _userRepository;
+        private readonly IUserTypeRepository _userTypeRepository;
+
+        public UserService(IUserRepository userRepository, IUserTypeRepository userTypeRepository)
         {
-            throw new NotImplementedException();
+            _userRepository = userRepository;
+            _userTypeRepository = userTypeRepository;
         }
 
-        public void DeleteUser(int id)
+        public async Task<IEnumerable<UserDto>> GetAllUsers()
         {
-            throw new NotImplementedException();
+            var users = await _userRepository.GetAllEntitiesAsync();
+            if (users == null)
+                return Enumerable.Empty<UserDto>();
+
+            return users.Select(x => x.Adapt<UserDto>());
         }
 
-        public IEnumerable<UserDto> GetAllUsers()
+        public async Task<UserDto> GetUser(int id)
         {
-            throw new NotImplementedException();
+            var user = await _userRepository.GetEntityByIdAsync(id) 
+                ?? throw new EntityNotFoundException($"User {id} not found.");
+            
+            return user.Adapt<UserDto>();
         }
 
-        public UserDto GetUser(int id)
+        public async Task<UserDto> CreateUser(UpsertUserDto userDto)
         {
-            throw new NotImplementedException();
+            var type = await _userTypeRepository.GetTypeByCode(userDto.Role);
+            
+            var userModel = userDto.Adapt<User>();
+            userModel.Type = type;
+            userModel.TypeId = type.Id;
+
+            var user = await _userRepository.CreateEntityAsync(userModel);
+
+            return user.Adapt<UserDto>();
         }
 
-        public UserDto UpdateUser(UserDto userDto)
+        public async Task<UserDto> UpdateUser(int id, UpsertUserDto userDto)
         {
-            throw new NotImplementedException();
+            var type = await _userTypeRepository.GetTypeByCode(userDto.Role);
+            
+            var userModel = userDto.Adapt<User>();
+            userModel.Id = id;
+            userModel.Type = type;
+            userModel.TypeId = type.Id;
+
+            var updated = await _userRepository.UpdateEntityAsync(userModel);
+            
+            return updated.Adapt<UserDto>();
+        }
+
+        public async Task DeleteUser(int id)
+        {
+            await _userRepository.DeleteEntityAsync(id);
         }
     }
 }

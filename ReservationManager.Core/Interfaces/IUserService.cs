@@ -1,18 +1,13 @@
 ﻿using ReservationManager.Core.Dtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Interfaces
 {
     public interface IUserService
     {
-        IEnumerable<UserDto> GetAllUsers();
-        UserDto GetUser(int id);
-        UserDto CreateUser(UpsertUserDto userDto);
-        UserDto UpdateUser(UserDto userDto);
-        void DeleteUser(int id);
+        Task<IEnumerable<UserDto>> GetAllUsers();
+        Task<UserDto> GetUser(int id);
+        Task<UserDto> CreateUser(UpsertUserDto userDto);
+        Task<UserDto> UpdateUser(int id, UpsertUserDto userDto);
+        Task DeleteUser(int id);
     }
 }

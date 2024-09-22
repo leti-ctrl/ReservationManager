@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ReservationManager.DomainModel.Base;
+using ReservationManager.Persistence.Exceptions;
 using ReservationManager.Persistence.Interfaces.Base;
 
 namespace ReservationManager.Persistence.Repositories.Base
@@ -21,12 +22,11 @@ namespace ReservationManager.Persistence.Repositories.Base
             return await base.AddAsync(entity, cancellationToken);
         }
 
-        public async void DeleteEntityAsync(int id, CancellationToken cancellationToken = default)
+        public async Task DeleteEntityAsync(int id, CancellationToken cancellationToken = default)
         {
-            var dbEntity = await Context.Set<T>()
-                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
-            if (dbEntity == null)
-                return;
+            var dbEntity = await Context.Set<T>().FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken) 
+                ?? throw new EntityNotFoundException($"Cannot delete Entity id: {id}");
+
             dbEntity.IsDeleted = DateTime.UtcNow;
             await base.UpdateAsync(dbEntity, cancellationToken);
         }

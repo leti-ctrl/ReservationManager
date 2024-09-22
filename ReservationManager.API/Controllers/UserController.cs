@@ -1,6 +1,9 @@
 ﻿
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using ReservationManager.API.Request.User;
 using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Interfaces;
 
 namespace ReservationManager.API.Controllers
 {
@@ -8,34 +11,51 @@ namespace ReservationManager.API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly IUserService _userService;
+
+        public UserController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
         {
-            throw new NotImplementedException();
+            var users = await _userService.GetAllUsers();
+            if(!users.Any()) 
+                return NoContent();
+
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDto>> GetUser(int id)
         {
-            throw new NotImplementedException();
+            var user = await _userService.GetUser(id);
+
+            return Ok(user);
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserDto>> CreateUser(UpsertUserDto user)
+        public async Task<ActionResult<UserDto>> CreateUser(UserUpsertRequest user)
         {
-            throw new NotImplementedException();
+            var created = await _userService.CreateUser(user.Adapt<UpsertUserDto>());
+
+            return Ok(created);
         }
 
         [HttpPut]
-        public async Task<ActionResult<UserDto>> UpdateUser(int id, UpsertUserDto user)
+        public async Task<ActionResult<UserDto>> UpdateUser(int id, UserUpsertRequest user)
         {
-            throw new NotImplementedException();
+            var updated = await _userService.UpdateUser(id, user.Adapt<UpsertUserDto>());
+            return Ok(updated);
         }
 
         [HttpDelete]
         public async Task<ActionResult> DeleteUser(int id)
         {
-            throw new NotImplementedException();
+            await _userService.DeleteUser(id);
+            return Accepted();
         }
     }
 }

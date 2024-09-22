@@ -8,6 +8,6 @@ namespace ReservationManager.Persistence.Interfaces.Base
         Task<T?> GetEntityByIdAsync(int id, CancellationToken cancellationToken = default);
         Task<T> CreateEntityAsync(T entity, CancellationToken cancellationToken = default);
         Task<T?> UpdateEntityAsync(T entity, CancellationToken cancellationToken = default);
-        void DeleteEntityAsync(int id, CancellationToken cancellationToken = default);
+        Task DeleteEntityAsync(int id, CancellationToken cancellationToken = default);
     }
 }

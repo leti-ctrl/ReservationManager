@@ -1,7 +1,6 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ReservationManager.DomainModel.Base;
-using ReservationManager.Persistence.Exceptions;
 using ReservationManager.Persistence.Interfaces.Base;
 
 namespace ReservationManager.Persistence.Repositories.Base
@@ -17,22 +16,7 @@ namespace ReservationManager.Persistence.Repositories.Base
             Context = dbContext;
         }
 
-        public async Task<T> CreateTypeAsync(T entity, CancellationToken cancellationToken = default)
-        {
-            return await base.AddAsync(entity, cancellationToken);
-        }
-
-        public async Task DeleteTypeAsync(int id, CancellationToken cancellationToken = default)
-        {
-            var dbEntity = await Context.Set<T>()
-                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
-            if (dbEntity == null)
-                throw new EntityNotFoundException($"Cannot delete Type id: {id}");
-
-            dbEntity.IsDeleted = DateTime.UtcNow;
-            await base.UpdateAsync(dbEntity, cancellationToken);
-        }
-
+       
         public async Task<IEnumerable<T>> GetAllTypesAsync(CancellationToken cancellationToken = default)
         {
             return await Context.Set<T>().ToListAsync(cancellationToken);
@@ -48,6 +32,22 @@ namespace ReservationManager.Persistence.Repositories.Base
             return entity;
         }
 
+        public async Task<T> GetTypeByCode(string code, CancellationToken cancellationToken = default)
+        {
+            var entity = await Context.Set<T>()
+                                .FirstOrDefaultAsync(x => x.Code == code, cancellationToken: cancellationToken);
+
+            //if (entity == null)
+            //    throw new InvalidCodeTypeException($"Type code {code} not valid");
+            return entity;
+        }
+
+        public async Task<T> CreateTypeAsync(T entity, CancellationToken cancellationToken = default)
+        {
+            return await base.AddAsync(entity, cancellationToken);
+        }
+
+
         public async Task<T?> UpdateTypeAsync(T entity, CancellationToken cancellationToken = default)
         {
             var getEntity = await base.GetByIdAsync(entity.Id, cancellationToken);
@@ -56,6 +56,15 @@ namespace ReservationManager.Persistence.Repositories.Base
             entry.CurrentValues.SetValues(entity);
             await base.UpdateAsync(getEntity, cancellationToken);
             return getEntity;
+        }
+
+        public async Task DeleteTypeAsync(int id, CancellationToken cancellationToken = default)
+        {
+            var dbEntity = await Context.Set<T>().FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken)
+                ?? throw new EntityNotFoundException($"Cannot delete Type id: {id}");
+
+            dbEntity.IsDeleted = DateTime.UtcNow;
+            await base.UpdateAsync(dbEntity, cancellationToken);
         }
     }
 }
