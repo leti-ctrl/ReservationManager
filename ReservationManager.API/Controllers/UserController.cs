@@ -18,7 +18,10 @@ namespace ReservationManager.API.Controllers
             _userService = userService;
         }
 
-        [HttpGet]
+        [HttpGet()]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
         {
             var users = await _userService.GetAllUsers();
@@ -29,6 +32,9 @@ namespace ReservationManager.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> GetUser(int id)
         {
             var user = await _userService.GetUser(id);
@@ -36,7 +42,10 @@ namespace ReservationManager.API.Controllers
             return Ok(user);
         }
 
-        [HttpPost]
+        [HttpPost()]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> CreateUser(UserUpsertRequest user)
         {
             var created = await _userService.CreateUser(user.Adapt<UpsertUserDto>());
@@ -44,7 +53,11 @@ namespace ReservationManager.API.Controllers
             return Ok(created);
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> UpdateUser(int id, UserUpsertRequest user)
         {
             var updated = await _userService.UpdateUser(id, user.Adapt<UpsertUserDto>());
@@ -52,6 +65,10 @@ namespace ReservationManager.API.Controllers
         }
 
         [HttpDelete]
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteUser(int id)
         {
             await _userService.DeleteUser(id);
