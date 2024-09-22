@@ -1,7 +1,6 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ReservationManager.DomainModel.Base;
-using ReservationManager.Persistence.Exceptions;
 using ReservationManager.Persistence.Interfaces.Base;
 
 namespace ReservationManager.Persistence.Repositories.Base
@@ -17,20 +16,6 @@ namespace ReservationManager.Persistence.Repositories.Base
             Context = dbContext;
         }
 
-        public async Task<T> CreateEntityAsync(T entity, CancellationToken cancellationToken = default)
-        {
-            return await base.AddAsync(entity, cancellationToken);
-        }
-
-        public async Task DeleteEntityAsync(int id, CancellationToken cancellationToken = default)
-        {
-            var dbEntity = await Context.Set<T>().FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken) 
-                ?? throw new EntityNotFoundException($"Cannot delete Entity id: {id}");
-
-            dbEntity.IsDeleted = DateTime.UtcNow;
-            await base.UpdateAsync(dbEntity, cancellationToken);
-        }
-
         public async Task<IEnumerable<T>> GetAllEntitiesAsync(CancellationToken cancellationToken = default)
         {
             return await Context.Set<T>().ToListAsync(cancellationToken);
@@ -40,6 +25,18 @@ namespace ReservationManager.Persistence.Repositories.Base
         {
             return await base.GetByIdAsync(id, cancellationToken);
         }
+
+        public async Task<T> CreateEntityAsync(T entity, CancellationToken cancellationToken = default)
+        {
+            return await base.AddAsync(entity, cancellationToken);
+        }
+
+        public async Task DeleteEntityAsync(T dbEntity, CancellationToken cancellationToken = default)
+        {
+            dbEntity.IsDeleted = DateTime.UtcNow;
+            await base.UpdateAsync(dbEntity, cancellationToken);
+        }
+
 
         public async Task<T?> UpdateEntityAsync(T entity, CancellationToken cancellationToken = default)
         {

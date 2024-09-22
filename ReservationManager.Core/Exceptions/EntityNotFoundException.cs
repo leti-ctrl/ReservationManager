@@ -1,4 +1,4 @@
-﻿namespace ReservationManager.Persistence.Exceptions
+﻿namespace ReservationManager.Core.Exceptions
 {
     public class EntityNotFoundException : Exception
     {

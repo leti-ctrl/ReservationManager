@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Persistence.Interfaces;
 
@@ -24,7 +25,8 @@ namespace ReservationManager.Core.Services
 
         public async Task<ResourceTypeDto> UpdateResourceType(int id, string code)
         {
-            var oldResourceType = await _resourceTypeRepository.GetTypeById(id);
+            var oldResourceType = await _resourceTypeRepository.GetTypeById(id)
+                ?? throw new EntityNotFoundException($"Resource Type with id {id} not found");
             oldResourceType.Code = code;
 
             var updated = await _resourceTypeRepository.UpdateTypeAsync(oldResourceType);
@@ -39,7 +41,10 @@ namespace ReservationManager.Core.Services
 
         public async Task DeleteResourceType(int id)
         {
-            await _resourceTypeRepository.DeleteTypeAsync(id);
+            var toDelete = await _resourceTypeRepository.GetTypeById(id)
+                ?? throw new EntityNotFoundException($"Resource Type with id {id} not found");
+
+            await _resourceTypeRepository.DeleteTypeAsync(toDelete);
         }
     }
 }

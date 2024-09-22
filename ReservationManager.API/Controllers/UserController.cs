@@ -22,7 +22,7 @@ namespace ReservationManager.API.Controllers
         public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
         {
             var users = await _userService.GetAllUsers();
-            if(!users.Any()) 
+            if (!users.Any())
                 return NoContent();
 
             return Ok(users);

@@ -1,10 +1,9 @@
 ﻿using Mapster;
 using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.DomainModel.Operation;
-using ReservationManager.Persistence.Exceptions;
 using ReservationManager.Persistence.Interfaces;
-using System;
 
 namespace ReservationManager.Core.Services
 {
@@ -30,16 +29,17 @@ namespace ReservationManager.Core.Services
 
         public async Task<UserDto> GetUser(int id)
         {
-            var user = await _userRepository.GetEntityByIdAsync(id) 
+            var user = await _userRepository.GetEntityByIdAsync(id)
                 ?? throw new EntityNotFoundException($"User {id} not found.");
-            
+
             return user.Adapt<UserDto>();
         }
 
         public async Task<UserDto> CreateUser(UpsertUserDto userDto)
         {
-            var type = await _userTypeRepository.GetTypeByCode(userDto.Role);
-            
+            var type = await _userTypeRepository.GetTypeByCode(userDto.Role)
+                ?? throw new InvalidCodeTypeException($"User role {userDto.Role} not found");
+
             var userModel = userDto.Adapt<User>();
             userModel.Type = type;
             userModel.TypeId = type.Id;
@@ -51,21 +51,25 @@ namespace ReservationManager.Core.Services
 
         public async Task<UserDto> UpdateUser(int id, UpsertUserDto userDto)
         {
-            var type = await _userTypeRepository.GetTypeByCode(userDto.Role);
-            
+            var type = await _userTypeRepository.GetTypeByCode(userDto.Role)
+                ?? throw new InvalidCodeTypeException($"User role {userDto.Role} not found");
+
             var userModel = userDto.Adapt<User>();
             userModel.Id = id;
             userModel.Type = type;
             userModel.TypeId = type.Id;
 
             var updated = await _userRepository.UpdateEntityAsync(userModel);
-            
+
             return updated.Adapt<UserDto>();
         }
 
         public async Task DeleteUser(int id)
         {
-            await _userRepository.DeleteEntityAsync(id);
+            var user = await _userRepository.GetEntityByIdAsync(id)
+                ?? throw new EntityNotFoundException($"User {id} not found.");
+
+            await _userRepository.DeleteEntityAsync(user);
         }
     }
 }

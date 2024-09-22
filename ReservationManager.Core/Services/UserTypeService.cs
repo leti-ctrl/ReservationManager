@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Persistence.Interfaces;
 
@@ -31,7 +32,8 @@ namespace ReservationManager.Core.Services
 
         public async Task<UserTypeDto> UpdateUserType(int id, string userTypeDto)
         {
-            var oldUserType = await _userTypeRepository.GetTypeById(id);
+            var oldUserType = await _userTypeRepository.GetTypeById(id)
+                ?? throw new EntityNotFoundException($"User Type with id {id} not found.");
             oldUserType.Code = userTypeDto;
 
             var updated = await _userTypeRepository.UpdateTypeAsync(oldUserType);
@@ -40,7 +42,10 @@ namespace ReservationManager.Core.Services
 
         public async Task DeleteUserType(int id)
         {
-            await _userTypeRepository.DeleteTypeAsync(id);
+            var toDelete = await _userTypeRepository.GetTypeById(id)
+                ?? throw new EntityNotFoundException($"User Type with id {id} not found.");
+
+            await _userTypeRepository.DeleteTypeAsync(toDelete);
         }
     }
 }

@@ -48,7 +48,8 @@ namespace ReservationManager.Core.Services
             TimeOnly formattedStart, formattedEnd;
             ValidateInputs(start, end, out formattedStart, out formattedEnd);
 
-            var oldReseationType = await _reservationTypeRepository.GetTypeById(id);
+            var oldReseationType = await _reservationTypeRepository.GetTypeById(id)
+                ?? throw new EntityNotFoundException($"Rervation type with id {id} not found");
             oldReseationType.Code = code;
             oldReseationType.Start = formattedStart;
             oldReseationType.End = formattedEnd;
@@ -60,7 +61,10 @@ namespace ReservationManager.Core.Services
 
         public async Task DeleteReservationType(int id)
         {
-            await _reservationTypeRepository.DeleteTypeAsync(id);
+            var toDelete = await _reservationTypeRepository.GetTypeById(id)
+                ?? throw new EntityNotFoundException($"Rervation type with id {id} not found");
+
+            await _reservationTypeRepository.DeleteTypeAsync(toDelete);
         }
 
         private static void ValidateInputs(string start, string end, out TimeOnly formattedStart, out TimeOnly formattedEnd)

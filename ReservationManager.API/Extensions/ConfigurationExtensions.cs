@@ -1,7 +1,6 @@
 ﻿using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Services;
-using ReservationManager.Persistence.Exceptions;
 using ReservationManager.Persistence.Interfaces;
 using ReservationManager.Persistence.Repositories;
 using ProblemDetailsOptions = Hellang.Middleware.ProblemDetails.ProblemDetailsOptions;
@@ -41,6 +40,7 @@ namespace ReservationManager.API.Extensions
         {
             opt.MapToStatusCode<EntityNotFoundException>(StatusCodes.Status404NotFound);
             opt.MapToStatusCode<TimeOnlyException>(StatusCodes.Status400BadRequest);
+            opt.MapToStatusCode<InvalidCodeTypeException>(StatusCodes.Status400BadRequest);
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);

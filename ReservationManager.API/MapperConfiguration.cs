@@ -1,5 +1,4 @@
 ﻿using Mapster;
-using ReservationManager.API.Request.User;
 using ReservationManager.Core.Dtos;
 using ReservationManager.DomainModel.Operation;
 
@@ -12,7 +11,7 @@ namespace ReservationManager.API
             config.NewConfig<User, UserDto>()
                 .Map(d => d.Role, s => s.Type);
 
-            
+
         }
     }
 }

@@ -1,9 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ReservationManager.DomainModel.Operation;
-using ReservationManager.Persistence.Exceptions;
+﻿using ReservationManager.DomainModel.Operation;
 using ReservationManager.Persistence.Interfaces;
 using ReservationManager.Persistence.Repositories.Base;
-using System.Threading;
 
 namespace ReservationManager.Persistence.Repositories
 {
