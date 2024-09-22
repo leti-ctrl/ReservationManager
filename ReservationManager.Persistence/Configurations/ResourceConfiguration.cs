@@ -22,6 +22,8 @@ namespace ReservationManager.Persistence.Configurations
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasQueryFilter(x => !x.IsDeleted.HasValue);
+
+            builder.Navigation(c => c.Type).AutoInclude();
         }
     }
 }
