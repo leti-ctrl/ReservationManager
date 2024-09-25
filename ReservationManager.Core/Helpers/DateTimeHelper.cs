@@ -1,8 +1,8 @@
 ﻿namespace ReservationManager.Core.Validators
 {
-    public static class DateTimeValidators
+    public static class DateTimeHelper
     {
-        public static TimeOnly? TimeOnlyValidator(this string time)
+        public static TimeOnly? StringToTimeOnly(this string time)
         {
             if (TimeOnly.TryParse(time, out var timeOnly))
                 return timeOnly;

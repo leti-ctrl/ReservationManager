@@ -41,6 +41,7 @@ namespace ReservationManager.API.Extensions
             opt.MapToStatusCode<EntityNotFoundException>(StatusCodes.Status404NotFound);
             opt.MapToStatusCode<TimeOnlyException>(StatusCodes.Status400BadRequest);
             opt.MapToStatusCode<InvalidCodeTypeException>(StatusCodes.Status400BadRequest);
+            opt.MapToStatusCode<DeleteNotPermittedException>(StatusCodes.Status403Forbidden);
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);

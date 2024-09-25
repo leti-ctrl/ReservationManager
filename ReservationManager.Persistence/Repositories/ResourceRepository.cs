@@ -1,4 +1,5 @@
-﻿using ReservationManager.DomainModel.Operation;
+﻿using Microsoft.EntityFrameworkCore;
+using ReservationManager.DomainModel.Operation;
 using ReservationManager.Persistence.Interfaces;
 using ReservationManager.Persistence.Repositories.Base;
 
@@ -10,9 +11,11 @@ namespace ReservationManager.Persistence.Repositories
         {
         }
 
-        public Task<IEnumerable<Resource>> GetByTypeAsync(string code)
+        public async Task<IEnumerable<Resource>> GetByTypeAsync(string code)
         {
-            throw new NotImplementedException();
+            return await Context.Set<Resource>()
+                                .Where(x => x.Type.Code == code)
+                                .ToListAsync();
         }
     }
 }

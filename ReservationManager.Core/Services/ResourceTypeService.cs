@@ -3,16 +3,19 @@ using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Persistence.Interfaces;
+using ReservationManager.Persistence.Repositories;
 
 namespace ReservationManager.Core.Services
 {
     public class ResourceTypeService : IResourceTypeService
     {
         private readonly IResourceTypeRepository _resourceTypeRepository;
+        private readonly IResourceRepository _resourceRepository;
 
-        public ResourceTypeService(IResourceTypeRepository resourceTypeRepository)
+        public ResourceTypeService(IResourceTypeRepository resourceTypeRepository, IResourceRepository resourceRepository)
         {
             _resourceTypeRepository = resourceTypeRepository;
+            _resourceRepository = resourceRepository;
         }
         public async Task<IEnumerable<ResourceTypeDto>> GetAllResourceTypes()
         {
@@ -43,6 +46,10 @@ namespace ReservationManager.Core.Services
         {
             var toDelete = await _resourceTypeRepository.GetTypeById(id)
                 ?? throw new EntityNotFoundException($"Resource Type with id {id} not found");
+            
+            var exists = await _resourceRepository.GetByTypeAsync(toDelete.Code);
+            if (exists.Any())
+                throw new DeleteNotPermittedException($"Cannot delete {toDelete.Code} because exits resources with this type");
 
             await _resourceTypeRepository.DeleteTypeAsync(toDelete);
         }

@@ -9,10 +9,12 @@ namespace ReservationManager.Core.Services
     public class UserTypeService : IUserTypeService
     {
         private readonly IUserTypeRepository _userTypeRepository;
+        private readonly IUserRepository _userRepository;
 
-        public UserTypeService(IUserTypeRepository userTypeRepository)
+        public UserTypeService(IUserTypeRepository userTypeRepository, IUserRepository userRepository)
         {
             _userTypeRepository = userTypeRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<IEnumerable<UserTypeDto>> GetAllUserTypes()
@@ -44,6 +46,10 @@ namespace ReservationManager.Core.Services
         {
             var toDelete = await _userTypeRepository.GetTypeById(id)
                 ?? throw new EntityNotFoundException($"User Type with id {id} not found.");
+            
+            var exists = await _userRepository.GetByTypeAsync(toDelete.Code);
+            if (exists.Any())
+                throw new DeleteNotPermittedException($"Cannot delete {toDelete.Code} because exits user with this role");
 
             await _userTypeRepository.DeleteTypeAsync(toDelete);
         }

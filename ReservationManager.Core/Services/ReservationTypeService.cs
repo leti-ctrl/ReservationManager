@@ -5,16 +5,19 @@ using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Validators;
 using ReservationManager.DomainModel.Meta;
 using ReservationManager.Persistence.Interfaces;
+using ReservationManager.Persistence.Repositories;
 
 namespace ReservationManager.Core.Services
 {
     public class ReservationTypeService : IReservationTypeService
     {
         private readonly IReservationTypeRepository _reservationTypeRepository;
+        private readonly IReservationRepository _reservationRepository;
 
-        public ReservationTypeService(IReservationTypeRepository reservationTypeRepository)
+        public ReservationTypeService(IReservationTypeRepository reservationTypeRepository, IReservationRepository reservationRepository)
         {
             _reservationTypeRepository = reservationTypeRepository;
+            _reservationRepository = reservationRepository;
         }
 
         public async Task<IEnumerable<ReservationTypeDto>> GetAllReservationType()
@@ -63,15 +66,20 @@ namespace ReservationManager.Core.Services
         {
             var toDelete = await _reservationTypeRepository.GetTypeById(id)
                 ?? throw new EntityNotFoundException($"Rervation type with id {id} not found");
+            
+            var exists = await _reservationRepository.GetByTypeAsync(toDelete.Code);
+            if (exists.Any() && 
+                exists.Where(x => x.Day >= DateOnly.FromDateTime(DateTime.Now)).Any())
+                throw new DeleteNotPermittedException($"Cannot delete {toDelete.Code} because exits future reservations with this type");
 
             await _reservationTypeRepository.DeleteTypeAsync(toDelete);
         }
 
         private static void ValidateInputs(string start, string end, out TimeOnly formattedStart, out TimeOnly formattedEnd)
         {
-            formattedStart = start.TimeOnlyValidator() ??
+            formattedStart = start.StringToTimeOnly() ??
                             throw new TimeOnlyException("Start time is in the wrong format. Try with hh:mm:ss");
-            formattedEnd = end.TimeOnlyValidator() ??
+            formattedEnd = end.StringToTimeOnly() ??
                             throw new TimeOnlyException("End time is in the wrong format. Try with hh:mm:ss");
         }
     }
