@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ReservationManager.DomainModel.Base;
+using ReservationManager.Persistence.Exceptions;
 using ReservationManager.Persistence.Interfaces.Base;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,21 @@ namespace ReservationManager.Persistence.Repositories.Base
                                 .FirstOrDefaultAsync(x => x.Code == code, cancellationToken: cancellationToken);
 
             return entity;
+        }
+
+        public virtual Task<T> CreateTypeAsync(T entity, CancellationToken cancellationToken = default)
+        {
+            throw new NotEditableTypeException("Create not permitted");
+        }
+
+        public virtual Task<T?> UpdateTypeAsync(T entity, CancellationToken cancellationToken = default)
+        {
+            throw new NotEditableTypeException("Update not permitted");
+        }
+
+        public virtual Task DeleteTypeAsync(T entity, CancellationToken cancellationToken = default)
+        {
+            throw new NotEditableTypeException("Delete not permitted");
         }
     }
 }

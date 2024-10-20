@@ -1,8 +1,10 @@
 ﻿using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Services;
+using ReservationManager.DomainModel.Meta;
 using ReservationManager.Persistence.Interfaces;
 using ReservationManager.Persistence.Repositories;
+using ReservationManager.Persistence.Repositories.Base;
 using ProblemDetailsOptions = Hellang.Middleware.ProblemDetails.ProblemDetailsOptions;
 
 
@@ -15,6 +17,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IUserTypeService, UserTypeService>();
             services.AddScoped<IResourceTypeService, ResourceTypeService>();
             services.AddScoped<IReservationTypeService, ReservationTypeService>();
+            services.AddScoped<ITimetableTypeService, TimetableTypeService>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IResourceService, ResourceService>();
@@ -28,6 +31,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IUserTypeRepository, UserTypeRepository>();
             services.AddScoped<IResourceTypeRepository, ResourceTypeRepository>();
             services.AddScoped<IReservationTypeRepository, ReservationTypeRepository>();
+            services.AddScoped<ITimetableTypeRepository, TimetableTypeRepository>();
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IResourceRepository, ResourceRepository>();

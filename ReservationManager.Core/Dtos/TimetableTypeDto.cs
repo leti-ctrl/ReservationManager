@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ReservationManager.DomainModel.Base
+namespace ReservationManager.Core.Dtos
 {
-    public class BaseType
+    public class TimetableTypeDto
     {
         public int Id { get; set; }
         public required string Code { get; set; }
-        //public required string Name { get; set; }
     }
 }
