@@ -1,6 +1,8 @@
-﻿using ReservationManager.Core.Exceptions;
+﻿using ReservationManager.Core.Builders;
+using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Services;
+using ReservationManager.Core.Validators;
 using ReservationManager.DomainModel.Meta;
 using ReservationManager.Persistence.Interfaces;
 using ReservationManager.Persistence.Repositories;
@@ -22,6 +24,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IResourceService, ResourceService>();
             services.AddScoped<IReservationService, ReservationService>();
+            services.AddScoped<IEstabilishmentTimetableService, EstabilishementTimetableService>();
 
             return services;
         }
@@ -36,6 +39,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IResourceRepository, ResourceRepository>();
             services.AddScoped<IReservationRepository, ReservationRepository>();
+            services.AddScoped<IEstabilishmentTimetableRepository, EstabilishmentTimetableRepository>();
 
             return services;
         }
@@ -52,6 +56,22 @@ namespace ReservationManager.API.Extensions
             opt.IncludeExceptionDetails = (_, _) => !webHostEnvironment.IsProduction();
         }
 
+        public static IServiceCollection ConfigureBuilders(this IServiceCollection services)
+        {
+            services.AddScoped<IEstabilishmentTimetableBuilderStrategy, ClosedTimetableBuilderStrategy>();
+            services.AddScoped<IEstabilishmentTimetableBuilderStrategy, TimeReductionTimetableBuilderStrategy>();
+            services.AddScoped<IEstabilishmentTimetableBuilderStrategy, NominalTimetableBuilderStrategy>();
 
+            services.AddScoped<IEstabilishmentTimetableBuilderStrategyHandler, EstabilishmentTimetableBuilderStrategyHandler>();
+
+            return services;
+        }
+
+        public static IServiceCollection ConfigureValidators(this IServiceCollection services)
+        {
+            services.AddScoped<IEstabilishmentTimetableValidator, EstabilishmentTimetableValidator>();
+            
+            return services;
+        }
     }
 }

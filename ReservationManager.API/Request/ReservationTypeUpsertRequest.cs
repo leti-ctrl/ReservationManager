@@ -1,4 +1,4 @@
-﻿namespace ReservationManager.API.Request.ReservationType
+﻿namespace ReservationManager.API.Request
 {
     public class ReservationTypeUpsertRequest
     {

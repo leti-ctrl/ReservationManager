@@ -1,7 +1,7 @@
 ﻿
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using ReservationManager.API.Request.User;
+using ReservationManager.API.Request;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
 

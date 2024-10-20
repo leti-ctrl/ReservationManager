@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.DomainModel.Meta;
 using ReservationManager.Persistence.Interfaces;
@@ -26,6 +27,13 @@ namespace ReservationManager.Core.Services
                 Enumerable.Empty<TimetableType>();
 
             return toRet.Select(x => x.Adapt<TimetableTypeDto>());
+        }
+
+        public async Task<TimetableTypeDto> GetById(int id)
+        {
+            var timetable = await _timetableTypeRepository.GetTypeById(id) ??
+                throw new EntityNotFoundException($"TimetableType {id} not found.");
+            return timetable.Adapt<TimetableTypeDto>(); 
         }
     }
 }

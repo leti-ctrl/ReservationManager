@@ -1,0 +1,16 @@
+﻿using ReservationManager.Core.Dtos;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ReservationManager.Core.Interfaces
+{
+    public interface IEstabilishmentTimetableValidator
+    {
+        bool IsClosureTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type);
+        bool IsNominalTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type);
+        bool IsTimeReductionTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type);
+    }
+}

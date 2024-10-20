@@ -1,4 +1,4 @@
-﻿namespace ReservationManager.API.Request.User
+﻿namespace ReservationManager.API.Request
 {
     public class UserUpsertRequest
     {

@@ -24,7 +24,9 @@ builder.Services.AddDbContext<ReservationManagerDbContext>(option =>
     option.UseNpgsql(builder.Configuration.GetConnectionString("ReservationManagerDb")));
 
 builder.Services.ConfigureRepositories()
-                .ConfigureServices();
+                .ConfigureServices()
+                .ConfigureBuilders()
+                .ConfigureValidators();
 
 
 var app = builder.Build();

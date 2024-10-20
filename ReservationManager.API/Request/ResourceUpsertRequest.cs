@@ -1,4 +1,4 @@
-﻿namespace ReservationManager.API.Request.Resource
+﻿namespace ReservationManager.API.Request
 {
     public class ResourceUpsertRequest
     {

@@ -10,5 +10,6 @@ namespace ReservationManager.Core.Interfaces
     public interface ITimetableTypeService
     {
         Task<IEnumerable<TimetableTypeDto>> GetAllTypes();
+        Task<TimetableTypeDto> GetById(int id);
     }
 }
