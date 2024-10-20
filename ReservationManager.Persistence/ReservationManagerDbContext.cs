@@ -18,6 +18,7 @@ namespace ReservationManager.Persistence
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new UserTypeConfigration());
             modelBuilder.ApplyConfiguration(new TimetableTypeConfiguration());
+            modelBuilder.ApplyConfiguration(new EstabilishmentTimetableConfiguration());
         }
 
     }
