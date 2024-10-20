@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Interfaces;
+using System.Runtime.CompilerServices;
 
 namespace ReservationManager.API.Controllers
 {
@@ -7,6 +9,13 @@ namespace ReservationManager.API.Controllers
     [ApiController]
     public class ReservationController : ControllerBase
     {
+        private readonly IReservationService _reservationService;
+
+        public ReservationController(IReservationService reservationService)
+        {
+            _reservationService = reservationService;
+        }
+
         [HttpGet("user/{id}")]
         public async Task<ActionResult<IEnumerable<ReservationDto>>> GetUserReservations(int userId)
         {
@@ -22,7 +31,7 @@ namespace ReservationManager.API.Controllers
         [HttpPost]
         public async Task<ActionResult<ReservationDto>> CreateReservation(UpsertReservationDto reservation)
         {
-            throw new NotImplementedException();
+            return await _reservationService.CreateReservation(reservation);
         }
 
         [HttpPut]

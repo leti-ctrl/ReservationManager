@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ReservationManager.DomainModel.Operation;
+using System.Reflection.Emit;
 
 namespace ReservationManager.Persistence.Configurations
 {
@@ -47,6 +48,10 @@ namespace ReservationManager.Persistence.Configurations
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasQueryFilter(x => !x.IsDeleted.HasValue);
+
+            builder.Navigation(e => e.Type).AutoInclude();
+            builder.Navigation(e => e.User).AutoInclude();
+            builder.Navigation(e => e.Resource).AutoInclude();
         }
     }
 }
