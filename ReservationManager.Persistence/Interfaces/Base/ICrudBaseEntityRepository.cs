@@ -2,7 +2,7 @@
 
 namespace ReservationManager.Persistence.Interfaces.Base
 {
-    public interface ICrudEntityRepository<T> where T : BaseEntity
+    public interface ICrudBaseEntityRepository<T> where T : BaseEntity
     {
         Task<IEnumerable<T>> GetAllEntitiesAsync(CancellationToken cancellationToken = default);
         Task<T?> GetEntityByIdAsync(int id, CancellationToken cancellationToken = default);

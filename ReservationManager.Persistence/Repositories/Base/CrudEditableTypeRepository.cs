@@ -5,38 +5,15 @@ using ReservationManager.Persistence.Interfaces.Base;
 
 namespace ReservationManager.Persistence.Repositories.Base
 {
-    public class CrudTypeBaseRepository<T> : RepositoryBase<T>, ICrudTypeRepository<T>
-        where T : BaseType
+    public class CrudEditableTypeRepository<T> : CrudBaseTypeRepository<T>, ICrudEditableTypeRepository<T>
+        where T : EditableType
     {
 
-        protected readonly ReservationManagerDbContext Context;
 
-        public CrudTypeBaseRepository(ReservationManagerDbContext dbContext) : base(dbContext)
+        public CrudEditableTypeRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
-            Context = dbContext;
         }
 
-
-        public async Task<IEnumerable<T>> GetAllTypesAsync(CancellationToken cancellationToken = default)
-        {
-            return await Context.Set<T>().ToListAsync(cancellationToken);
-        }
-
-        public async Task<T?> GetTypeById(int id, CancellationToken cancellationToken = default)
-        {
-            var entity = await Context.Set<T>()
-                                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken: cancellationToken);
-
-            return entity;
-        }
-
-        public async Task<T?> GetTypeByCode(string code, CancellationToken cancellationToken = default)
-        {
-            var entity = await Context.Set<T>()
-                                .FirstOrDefaultAsync(x => x.Code == code, cancellationToken: cancellationToken);
-
-            return entity;
-        }
 
         public async Task<T> CreateTypeAsync(T entity, CancellationToken cancellationToken = default)
         {
@@ -63,5 +40,7 @@ namespace ReservationManager.Persistence.Repositories.Base
             dbEntity.IsDeleted = DateTime.UtcNow;
             await base.UpdateAsync(dbEntity, cancellationToken);
         }
+
+
     }
 }

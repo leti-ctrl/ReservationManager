@@ -20,8 +20,8 @@ namespace ReservationManager.Core.Services
 
         public async Task<ReservationDto> CreateReservation(UpsertReservationDto reservation)
         {
-            var type = await _reservationTypeRepository.GetTypeByCode(reservation.TypeCode)
-                ?? throw new InvalidCodeTypeException($"Reservation type {reservation.TypeCode} not valid");
+            var type = await _reservationTypeRepository.GetTypeById(reservation.TypeId)
+                ?? throw new InvalidCodeTypeException($"Reservation type {reservation.TypeId} not valid");
 
             var toCreate = reservation.Adapt<Reservation>();
             toCreate.TypeId = type.Id;

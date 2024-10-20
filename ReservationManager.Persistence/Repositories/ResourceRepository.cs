@@ -5,7 +5,7 @@ using ReservationManager.Persistence.Repositories.Base;
 
 namespace ReservationManager.Persistence.Repositories
 {
-    public class ResourceRepository : CrudEntityBaseRepository<Resource>, IResourceRepository
+    public class ResourceRepository : CrudBaseEntityRepository<Resource>, IResourceRepository
     {
         public ResourceRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {

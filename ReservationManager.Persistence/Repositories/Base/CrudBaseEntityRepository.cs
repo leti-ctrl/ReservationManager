@@ -5,13 +5,13 @@ using ReservationManager.Persistence.Interfaces.Base;
 
 namespace ReservationManager.Persistence.Repositories.Base
 {
-    public class CrudEntityBaseRepository<T> : RepositoryBase<T>, ICrudEntityRepository<T>
+    public class CrudBaseEntityRepository<T> : RepositoryBase<T>, ICrudBaseEntityRepository<T>
         where T : BaseEntity
     {
 
         protected readonly ReservationManagerDbContext Context;
 
-        public CrudEntityBaseRepository(ReservationManagerDbContext dbContext) : base(dbContext)
+        public CrudBaseEntityRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
             Context = dbContext;
         }

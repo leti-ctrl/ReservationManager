@@ -2,7 +2,7 @@
 
 namespace ReservationManager.DomainModel.Meta
 {
-    public class ReservationType : BaseType
+    public class ReservationType : EditableType
     {
         public TimeOnly Start { get; set; }
         public TimeOnly End { get; set; }

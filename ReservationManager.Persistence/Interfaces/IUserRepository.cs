@@ -3,7 +3,7 @@ using ReservationManager.Persistence.Interfaces.Base;
 
 namespace ReservationManager.Persistence.Interfaces
 {
-    public interface IUserRepository : ICrudEntityRepository<User>
+    public interface IUserRepository : ICrudBaseEntityRepository<User>
     {
         Task<User> GetByEmailAsync(string email);
         Task<IEnumerable<User>> GetByTypeAsync(string code);

@@ -3,7 +3,7 @@ using ReservationManager.Persistence.Interfaces.Base;
 
 namespace ReservationManager.Persistence.Interfaces
 {
-    public interface IReservationRepository : ICrudEntityRepository<Reservation>
+    public interface IReservationRepository : ICrudBaseEntityRepository<Reservation>
     {
         Task<IEnumerable<Reservation>> GetByDayAsync(DateOnly day);
         Task<IEnumerable<Reservation>> GetByResourceAsync(int resourceId);

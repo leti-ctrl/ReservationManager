@@ -2,7 +2,7 @@
 
 namespace ReservationManager.DomainModel.Meta
 {
-    public class ResourceType : BaseType
+    public class ResourceType : EditableType
     {
     }
 }
