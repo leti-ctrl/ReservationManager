@@ -50,6 +50,8 @@ namespace ReservationManager.API.Extensions
             opt.MapToStatusCode<TimeOnlyException>(StatusCodes.Status400BadRequest);
             opt.MapToStatusCode<InvalidCodeTypeException>(StatusCodes.Status400BadRequest);
             opt.MapToStatusCode<DeleteNotPermittedException>(StatusCodes.Status403Forbidden);
+            opt.MapToStatusCode<TimetableExistsException>(StatusCodes.Status400BadRequest);
+            opt.MapToStatusCode<CreateEstabilishmentTimetableException>(StatusCodes.Status400BadRequest);
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);

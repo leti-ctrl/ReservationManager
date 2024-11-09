@@ -19,10 +19,15 @@ namespace ReservationManager.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<EstabilishmentTimetableDto>>> GetAll()
         {
             var ret = await _estabilishmentTimetableService.GetAll();
+
+            if (!ret.Any())
+                return NoContent();
+            
             return Ok(ret);
         }
 

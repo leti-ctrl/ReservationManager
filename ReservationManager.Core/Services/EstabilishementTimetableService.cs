@@ -19,16 +19,13 @@ namespace ReservationManager.Core.Services
         private readonly IEstabilishmentTimetableRepository _estabilishmentTimetableRepository;
         private readonly ITimetableTypeService _timetableTypeService;
         private readonly IEstabilishmentTimetableBuilderStrategyHandler _timetableBuilderHandler;
-        private readonly IEstabilishmentTimetableValidator _timetableValidator;
 
         public EstabilishementTimetableService(IEstabilishmentTimetableRepository estabilishmentTimetableRepository,
                                                ITimetableTypeService timetableTypeService,
-                                               IEstabilishmentTimetableValidator timetableValidator,
                                                IEstabilishmentTimetableBuilderStrategyHandler timetableBuilder)
         {
             _estabilishmentTimetableRepository = estabilishmentTimetableRepository;
             _timetableTypeService = timetableTypeService;
-            _timetableValidator = timetableValidator;
             _timetableBuilderHandler = timetableBuilder;
         }
 
@@ -38,7 +35,6 @@ namespace ReservationManager.Core.Services
                 throw new EntityNotFoundException($"TimetableType {entity.TypeId} not found.");
 
 
-            // Usa il gestore delle strategie per costruire il modello
             var model = await _timetableBuilderHandler.BuildTimetable(entity, type);
 
 

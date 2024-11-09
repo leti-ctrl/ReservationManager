@@ -6,11 +6,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReservationManager.Core.Commons;
+using ReservationManager.DomainModel.Operation;
+using ReservationManager.Persistence.Interfaces;
 
 namespace ReservationManager.Core.Validators
 {
     public class EstabilishmentTimetableValidator : IEstabilishmentTimetableValidator
     {
+        private readonly IEstabilishmentTimetableRepository _timetableRepository;
+
+        public EstabilishmentTimetableValidator(IEstabilishmentTimetableRepository timetableRepository)
+        {
+            _timetableRepository = timetableRepository;
+        }
+
         public bool IsClosureTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type)
         {
             if (timetable.StartTime == null && timetable.EndTime == null
@@ -36,6 +46,42 @@ namespace ReservationManager.Core.Validators
                 && type.Code == FixedTimetableType.TimeReduction)
                 return true;
             return false;
+        }
+        
+        public bool IsLegalDateRange(UpsertEstabilishmentTimetableDto entity)
+        {
+            var start = (DateOnly)entity.StartDate!;
+            var end = (DateOnly)entity.EndDate!;
+
+            if (start > end)
+                return false;
+
+            if (start < DateOnly.FromDateTime(DateTime.Now) || end < DateOnly.FromDateTime(DateTime.Now))
+                return false;
+
+            return true;
+        }
+
+        public async Task<bool> IsLegalCloseDates(UpsertEstabilishmentTimetableDto entity)
+        {
+            var start = (DateOnly)entity.StartDate!;
+            var end = (DateOnly)entity.EndDate!;
+            var existingIntersection = 
+                await _timetableRepository.GetClosingDateIntersection(start, end, entity.TypeId)
+                ?? Enumerable.Empty<EstabilishmentTimetable>();
+            return existingIntersection.Any();
+        }
+
+        public async Task<bool> IsLegalTimeReduction(UpsertEstabilishmentTimetableDto entity)
+        {
+            var startDate = (DateOnly)entity.StartDate!;
+            var endDate = (DateOnly)entity.EndDate!;
+            var startTime = (TimeOnly)entity.StartTime!;
+            var endTime = (TimeOnly)entity.EndTime!;
+            var existingIntersection = 
+                await _timetableRepository.GetTimeReductionIntersection(startDate, endDate, startTime, endTime, entity.TypeId)
+                ?? Enumerable.Empty<EstabilishmentTimetable>();
+            return existingIntersection.Any();
         }
     }
 }

@@ -1,7 +1,10 @@
-﻿using ReservationManager.Core.Dtos;
+﻿using Mapster;
+using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.DomainModel.Meta;
 using ReservationManager.DomainModel.Operation;
+using ReservationManager.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,9 +27,15 @@ namespace ReservationManager.Core.Builders
             return _timetableValidator.IsTimeReductionTimetable(entity, type);
         }
 
-        public Task<EstabilishmentTimetable> Build(UpsertEstabilishmentTimetableDto entity)
+        public async Task<EstabilishmentTimetable> Build(UpsertEstabilishmentTimetableDto entity)
         {
-            throw new NotImplementedException();
+            if (!_timetableValidator.IsLegalDateRange(entity))
+                throw new CreateEstabilishmentTimetableException(
+                    "Date range could not be in the past or start date connot be earlier than end date.");
+            if (_timetableValidator.IsLegalTimeReduction(entity).Result)
+                throw new CreateEstabilishmentTimetableException("New time reduction intersect with existing ones.");
+
+            return entity.Adapt<EstabilishmentTimetable>();
         }
     }
 }

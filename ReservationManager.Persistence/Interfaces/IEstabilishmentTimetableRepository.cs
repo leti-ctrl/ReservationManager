@@ -11,5 +11,8 @@ namespace ReservationManager.Persistence.Interfaces
     public interface IEstabilishmentTimetableRepository : ICrudBaseEntityRepository<EstabilishmentTimetable>
     {
         Task<IEnumerable<EstabilishmentTimetable>> GetByTypeId(int typeId);
+        Task<IEnumerable<EstabilishmentTimetable>> GetClosingDateIntersection(DateOnly start, DateOnly end, int typeId);
+        Task<IEnumerable<EstabilishmentTimetable>> GetTimeReductionIntersection(DateOnly startDate, DateOnly endDate, 
+            TimeOnly startTime, TimeOnly endTime, int typeId);
     }
 }

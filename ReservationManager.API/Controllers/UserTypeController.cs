@@ -23,7 +23,7 @@ namespace ReservationManager.API.Controllers
         {
             var result = await _userTypeService.GetAllUserTypes();
 
-            if (result == null)
+            if (result == null || !result.Any())
                 return NoContent();
             return Ok(result);
         }
