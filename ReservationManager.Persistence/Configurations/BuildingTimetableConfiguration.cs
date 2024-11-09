@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Configurations
 {
-    internal class EstabilishmentTimetableConfiguration : IEntityTypeConfiguration<EstabilishmentTimetable>
+    internal class BuildingTimetableConfiguration : IEntityTypeConfiguration<BuildingTimetable>
     {
-        public void Configure(EntityTypeBuilder<EstabilishmentTimetable> builder)
+        public void Configure(EntityTypeBuilder<BuildingTimetable> builder)
         {
-            builder.ToTable("EstabilishmentTimetable");
+            builder.ToTable("BuildingTimetable");
 
             builder.HasKey(x => x.Id);
 

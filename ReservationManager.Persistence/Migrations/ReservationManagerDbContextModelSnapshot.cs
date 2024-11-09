@@ -109,7 +109,7 @@ namespace ReservationManager.Persistence.Migrations
                     b.ToTable("UserType", (string)null);
                 });
 
-            modelBuilder.Entity("ReservationManager.DomainModel.Operation.EstabilishmentTimetable", b =>
+            modelBuilder.Entity("ReservationManager.DomainModel.Operation.BuildingTimetable", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -143,7 +143,7 @@ namespace ReservationManager.Persistence.Migrations
 
                     b.HasIndex("TypeId");
 
-                    b.ToTable("EstabilishmentTimetable", (string)null);
+                    b.ToTable("BuildingTimetable", (string)null);
                 });
 
             modelBuilder.Entity("ReservationManager.DomainModel.Operation.Reservation", b =>
@@ -258,7 +258,7 @@ namespace ReservationManager.Persistence.Migrations
                     b.ToTable("User", (string)null);
                 });
 
-            modelBuilder.Entity("ReservationManager.DomainModel.Operation.EstabilishmentTimetable", b =>
+            modelBuilder.Entity("ReservationManager.DomainModel.Operation.BuildingTimetable", b =>
                 {
                     b.HasOne("ReservationManager.DomainModel.Meta.TimetableType", "Type")
                         .WithMany()
