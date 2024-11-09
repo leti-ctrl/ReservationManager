@@ -13,11 +13,11 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Builders
 {
-    public class TimeReductionTimetableBuilderStrategy : IEstabilishmentTimetableBuilderStrategy
+    public class OvertimeTimetableStrategy : IBuildingTimetableStrategy
     {
-        private readonly IEstabilishmentTimetableValidator _timetableValidator;
+        private readonly IBuildingTimetableValidator _timetableValidator;
 
-        public TimeReductionTimetableBuilderStrategy(IEstabilishmentTimetableValidator timetableValidator)
+        public OvertimeTimetableStrategy(IBuildingTimetableValidator timetableValidator)
         {
             _timetableValidator = timetableValidator;
         }
@@ -27,15 +27,15 @@ namespace ReservationManager.Core.Builders
             return _timetableValidator.IsTimeReductionTimetable(entity, type);
         }
 
-        public async Task<EstabilishmentTimetable> Build(UpsertEstabilishmentTimetableDto entity)
+        public async Task<BuildingTimetable> Build(UpsertEstabilishmentTimetableDto entity)
         {
             if (!_timetableValidator.IsLegalDateRange(entity))
-                throw new CreateEstabilishmentTimetableException(
+                throw new CreateBuildingTimetableException(
                     "Date range could not be in the past or start date connot be earlier than end date.");
             if (_timetableValidator.IsLegalTimeReduction(entity).Result)
-                throw new CreateEstabilishmentTimetableException("New time reduction intersect with existing ones.");
+                throw new CreateBuildingTimetableException("New time reduction intersect with existing ones.");
 
-            return entity.Adapt<EstabilishmentTimetable>();
+            return entity.Adapt<BuildingTimetable>();
         }
     }
 }

@@ -10,32 +10,32 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Persistence.Repositories
 {
-    public class EstabilishmentTimetableRepository : CrudBaseEntityRepository<EstabilishmentTimetable>,
-        IEstabilishmentTimetableRepository
+    public class BuildingTimetableRepository : CrudBaseEntityRepository<BuildingTimetable>,
+        IBuildingTimetableRepository
     {
-        public EstabilishmentTimetableRepository(ReservationManagerDbContext dbContext) : base(dbContext)
+        public BuildingTimetableRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
         }
 
-        public async Task<IEnumerable<EstabilishmentTimetable>> GetClosingDateIntersection(DateOnly start, DateOnly end, int typeId)
+        public async Task<IEnumerable<BuildingTimetable>> GetClosingDateIntersection(DateOnly start, DateOnly end, int typeId)
         {
-            return await base.Context.Set<EstabilishmentTimetable>()
+            return await base.Context.Set<BuildingTimetable>()
                                      .Where(x => x.TypeId == typeId && !x.IsDeleted.HasValue)
                                      .Where(x => x.StartDate <= end && x.EndDate >= start)
                                      .ToListAsync();
         }
 
-        public async Task<IEnumerable<EstabilishmentTimetable>> GetByTypeId(int typeId)
+        public async Task<IEnumerable<BuildingTimetable>> GetByTypeId(int typeId)
         {
-            return await base.Context.Set<EstabilishmentTimetable>()
+            return await base.Context.Set<BuildingTimetable>()
                                      .Where(x => x.TypeId == typeId)
                                      .ToListAsync();    
         }
         
-        public async Task<IEnumerable<EstabilishmentTimetable>> GetTimeReductionIntersection(DateOnly startDate, 
+        public async Task<IEnumerable<BuildingTimetable>> GetTimeReductionIntersection(DateOnly startDate, 
             DateOnly endDate, TimeOnly startTime, TimeOnly endTime, int typeId) 
         {
-            return await base.Context.Set<EstabilishmentTimetable>()
+            return await base.Context.Set<BuildingTimetable>()
                                      .Where(x => x.TypeId == typeId && !x.IsDeleted.HasValue)
                                      .Where(x => x.StartDate <= endDate && x.EndDate >= startDate)
                                      .Where(x => x.StartTime <= endTime && x.EndTime >= startTime)

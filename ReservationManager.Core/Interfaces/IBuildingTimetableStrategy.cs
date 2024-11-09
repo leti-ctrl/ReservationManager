@@ -1,4 +1,5 @@
 ﻿using ReservationManager.Core.Dtos;
+using ReservationManager.DomainModel.Meta;
 using ReservationManager.DomainModel.Operation;
 using System;
 using System.Collections.Generic;
@@ -8,8 +9,9 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Interfaces
 {
-    public interface IEstabilishmentTimetableBuilderStrategyHandler
+    public interface IBuildingTimetableStrategy
     {
-        Task<EstabilishmentTimetable> BuildTimetable(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type);
+        bool IsMatch(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type);
+        Task<BuildingTimetable> Build(UpsertEstabilishmentTimetableDto entity);
     }
 }

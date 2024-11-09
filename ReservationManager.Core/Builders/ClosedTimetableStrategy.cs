@@ -14,11 +14,11 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Builders
 {
-    public class ClosedTimetableBuilderStrategy : IEstabilishmentTimetableBuilderStrategy
+    public class ClosedTimetableStrategy : IBuildingTimetableStrategy
     {
-        private readonly IEstabilishmentTimetableValidator _timetableValidator;
+        private readonly IBuildingTimetableValidator _timetableValidator;
 
-        public ClosedTimetableBuilderStrategy(IEstabilishmentTimetableValidator validator)
+        public ClosedTimetableStrategy(IBuildingTimetableValidator validator)
         {
             _timetableValidator = validator;
 ;
@@ -29,15 +29,15 @@ namespace ReservationManager.Core.Builders
             return _timetableValidator.IsClosureTimetable(entity, type);
         }
 
-        public async Task<EstabilishmentTimetable> Build(UpsertEstabilishmentTimetableDto entity)
+        public async Task<BuildingTimetable> Build(UpsertEstabilishmentTimetableDto entity)
         {
             if (!_timetableValidator.IsLegalDateRange(entity))
-                throw new CreateEstabilishmentTimetableException(
+                throw new CreateBuildingTimetableException(
                     "Date range could not be in the past or start date connot be earlier than end date.");
             if (_timetableValidator.IsLegalCloseDates(entity).Result)
-                throw new CreateEstabilishmentTimetableException("New closing dates intersect with existing ones.");
+                throw new CreateBuildingTimetableException("New closing dates intersect with existing ones.");
 
-            return entity.Adapt<EstabilishmentTimetable>();
+            return entity.Adapt<BuildingTimetable>();
         }
 
         

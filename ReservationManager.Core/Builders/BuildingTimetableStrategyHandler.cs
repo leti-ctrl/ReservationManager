@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Builders
 {
-    public class EstabilishmentTimetableBuilderStrategyHandler : IEstabilishmentTimetableBuilderStrategyHandler
+    public class BuildingTimetableStrategyHandler : IBuildingTimetableStrategyHandler
     {
-        private readonly IEnumerable<IEstabilishmentTimetableBuilderStrategy> _strategies;
+        private readonly IEnumerable<IBuildingTimetableStrategy> _strategies;
 
-        public EstabilishmentTimetableBuilderStrategyHandler(IEnumerable<IEstabilishmentTimetableBuilderStrategy> strategies)
+        public BuildingTimetableStrategyHandler(IEnumerable<IBuildingTimetableStrategy> strategies)
         {
             _strategies = strategies;
         }
 
-        public async Task<EstabilishmentTimetable> BuildTimetable(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type)
+        public async Task<BuildingTimetable> BuildTimetable(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type)
         {
             var strategy = _strategies.FirstOrDefault(s => s.IsMatch(entity, type))
                 ?? throw new NotImplementedException("Nessuna strategia corrisponde a questo tipo di estabilishment timetable.");

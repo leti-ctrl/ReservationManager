@@ -8,27 +8,27 @@ namespace ReservationManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EstabilishmentTimetableController : ControllerBase
+    public class BuildingTimetableController : ControllerBase
     {
-        private readonly IEstabilishmentTimetableService _estabilishmentTimetableService;
+        private readonly IBuildingTimetableService _buildingTimetableService;
 
-        public EstabilishmentTimetableController(IEstabilishmentTimetableService estabilishmentTimetableService)
+        public BuildingTimetableController(IBuildingTimetableService buildingTimetableService)
         {
-            _estabilishmentTimetableService = estabilishmentTimetableService;
+            _buildingTimetableService = buildingTimetableService;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<EstabilishmentTimetableDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<BuildingTimetableDto>>> GetAll()
         {
-            var ret = await _estabilishmentTimetableService.GetAll();
+            var timetableDtos = await _buildingTimetableService.GetAll();
 
-            if (!ret.Any())
+            if (!timetableDtos.Any())
                 return NoContent();
             
-            return Ok(ret);
+            return Ok(timetableDtos);
         }
 
         [HttpGet("{typeId}")]
@@ -36,7 +36,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public Task<ActionResult<IEnumerable<EstabilishmentTimetableDto>>> GetByType(int typeId)
+        public Task<ActionResult<IEnumerable<BuildingTimetableDto>>> GetByType(int typeId)
         {
             throw new NotImplementedException();
         }
@@ -46,7 +46,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public Task<ActionResult<IEnumerable<EstabilishmentTimetableDto>>> GetByDateRange(DateOnly start, DateOnly end)
+        public Task<ActionResult<IEnumerable<BuildingTimetableDto>>> GetByDateRange(DateOnly start, DateOnly end)
         {
             throw new NotImplementedException();
         }
@@ -55,20 +55,21 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<EstabilishmentTimetableDto>> Create(UpsertEstabilishmentTimetableRequest timetable) 
+        public async Task<ActionResult<BuildingTimetableDto>> Create(UpsertBuildingTimetableRequest timetable) 
         {
-            var ret = await _estabilishmentTimetableService.Create(timetable.Adapt<UpsertEstabilishmentTimetableDto>());
-            return Ok(ret);
+            var estabilishmentTimetableDto = await _buildingTimetableService.Create(timetable.Adapt<UpsertEstabilishmentTimetableDto>());
+            
+            return Ok(estabilishmentTimetableDto);
         }
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public Task<ActionResult<EstabilishmentTimetableDto>> Update(int id, UpsertEstabilishmentTimetableDto timetable)
+        public async Task<ActionResult<BuildingTimetableDto>> Update(int id, UpsertEstabilishmentTimetableDto timetable)
         {
-            throw new NotImplementedException();
+            var estabilishmentTimetableDto = await _buildingTimetableService.Update(id, timetable.Adapt<UpsertEstabilishmentTimetableDto>());
+            return Ok(estabilishmentTimetableDto);
         }
 
         [HttpDelete]

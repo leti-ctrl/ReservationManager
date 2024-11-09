@@ -1,5 +1,4 @@
-﻿using ReservationManager.Core.Consts;
-using ReservationManager.Core.Dtos;
+﻿using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,11 +11,11 @@ using ReservationManager.Persistence.Interfaces;
 
 namespace ReservationManager.Core.Validators
 {
-    public class EstabilishmentTimetableValidator : IEstabilishmentTimetableValidator
+    public class BuildingTimetableValidator : IBuildingTimetableValidator
     {
-        private readonly IEstabilishmentTimetableRepository _timetableRepository;
+        private readonly IBuildingTimetableRepository _timetableRepository;
 
-        public EstabilishmentTimetableValidator(IEstabilishmentTimetableRepository timetableRepository)
+        public BuildingTimetableValidator(IBuildingTimetableRepository timetableRepository)
         {
             _timetableRepository = timetableRepository;
         }
@@ -43,7 +42,7 @@ namespace ReservationManager.Core.Validators
         {
             if (timetable.StartTime != null && timetable.EndTime != null
                 && timetable.StartDate != null && timetable.EndDate != null
-                && type.Code == FixedTimetableType.TimeReduction)
+                && type.Code == FixedTimetableType.Overtime)
                 return true;
             return false;
         }
@@ -68,7 +67,7 @@ namespace ReservationManager.Core.Validators
             var end = (DateOnly)entity.EndDate!;
             var existingIntersection = 
                 await _timetableRepository.GetClosingDateIntersection(start, end, entity.TypeId)
-                ?? Enumerable.Empty<EstabilishmentTimetable>();
+                ?? Enumerable.Empty<BuildingTimetable>();
             return existingIntersection.Any();
         }
 
@@ -80,7 +79,7 @@ namespace ReservationManager.Core.Validators
             var endTime = (TimeOnly)entity.EndTime!;
             var existingIntersection = 
                 await _timetableRepository.GetTimeReductionIntersection(startDate, endDate, startTime, endTime, entity.TypeId)
-                ?? Enumerable.Empty<EstabilishmentTimetable>();
+                ?? Enumerable.Empty<BuildingTimetable>();
             return existingIntersection.Any();
         }
     }

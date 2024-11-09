@@ -13,13 +13,13 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Builders
 {
-    public class NominalTimetableBuilderStrategy : IEstabilishmentTimetableBuilderStrategy
+    public class NominalTimetableStrategy : IBuildingTimetableStrategy
     {
-        private readonly IEstabilishmentTimetableValidator _timetableValidator;
-        private readonly IEstabilishmentTimetableRepository _timetableRepository;
+        private readonly IBuildingTimetableValidator _timetableValidator;
+        private readonly IBuildingTimetableRepository _timetableRepository;
 
-        public NominalTimetableBuilderStrategy(IEstabilishmentTimetableValidator timetableValidator, 
-                                               IEstabilishmentTimetableRepository timetableRepository)
+        public NominalTimetableStrategy(IBuildingTimetableValidator timetableValidator, 
+                                               IBuildingTimetableRepository timetableRepository)
         {
             _timetableValidator = timetableValidator;
             _timetableRepository = timetableRepository;
@@ -30,11 +30,11 @@ namespace ReservationManager.Core.Builders
             return _timetableValidator.IsNominalTimetable(entity, type);
         }
 
-        public async Task<EstabilishmentTimetable> Build(UpsertEstabilishmentTimetableDto entity)
+        public async Task<BuildingTimetable> Build(UpsertEstabilishmentTimetableDto entity)
         {
             var existing = await _timetableRepository.GetByTypeId(entity.TypeId);
             if (existing == null || !existing.Any())
-                return entity.Adapt<EstabilishmentTimetable>();
+                return entity.Adapt<BuildingTimetable>();
 
             throw new TimetableExistsException("NominalTimetable already exists.");
         }

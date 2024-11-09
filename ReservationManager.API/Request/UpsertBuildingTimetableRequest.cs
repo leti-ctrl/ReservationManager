@@ -1,7 +1,7 @@
 ﻿
 namespace ReservationManager.API.Request
 {
-    public class UpsertEstabilishmentTimetableRequest
+    public class UpsertBuildingTimetableRequest
     {
         public int TypeId { get; set; }
         public DateOnly? StartDate { get; set; }

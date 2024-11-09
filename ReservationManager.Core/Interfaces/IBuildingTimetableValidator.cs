@@ -8,7 +8,7 @@ using ReservationManager.Core.Commons;
 
 namespace ReservationManager.Core.Interfaces
 {
-    public interface IEstabilishmentTimetableValidator
+    public interface IBuildingTimetableValidator
     {
         bool IsClosureTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type);
         bool IsNominalTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type);

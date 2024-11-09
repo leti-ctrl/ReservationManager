@@ -24,7 +24,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IResourceService, ResourceService>();
             services.AddScoped<IReservationService, ReservationService>();
-            services.AddScoped<IEstabilishmentTimetableService, EstabilishementTimetableService>();
+            services.AddScoped<IBuildingTimetableService, BuildingTimetableService>();
 
             return services;
         }
@@ -39,7 +39,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IResourceRepository, ResourceRepository>();
             services.AddScoped<IReservationRepository, ReservationRepository>();
-            services.AddScoped<IEstabilishmentTimetableRepository, EstabilishmentTimetableRepository>();
+            services.AddScoped<IBuildingTimetableRepository, BuildingTimetableRepository>();
 
             return services;
         }
@@ -51,7 +51,7 @@ namespace ReservationManager.API.Extensions
             opt.MapToStatusCode<InvalidCodeTypeException>(StatusCodes.Status400BadRequest);
             opt.MapToStatusCode<DeleteNotPermittedException>(StatusCodes.Status403Forbidden);
             opt.MapToStatusCode<TimetableExistsException>(StatusCodes.Status400BadRequest);
-            opt.MapToStatusCode<CreateEstabilishmentTimetableException>(StatusCodes.Status400BadRequest);
+            opt.MapToStatusCode<CreateBuildingTimetableException>(StatusCodes.Status400BadRequest);
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
@@ -60,18 +60,18 @@ namespace ReservationManager.API.Extensions
 
         public static IServiceCollection ConfigureBuilders(this IServiceCollection services)
         {
-            services.AddScoped<IEstabilishmentTimetableBuilderStrategy, ClosedTimetableBuilderStrategy>();
-            services.AddScoped<IEstabilishmentTimetableBuilderStrategy, TimeReductionTimetableBuilderStrategy>();
-            services.AddScoped<IEstabilishmentTimetableBuilderStrategy, NominalTimetableBuilderStrategy>();
+            services.AddScoped<IBuildingTimetableStrategy, ClosedTimetableStrategy>();
+            services.AddScoped<IBuildingTimetableStrategy, OvertimeTimetableStrategy>();
+            services.AddScoped<IBuildingTimetableStrategy, NominalTimetableStrategy>();
 
-            services.AddScoped<IEstabilishmentTimetableBuilderStrategyHandler, EstabilishmentTimetableBuilderStrategyHandler>();
+            services.AddScoped<IBuildingTimetableStrategyHandler, BuildingTimetableStrategyHandler>();
 
             return services;
         }
 
         public static IServiceCollection ConfigureValidators(this IServiceCollection services)
         {
-            services.AddScoped<IEstabilishmentTimetableValidator, EstabilishmentTimetableValidator>();
+            services.AddScoped<IBuildingTimetableValidator, BuildingTimetableValidator>();
             
             return services;
         }

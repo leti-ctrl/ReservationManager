@@ -1,7 +1,7 @@
-﻿using ReservationManager.Core.Consts;
-using ReservationManager.DomainModel.Meta;
+﻿using ReservationManager.DomainModel.Meta;
 using ReservationManager.Persistence;
 using System.Data;
+using ReservationManager.Core.Commons;
 
 namespace ReservationManager.API
 {
@@ -17,7 +17,7 @@ namespace ReservationManager.API
             var roles = new List<TimetableType>()
             {
                 new() { Code = FixedTimetableType.Closure },
-                new() { Code = FixedTimetableType.TimeReduction },
+                new() { Code = FixedTimetableType.Overtime },
                 new() { Code = FixedTimetableType.Nominal },
             };
             foreach (var role in roles.Where(role => !dbSet.Any(x => x.Code == role.Code)))
