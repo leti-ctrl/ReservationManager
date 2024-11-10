@@ -22,29 +22,20 @@ namespace ReservationManager.Core.Validators
 
         public bool IsClosureTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type)
         {
-            if (timetable.StartTime == null && timetable.EndTime == null
-                && timetable.StartDate != null && timetable.EndDate != null
-                && type.Code == FixedTimetableType.Closure)
-                return true;
-            return false;
+            return timetable is { StartTime: null, EndTime: null,StartDate: not null, EndDate: not null }
+                   && type.Code == FixedTimetableType.Closure;
         }
 
         public bool IsNominalTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type)
         {
-            if (timetable.StartTime != null && timetable.EndTime != null
-                && timetable.StartDate == null && timetable.EndDate == null
-                && type.Code == FixedTimetableType.Nominal)
-                return true;
-            return false;
+            return timetable is { StartTime: not null, EndTime: not null, StartDate: null, EndDate: null }
+                   && type.Code == FixedTimetableType.Nominal;
         }
 
         public bool IsTimeReductionTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type)
         {
-            if (timetable.StartTime != null && timetable.EndTime != null
-                && timetable.StartDate != null && timetable.EndDate != null
-                && type.Code == FixedTimetableType.Overtime)
-                return true;
-            return false;
+            return timetable is { StartTime: not null, EndTime: not null, StartDate: not null, EndDate: not null }
+                   && type.Code == FixedTimetableType.Overtime;
         }
         
         public bool IsLegalDateRange(UpsertEstabilishmentTimetableDto entity)
@@ -52,35 +43,42 @@ namespace ReservationManager.Core.Validators
             var start = (DateOnly)entity.StartDate!;
             var end = (DateOnly)entity.EndDate!;
 
-            if (start > end)
-                return false;
-
-            if (start < DateOnly.FromDateTime(DateTime.Now) || end < DateOnly.FromDateTime(DateTime.Now))
-                return false;
-
-            return true;
+            return start <= end && start >= DateOnly.FromDateTime(DateTime.Now) &&
+                   end >= DateOnly.FromDateTime(DateTime.Now);
         }
 
-        public async Task<bool> IsLegalCloseDates(UpsertEstabilishmentTimetableDto entity)
+        public async Task<bool> IsLegalCloseDates(UpsertEstabilishmentTimetableDto entity, bool isCreate, int? id)
         {
             var start = (DateOnly)entity.StartDate!;
             var end = (DateOnly)entity.EndDate!;
             var existingIntersection = 
-                await _timetableRepository.GetClosingDateIntersection(start, end, entity.TypeId)
-                ?? Enumerable.Empty<BuildingTimetable>();
-            return existingIntersection.Any();
+                await _timetableRepository.GetClosingDateIntersection(start, end, entity.TypeId);
+            return isCreate 
+                ? existingIntersection.Any()
+                : CheckForUpdate(existingIntersection.ToList(), id);
         }
 
-        public async Task<bool> IsLegalTimeReduction(UpsertEstabilishmentTimetableDto entity)
+        public async Task<bool> IsLegalTimeReduction(UpsertEstabilishmentTimetableDto entity, bool isCreate, int? id)
         {
             var startDate = (DateOnly)entity.StartDate!;
             var endDate = (DateOnly)entity.EndDate!;
             var startTime = (TimeOnly)entity.StartTime!;
             var endTime = (TimeOnly)entity.EndTime!;
-            var existingIntersection = 
-                await _timetableRepository.GetTimeReductionIntersection(startDate, endDate, startTime, endTime, entity.TypeId)
-                ?? Enumerable.Empty<BuildingTimetable>();
-            return existingIntersection.Any();
+
+            var existingIntersection = await _timetableRepository.
+                GetTimeReductionIntersection(startDate, endDate, startTime, endTime, entity.TypeId);
+            return isCreate && id != null
+                ? existingIntersection.Any() 
+                : CheckForUpdate(existingIntersection.ToList(), id);
+        }
+
+
+        private bool CheckForUpdate(List<BuildingTimetable> existingIntersection, int? id)
+        {
+            var oldBuildingTimetable = existingIntersection.FirstOrDefault(x => x.Id == id);
+            return oldBuildingTimetable != null 
+                ? existingIntersection.Any(x => x.Id != id) 
+                : existingIntersection.Any();
         }
     }
 }

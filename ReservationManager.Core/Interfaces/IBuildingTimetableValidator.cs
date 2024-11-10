@@ -14,7 +14,7 @@ namespace ReservationManager.Core.Interfaces
         bool IsNominalTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type);
         bool IsTimeReductionTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type);
         bool IsLegalDateRange(UpsertEstabilishmentTimetableDto entity);
-        Task<bool> IsLegalCloseDates(UpsertEstabilishmentTimetableDto entity);
-        Task<bool> IsLegalTimeReduction(UpsertEstabilishmentTimetableDto entity);
+        Task<bool> IsLegalCloseDates(UpsertEstabilishmentTimetableDto entity, bool isCreate, int? id);
+        Task<bool> IsLegalTimeReduction(UpsertEstabilishmentTimetableDto entity, bool isCreate, int? id);
     }
 }

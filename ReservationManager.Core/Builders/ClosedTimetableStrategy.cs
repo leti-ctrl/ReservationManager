@@ -29,17 +29,27 @@ namespace ReservationManager.Core.Builders
             return _timetableValidator.IsClosureTimetable(entity, type);
         }
 
-        public async Task<BuildingTimetable> Build(UpsertEstabilishmentTimetableDto entity)
+        public async Task<BuildingTimetable> Create(UpsertEstabilishmentTimetableDto entity)
         {
             if (!_timetableValidator.IsLegalDateRange(entity))
                 throw new CreateBuildingTimetableException(
                     "Date range could not be in the past or start date connot be earlier than end date.");
-            if (_timetableValidator.IsLegalCloseDates(entity).Result)
+            if (await _timetableValidator.IsLegalCloseDates(entity, true, null))
                 throw new CreateBuildingTimetableException("New closing dates intersect with existing ones.");
 
             return entity.Adapt<BuildingTimetable>();
         }
 
-        
+        public async Task<BuildingTimetable> Update(int id, UpsertEstabilishmentTimetableDto entity)
+        {
+            if (!_timetableValidator.IsLegalDateRange(entity))
+                throw new CreateBuildingTimetableException(
+                    "Date range could not be in the past or start date connot be earlier than end date.");
+            if (await _timetableValidator.IsLegalCloseDates(entity, false, id))
+                throw new CreateBuildingTimetableException("New closing dates intersect with existing ones.");
+            
+            
+            return entity.Adapt<BuildingTimetable>();
+        }
     }
 }

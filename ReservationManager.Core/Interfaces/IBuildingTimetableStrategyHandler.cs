@@ -5,11 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReservationManager.DomainModel.Meta;
 
 namespace ReservationManager.Core.Interfaces
 {
     public interface IBuildingTimetableStrategyHandler
     {
-        Task<BuildingTimetable> BuildTimetable(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type);
+        Task<BuildingTimetable> CreateTimetable(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type);
+        Task<BuildingTimetable> UpdateTimetable(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type, int id);
     }
 }

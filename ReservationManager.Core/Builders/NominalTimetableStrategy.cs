@@ -30,14 +30,18 @@ namespace ReservationManager.Core.Builders
             return _timetableValidator.IsNominalTimetable(entity, type);
         }
 
-        public async Task<BuildingTimetable> Build(UpsertEstabilishmentTimetableDto entity)
+        public async Task<BuildingTimetable> Create(UpsertEstabilishmentTimetableDto entity)
         {
             var existing = await _timetableRepository.GetByTypeId(entity.TypeId);
-            if (existing == null || !existing.Any())
+            if (!existing.Any())
                 return entity.Adapt<BuildingTimetable>();
 
             throw new TimetableExistsException("NominalTimetable already exists.");
         }
 
+        public Task<BuildingTimetable> Update(int id, UpsertEstabilishmentTimetableDto entity)
+        {
+            return Task.FromResult(entity.Adapt<BuildingTimetable>());
+        }
     }
 }

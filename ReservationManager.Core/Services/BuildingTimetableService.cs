@@ -20,8 +20,8 @@ namespace ReservationManager.Core.Services
         private readonly IBuildingTimetableStrategyHandler _timetableHandler;
 
         public BuildingTimetableService(IBuildingTimetableRepository buildingTimetableRepository,
-                                               ITimetableTypeService timetableTypeService,
-                                               IBuildingTimetableStrategyHandler timetable)
+                                        ITimetableTypeService timetableTypeService,
+                                        IBuildingTimetableStrategyHandler timetable)
         {
             _buildingTimetableRepository = buildingTimetableRepository;
             _timetableTypeService = timetableTypeService;
@@ -30,14 +30,11 @@ namespace ReservationManager.Core.Services
 
         public async Task<BuildingTimetableDto> Create(UpsertEstabilishmentTimetableDto entity)
         {
-            var type = await _timetableTypeService.GetById(entity.TypeId) ??
-                throw new EntityNotFoundException($"TimetableType {entity.TypeId} not found.");
-
-
-            var model = await _timetableHandler.BuildTimetable(entity, type);
-
+            var type = await _timetableTypeService.GetById(entity.TypeId);
+            var model = await _timetableHandler.CreateTimetable(entity, type);
 
             var created = await _buildingTimetableRepository.CreateEntityAsync(model);
+            
             return created.Adapt<BuildingTimetableDto>();
         }
 
@@ -46,22 +43,26 @@ namespace ReservationManager.Core.Services
             var timetableList = await _buildingTimetableRepository.GetEntityByIdAsync(id) ??
                                 throw new EntityNotFoundException($"Timetable {id} does not exist.");
             
-            var type = await _timetableTypeService.GetById(entity.TypeId) ??
-                       throw new EntityNotFoundException($"TimetableType {entity.TypeId} not found.");
+            var type = await _timetableTypeService.GetById(entity.TypeId);
 
             if (timetableList.TypeId != type.Id)
-                throw new Exception();
-            return new BuildingTimetableDto(){Type = new TimetableTypeDto(){Id = type.Id, Code = type.Code}};
+                throw new UpdateNotPermittedException("Timetable type does not match.");
+
+            var model = await _timetableHandler.UpdateTimetable(entity, type, id);
+            model.Id = id;
+            
+            var updated = await _buildingTimetableRepository.UpdateEntityAsync(model);
+            
+            return updated.Adapt<BuildingTimetableDto>();
         }
 
         public async Task<IEnumerable<BuildingTimetableDto>> GetAll()
         {
-            var timetableList = await _buildingTimetableRepository.GetAllEntitiesAsync();
-            if(timetableList == null) 
-                return Enumerable.Empty<BuildingTimetableDto>();
-
-            return timetableList.Select(x => x.Adapt<BuildingTimetableDto>());
+            var timetableList = (await _buildingTimetableRepository.GetAllEntitiesAsync()).ToList();
             
+            return !timetableList.Any() 
+                ? Enumerable.Empty<BuildingTimetableDto>() 
+                : timetableList.Select(x => x.Adapt<BuildingTimetableDto>());
         }
 
         public async Task<IEnumerable<BuildingTimetableDto>> GetByTypeId(int typeId)

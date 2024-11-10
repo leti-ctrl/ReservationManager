@@ -12,6 +12,8 @@ namespace ReservationManager.Core.Interfaces
     public interface IBuildingTimetableStrategy
     {
         bool IsMatch(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type);
-        Task<BuildingTimetable> Build(UpsertEstabilishmentTimetableDto entity);
+        Task<BuildingTimetable> Create(UpsertEstabilishmentTimetableDto entity);
+        Task<BuildingTimetable> Update(int id, UpsertEstabilishmentTimetableDto entity);
+        
     }
 }

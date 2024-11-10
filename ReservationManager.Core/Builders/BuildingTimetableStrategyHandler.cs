@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ReservationManager.Core.Exceptions;
 
 namespace ReservationManager.Core.Builders
 {
@@ -19,13 +20,22 @@ namespace ReservationManager.Core.Builders
             _strategies = strategies;
         }
 
-        public async Task<BuildingTimetable> BuildTimetable(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type)
+        public async Task<BuildingTimetable> CreateTimetable(UpsertEstabilishmentTimetableDto entity,
+            TimetableTypeDto type)
         {
             var strategy = _strategies.FirstOrDefault(s => s.IsMatch(entity, type))
-                ?? throw new NotImplementedException("Nessuna strategia corrisponde a questo tipo di estabilishment timetable.");
+                ?? throw new StrategyNotFoundException($"No strategy found for type {type.Id}.");
 
-            return await strategy.Build(entity);
+            return await strategy.Create(entity);
         }
 
+        public async Task<BuildingTimetable> UpdateTimetable(UpsertEstabilishmentTimetableDto entity,
+            TimetableTypeDto type, int id)
+        {
+            var strategy = _strategies.FirstOrDefault(s => s.IsMatch(entity, type))
+                           ?? throw new StrategyNotFoundException($"No strategy found for type {type.Id}.");
+
+            return await strategy.Update(id, entity);
+        }
     }
 }

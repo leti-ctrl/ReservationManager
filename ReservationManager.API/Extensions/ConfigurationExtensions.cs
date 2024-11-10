@@ -3,10 +3,8 @@ using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Services;
 using ReservationManager.Core.Validators;
-using ReservationManager.DomainModel.Meta;
 using ReservationManager.Persistence.Interfaces;
 using ReservationManager.Persistence.Repositories;
-using ReservationManager.Persistence.Repositories.Base;
 using ProblemDetailsOptions = Hellang.Middleware.ProblemDetails.ProblemDetailsOptions;
 
 
@@ -52,6 +50,8 @@ namespace ReservationManager.API.Extensions
             opt.MapToStatusCode<DeleteNotPermittedException>(StatusCodes.Status403Forbidden);
             opt.MapToStatusCode<TimetableExistsException>(StatusCodes.Status400BadRequest);
             opt.MapToStatusCode<CreateBuildingTimetableException>(StatusCodes.Status400BadRequest);
+            opt.MapToStatusCode<UpdateNotPermittedException>(StatusCodes.Status403Forbidden);
+            opt.MapToStatusCode<StrategyNotFoundException>(StatusCodes.Status404NotFound);
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
