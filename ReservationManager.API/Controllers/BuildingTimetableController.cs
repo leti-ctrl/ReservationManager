@@ -54,22 +54,25 @@ namespace ReservationManager.API.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<BuildingTimetableDto>> Create(UpsertBuildingTimetableRequest timetable) 
         {
-            var estabilishmentTimetableDto = await _buildingTimetableService.Create(timetable.Adapt<UpsertEstabilishmentTimetableDto>());
+            var buildingTimetableDto = await _buildingTimetableService.Create(timetable.Adapt<UpsertEstabilishmentTimetableDto>());
             
-            return Ok(estabilishmentTimetableDto);
+            return Ok(buildingTimetableDto);
         }
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<BuildingTimetableDto>> Update(int id, UpsertEstabilishmentTimetableDto timetable)
         {
-            var estabilishmentTimetableDto = await _buildingTimetableService.Update(id, timetable.Adapt<UpsertEstabilishmentTimetableDto>());
-            return Ok(estabilishmentTimetableDto);
+            var buildingTimetableDto = await _buildingTimetableService.Update(id, timetable.Adapt<UpsertEstabilishmentTimetableDto>());
+            return Ok(buildingTimetableDto);
         }
 
         [HttpDelete]
