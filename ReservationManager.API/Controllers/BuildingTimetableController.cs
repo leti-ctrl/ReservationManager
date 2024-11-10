@@ -34,11 +34,14 @@ namespace ReservationManager.API.Controllers
         [HttpGet("{typeId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public Task<ActionResult<IEnumerable<BuildingTimetableDto>>> GetByType(int typeId)
+        public async Task<ActionResult<IEnumerable<BuildingTimetableDto>>> GetByType(int typeId)
         {
-            throw new NotImplementedException();
+            var list = await _buildingTimetableService.GetByTypeId(typeId);
+
+            if (list.Any())
+                return Ok(list);
+            return NoContent();
         }
 
         [HttpGet("dateRange")]
@@ -46,9 +49,12 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public Task<ActionResult<IEnumerable<BuildingTimetableDto>>> GetByDateRange(DateOnly start, DateOnly end)
+        public async Task<ActionResult<IEnumerable<BuildingTimetableDto>>> GetByDateRange(DateOnly start, DateOnly end)
         {
-            throw new NotImplementedException();
+            var list = await _buildingTimetableService.GetByDateRange(start, end);
+             if(list.Any())
+                 return Ok(list);
+             return NoContent();
         }
 
         [HttpPost]

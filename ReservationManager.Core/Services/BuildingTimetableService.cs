@@ -28,6 +28,13 @@ namespace ReservationManager.Core.Services
             _timetableHandler = timetable;
         }
 
+        public async Task<IEnumerable<BuildingTimetableDto>> GetByDateRange(DateOnly startDate, DateOnly endDate)
+        {
+            var list = await _buildingTimetableRepository.GetByDateRange(startDate, endDate);
+            
+            return list.Select(t => t.Adapt<BuildingTimetableDto>());
+        }
+
         public async Task<BuildingTimetableDto> Create(UpsertEstabilishmentTimetableDto entity)
         {
             var type = await _timetableTypeService.GetById(entity.TypeId);
@@ -66,7 +73,7 @@ namespace ReservationManager.Core.Services
 
         public async Task<IEnumerable<BuildingTimetableDto>> GetAll()
         {
-            var timetableList = (await _buildingTimetableRepository.GetAllEntitiesAsync()).ToList();
+            var timetableList = (await _buildingTimetableRepository.GetAllTimetableFromToday()).ToList();
             
             return !timetableList.Any() 
                 ? Enumerable.Empty<BuildingTimetableDto>() 
@@ -75,7 +82,9 @@ namespace ReservationManager.Core.Services
 
         public async Task<IEnumerable<BuildingTimetableDto>> GetByTypeId(int typeId)
         {
-            throw new NotImplementedException();
+            var timetableList = await _buildingTimetableRepository.GetByTypeId(typeId);
+            
+            return timetableList.Select(item => item.Adapt<BuildingTimetableDto>());
         }
     }
 }
