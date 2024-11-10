@@ -56,6 +56,14 @@ namespace ReservationManager.Core.Services
             return updated.Adapt<BuildingTimetableDto>();
         }
 
+        public async Task Delete(int id)
+        {
+            var entity = await _buildingTimetableRepository.GetEntityByIdAsync(id) ??
+                         throw new EntityNotFoundException($"Timetable {id} not found.");
+            
+            await _buildingTimetableRepository.DeleteEntityAsync(entity);
+        }
+
         public async Task<IEnumerable<BuildingTimetableDto>> GetAll()
         {
             var timetableList = (await _buildingTimetableRepository.GetAllEntitiesAsync()).ToList();

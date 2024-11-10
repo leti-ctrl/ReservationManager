@@ -77,10 +77,12 @@ namespace ReservationManager.API.Controllers
 
         [HttpDelete]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(int id)
         {
-            throw new NotImplementedException();
+            await _buildingTimetableService.Delete(id);
+            return Accepted();
         }
     }
 }

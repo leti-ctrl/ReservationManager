@@ -8,5 +8,6 @@ namespace ReservationManager.Core.Interfaces
         Task<IEnumerable<BuildingTimetableDto>> GetByTypeId(int typeId);
         Task<BuildingTimetableDto> Create(UpsertEstabilishmentTimetableDto entity);
         Task<BuildingTimetableDto> Update(int id, UpsertEstabilishmentTimetableDto entity);
+        Task Delete(int id);
     }
 }
