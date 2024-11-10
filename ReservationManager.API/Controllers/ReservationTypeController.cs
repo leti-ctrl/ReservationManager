@@ -24,7 +24,7 @@ namespace ReservationManager.API.Controllers
         {
             var reservationTypes = await _reservationTypeService.GetAllReservationType();
 
-            if (reservationTypes == null || !reservationTypes.Any())
+            if (!reservationTypes.Any())
                 return NoContent();
             return Ok(reservationTypes);
         }

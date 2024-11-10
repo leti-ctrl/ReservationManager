@@ -23,8 +23,6 @@ namespace ReservationManager.API.Controllers
         {
             var timetableTypes = await _timetableTypeService.GetAllTypes();
 
-            if (timetableTypes == null)
-                return NoContent();
             return Ok(timetableTypes);
         }
     }

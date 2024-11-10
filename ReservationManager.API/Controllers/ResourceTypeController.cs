@@ -23,7 +23,7 @@ namespace ReservationManager.API.Controllers
         {
             var resourceTypes = await _resourceTypeService.GetAllResourceTypes();
 
-            if (resourceTypes == null || !resourceTypes.Any())
+            if (!resourceTypes.Any())
                 return NoContent();
             return Ok(resourceTypes);
         }

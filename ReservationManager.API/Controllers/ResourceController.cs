@@ -40,13 +40,10 @@ namespace ReservationManager.API.Controllers
         }
 
         [HttpGet("filtered")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<ResourceDto>>> GetFilteredResource(FilterDto filter)
-        {
-            throw new NotImplementedException();
-        }
-
-        [HttpGet("availability")]
-        public async Task<ActionResult<IEnumerable<ResourceDto>>> GetAvailabilityResource(FilterDto filter)
         {
             throw new NotImplementedException();
         }
@@ -63,9 +60,14 @@ namespace ReservationManager.API.Controllers
         }
 
         [HttpPut]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ResourceDto>> UpdateResource(int id, UpsertResourceDto resource)
         {
-            throw new NotImplementedException();
+            var updated = await _resourceService.UpdateResource(id, resource);
+
+            return Ok(updated);
         }
 
         [HttpDelete]

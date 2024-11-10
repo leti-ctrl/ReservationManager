@@ -10,21 +10,21 @@ namespace ReservationManager.Core.Services
     public class ResourceService : IResourceService
     {
         private readonly IResourceRepository _resourceRepository;
-        private readonly IResourceTypeRepository _resourceTypeRepository;
+        private readonly IResourceValidator _resourceValidator;
 
-        public ResourceService(IResourceRepository resourceRepository, IResourceTypeRepository resourceTypeRepository)
+        public ResourceService(IResourceRepository resourceRepository, IResourceValidator resourceValidator)
         {
             _resourceRepository = resourceRepository;
-            _resourceTypeRepository = resourceTypeRepository;
+            _resourceValidator = resourceValidator;
         }
 
         public async Task<IEnumerable<ResourceDto>> GetAllResources()
         {
-            var resources = await _resourceRepository.GetAllEntitiesAsync();
+            var resources = (await _resourceRepository.GetAllEntitiesAsync()).ToList();
 
-            if(resources == null) 
-                return Enumerable.Empty<ResourceDto>();
-            return resources.Select(x => x.Adapt<ResourceDto>());
+            return !resources.Any() 
+                ? Enumerable.Empty<ResourceDto>() 
+                : resources.Select(x => x.Adapt<ResourceDto>());
         }
 
         public async Task<ResourceDto> GetResourceById(int resourceId)
@@ -39,31 +39,30 @@ namespace ReservationManager.Core.Services
         {
             throw new NotImplementedException();
         }
-
-        public Task<IEnumerable<ResourceDto>> GetResourcesAvailability(FilterDto filters)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public async Task<ResourceDto> CreateResource(UpsertResourceDto resource)
         {
-            var type = await _resourceTypeRepository.GetTypeByCode(resource.Type) 
-                ?? throw new InvalidCodeTypeException($"Resource type {resource.Type} not valid");
-
-            var resourceToAdd = new Resource()
-            {
-                Description = resource.Description,
-                Type = type,
-                TypeId = type.Id,
-            };
-
-            var added = await _resourceRepository.CreateEntityAsync(resourceToAdd);
+            var existType = await _resourceValidator.ValidateResourceType(resource.TypeId);
+            if(!existType)
+                throw new InvalidCodeTypeException($"Resource type {resource.TypeId} is not valid");
+            
+            var added = await _resourceRepository.CreateEntityAsync(resource.Adapt<Resource>());
             return added.Adapt<ResourceDto>();
         }
 
-        public Task<ResourceDto> UpdateResource(UpsertResourceDto resource)
+        public async Task<ResourceDto> UpdateResource(int id, UpsertResourceDto resource)
         {
-            throw new NotImplementedException();
+            var existType = await _resourceRepository.GetEntityByIdAsync(id) ??
+                            throw new EntityNotFoundException($"Resource id {id} not found");
+            if(existType.TypeId != resource.TypeId)
+                throw new UpdateNotPermittedException($"Resource type {resource.TypeId} does not match the previous one.");
+
+            var toUpdate = resource.Adapt<Resource>();
+            toUpdate.Id = id;
+            
+            var updated = await _resourceRepository.UpdateEntityAsync(toUpdate);
+            
+            return updated.Adapt<ResourceDto>();
         }
 
         public Task DeleteResource(int id)
