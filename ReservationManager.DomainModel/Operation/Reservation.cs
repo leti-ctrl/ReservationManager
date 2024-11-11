@@ -8,8 +8,8 @@ namespace ReservationManager.DomainModel.Operation
         public string Title { get; set; }
         public string Description { get; set; }
         public DateOnly Day { get; set; }
-        public TimeOnly Start { get; set; }
-        public TimeOnly End { get; set; }
+        public TimeSpan Start { get; set; }
+        public TimeSpan End { get; set; }
         public int UserId { get; set; }
         public User User { get; set; }
         public int ResourceId { get; set; }
