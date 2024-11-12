@@ -1,7 +1,7 @@
-﻿using ReservationManager.DomainModel.Operation;
-using ReservationManager.Persistence.Interfaces.Base;
+﻿using ReservationManager.Core.Interfaces.Repositories.Base;
+using ReservationManager.DomainModel.Operation;
 
-namespace ReservationManager.Persistence.Interfaces
+namespace ReservationManager.Core.Interfaces.Repositories
 {
     public interface IUserRepository : ICrudBaseEntityRepository<User>
     {

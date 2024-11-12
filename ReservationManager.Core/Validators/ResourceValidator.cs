@@ -1,6 +1,5 @@
-using ReservationManager.Core.Dtos;
-using ReservationManager.Core.Interfaces;
-using ReservationManager.Persistence.Interfaces;
+using ReservationManager.Core.Interfaces.Repositories;
+using ReservationManager.Core.Interfaces.Validators;
 
 namespace ReservationManager.Core.Validators;
 

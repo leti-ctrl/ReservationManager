@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ReservationManager.Persistence.Interfaces.Base
+namespace ReservationManager.Core.Interfaces.Repositories.Base
 {
     public interface ICrudBaseTypeRepository<T> where T :BaseType
     {

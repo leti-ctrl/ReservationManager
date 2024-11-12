@@ -1,7 +1,6 @@
 ﻿using ReservationManager.DomainModel.Meta;
-using ReservationManager.Persistence;
-using System.Data;
 using ReservationManager.Core.Commons;
+using ReservationManager.Persistence;
 
 namespace ReservationManager.API
 {
