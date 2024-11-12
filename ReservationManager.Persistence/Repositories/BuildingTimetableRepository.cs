@@ -49,7 +49,7 @@ namespace ReservationManager.Persistence.Repositories
             return await Context.Set<BuildingTimetable>()
                                 .Where(x => x.TypeId == typeId && !x.IsDeleted.HasValue)
                                 .Where(x => x.StartDate <= endDate && x.EndDate >= startDate)
-                                .Where(x => x.StartTime <= endTime && x.EndTime >= startTime)
+                                .Where(x => x.StartTime >= endTime && x.EndTime <= startTime)
                                 .ToListAsync();
         }
     }

@@ -26,7 +26,8 @@ builder.Services.AddDbContext<ReservationManagerDbContext>(option =>
 builder.Services.ConfigureRepositories()
                 .ConfigureServices()
                 .ConfigureBuilders()
-                .ConfigureValidators();
+                .ConfigureValidators()
+                .ConfigureMappers();
 
 
 var app = builder.Build();

@@ -1,3 +1,4 @@
+using ReservationManager.Core.Dtos;
 using ReservationManager.DomainModel.Operation;
 
 namespace ReservationManager.Core.Interfaces;

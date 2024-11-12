@@ -28,6 +28,16 @@ namespace ReservationManager.Persistence.Repositories
                                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Reservation>> GetByResourceDateTimeAsync(List<int> resourceIds,
+            DateOnly startDate, DateOnly endDate, TimeSpan startTime, TimeSpan endTime)
+        {
+            var query = Context.Set<Reservation>().AsQueryable();
+            //query = query.Where(x => resourceIds.Contains(x.ResourceId));
+            query = query.Where(x => startDate == x.Day && x.Day == endDate);
+            query = query.Where(x => x.Start == startTime && x.End == endTime);
+            return await query.ToListAsync();
+        }
+
         public async Task<IEnumerable<Reservation>> GetByUserAsync(int userId)
         {
             throw new NotImplementedException();

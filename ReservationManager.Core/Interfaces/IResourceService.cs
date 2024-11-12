@@ -6,7 +6,7 @@ namespace ReservationManager.Core.Interfaces
     {
         Task<IEnumerable<ResourceDto>> GetAllResources();
         Task<ResourceDto> GetResourceById(int resourceId);
-        Task<IEnumerable<ResourceDto>> GetFilteredResources(FilterDto filters);
+        Task<IEnumerable<ResourceDto>> GetFilteredResources(ResourceFilterDto resourceFilters);
         Task<ResourceDto> CreateResource(UpsertResourceDto resource);
         Task<ResourceDto> UpdateResource( int id, UpsertResourceDto resource);
         Task DeleteResource(int id);

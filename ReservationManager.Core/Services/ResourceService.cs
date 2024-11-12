@@ -1,7 +1,9 @@
-﻿using Mapster;
+﻿using System.Globalization;
+using Mapster;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
+using ReservationManager.DomainModel;
 using ReservationManager.DomainModel.Operation;
 using ReservationManager.Persistence.Interfaces;
 
@@ -11,11 +13,19 @@ namespace ReservationManager.Core.Services
     {
         private readonly IResourceRepository _resourceRepository;
         private readonly IResourceValidator _resourceValidator;
+        private readonly IResourceFilterValidator _resourceFilterValidator;
+        private readonly IReservationRepository _reservationRepository;
+        private readonly IResourceReservedMapper _resourceReservedMapper;
 
-        public ResourceService(IResourceRepository resourceRepository, IResourceValidator resourceValidator)
+        public ResourceService(IResourceRepository resourceRepository, IResourceValidator resourceValidator, 
+            IResourceFilterValidator resourceFilterValidator, IReservationRepository reservationRepository, 
+            IResourceReservedMapper resourceReservedMapper)
         {
             _resourceRepository = resourceRepository;
             _resourceValidator = resourceValidator;
+            _resourceFilterValidator = resourceFilterValidator;
+            _reservationRepository = reservationRepository;
+            _resourceReservedMapper = resourceReservedMapper;
         }
 
         public async Task<IEnumerable<ResourceDto>> GetAllResources()
@@ -35,10 +45,43 @@ namespace ReservationManager.Core.Services
             return resource.Adapt<ResourceDto>();
         }
 
-        public Task<IEnumerable<ResourceDto>> GetFilteredResources(FilterDto filters)
+        public async Task<IEnumerable<ResourceDto>> GetFilteredResources(ResourceFilterDto resourceFilters)
         {
-            throw new NotImplementedException();
+            // Validate filters
+            var validationResult = await _resourceFilterValidator.ValidateAsync(resourceFilters);
+            if (!validationResult.IsValid)
+            {
+                var errorMsg = string.Join(", ", validationResult.Errors.Select(x => x.ErrorMessage));
+                throw new InvalidFiltersException(errorMsg);
+            }
+
+            // Retrieve filtered resources
+            var resources = await _resourceRepository.GetFiltered(resourceFilters.TypeId, resourceFilters.ResoruceId);
+            var resourceList = resources.ToList();
+            if (!resourceList.Any()) return Enumerable.Empty<ResourceDto>();
+
+            // If date filters are applied, filter by reservations
+            if (resourceFilters.DateFrom.HasValue && resourceFilters.DateTo.HasValue &&
+                !string.IsNullOrEmpty(resourceFilters.TimeFrom)  &&  !string.IsNullOrEmpty(resourceFilters.TimeTo))
+            {
+                var timeStart = TimeSpan.Parse(resourceFilters.TimeFrom, CultureInfo.InvariantCulture);
+                var timeEnd = TimeSpan.Parse(resourceFilters.TimeTo, CultureInfo.InvariantCulture);
+                
+                
+                var reservationFilteredList = 
+                    await _reservationRepository.GetByResourceDateTimeAsync(resourceList.Select(x => x.Id).ToList(), 
+                        resourceFilters.DateFrom.Value, resourceFilters.DateTo.Value, timeStart, timeEnd);
+
+                if (reservationFilteredList.Any())
+                {
+                    return _resourceReservedMapper.Map(resourceList, reservationFilteredList);
+                }
+            }
+
+            // If no reservations are found or date filters are not applied, map resources directly
+            return resourceList.Select(x => x.Adapt<ResourceDto>());
         }
+
         
         public async Task<ResourceDto> CreateResource(UpsertResourceDto resource)
         {

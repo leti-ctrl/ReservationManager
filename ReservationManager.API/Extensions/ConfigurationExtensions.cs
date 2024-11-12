@@ -1,6 +1,7 @@
 ﻿using ReservationManager.Core.Builders;
 using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
+using ReservationManager.Core.Mappers;
 using ReservationManager.Core.Services;
 using ReservationManager.Core.Validators;
 using ReservationManager.Persistence.Interfaces;
@@ -73,6 +74,14 @@ namespace ReservationManager.API.Extensions
         {
             services.AddScoped<IBuildingTimetableValidator, BuildingTimetableValidator>();
             services.AddScoped<IResourceValidator, ResourceValidator>();
+            services.AddScoped<IResourceFilterValidator, ResourceFilterValidator>();
+            
+            return services;
+        }
+        
+        public static IServiceCollection ConfigureMappers(this IServiceCollection services)
+        {
+            services.AddScoped<IResourceReservedMapper, ResourceReservedMapper>();
             
             return services;
         }

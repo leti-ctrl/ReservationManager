@@ -9,5 +9,7 @@ namespace ReservationManager.Persistence.Interfaces
         Task<IEnumerable<Reservation>> GetByResourceAsync(int resourceId);
         Task<IEnumerable<Reservation>> GetByUserAsync(int userId);
         Task<IEnumerable<Reservation>> GetByTypeAsync(string code);
+        Task<IEnumerable<Reservation>> GetByResourceDateTimeAsync(List<int> resourceIds, DateOnly startDate,
+            DateOnly endDate, TimeSpan startTime, TimeSpan endTime);
     }
 }

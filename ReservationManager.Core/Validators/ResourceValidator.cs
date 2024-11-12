@@ -1,3 +1,4 @@
+using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Persistence.Interfaces;
 
@@ -16,4 +17,6 @@ public class ResourceValidator : IResourceValidator
     {
         return await _resourceTypeRepository.GetTypeById(typeId) != null;
     }
+
+
 }

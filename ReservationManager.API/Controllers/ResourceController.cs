@@ -39,13 +39,18 @@ namespace ReservationManager.API.Controllers
             return Ok(resource);
         }
 
-        [HttpGet("filtered")]
+        [HttpPost("filtered")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<ResourceDto>>> GetFilteredResource(FilterDto filter)
+        public async Task<ActionResult<IEnumerable<ResourceDto>>> GetFilteredResource([FromBody]ResourceFilterDto resourceFilter)
         {
-            throw new NotImplementedException();
+            var resources = await _resourceService.GetFilteredResources(resourceFilter);
+            
+            if(resources.Any())
+                return Ok(resources);
+            return NoContent();
         }
 
         [HttpPost()]
