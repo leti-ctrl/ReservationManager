@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ReservationManager.DomainModel\ReservationManager.DomainModel.csproj" />
+    <ProjectReference Include="..\ReservationManager.Persistence\ReservationManager.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

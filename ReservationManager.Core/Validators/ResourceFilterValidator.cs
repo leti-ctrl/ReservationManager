@@ -1,7 +1,6 @@
 using FluentValidation;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
-using ReservationManager.Core.Interfaces.Validators;
 
 namespace ReservationManager.Core.Validators;
 

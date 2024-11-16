@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ReservationManager.Core\ReservationManager.Core.csproj" />
-    <ProjectReference Include="..\ReservationManager.Persistence\ReservationManager.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

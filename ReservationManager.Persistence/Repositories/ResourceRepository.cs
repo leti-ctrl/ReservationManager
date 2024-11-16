@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ReservationManager.Core.Interfaces.Repositories;
+using ReservationManager.DomainModel;
 using ReservationManager.DomainModel.Operation;
+using ReservationManager.Persistence.Interfaces;
 using ReservationManager.Persistence.Repositories.Base;
 
 namespace ReservationManager.Persistence.Repositories

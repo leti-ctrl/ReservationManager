@@ -1,7 +1,12 @@
 ﻿using ReservationManager.DomainModel.Operation;
-using ReservationManager.Core.Interfaces.Repositories.Base;
+using ReservationManager.Persistence.Interfaces.Base;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace ReservationManager.Core.Interfaces.Repositories
+namespace ReservationManager.Persistence.Interfaces
 {
     public interface IBuildingTimetableRepository : ICrudBaseEntityRepository<BuildingTimetable>
     {

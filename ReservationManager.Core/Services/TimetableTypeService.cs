@@ -1,9 +1,14 @@
 ﻿using Mapster;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
-using ReservationManager.Core.Interfaces.Repositories;
-using ReservationManager.Core.Interfaces.Services;
+using ReservationManager.Core.Interfaces;
 using ReservationManager.DomainModel.Meta;
+using ReservationManager.Persistence.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Services
 {

@@ -1,5 +1,7 @@
-﻿using ReservationManager.Core.Interfaces.Repositories.Base;
+﻿using Ardalis.Specification.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ReservationManager.DomainModel.Base;
+using ReservationManager.Persistence.Interfaces.Base;
 
 namespace ReservationManager.Persistence.Repositories.Base
 {

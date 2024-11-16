@@ -1,6 +1,6 @@
 ﻿using ReservationManager.Core.Dtos;
 
-namespace ReservationManager.Core.Interfaces.Services
+namespace ReservationManager.Core.Interfaces
 {
     public interface IReservationTypeService
     {
