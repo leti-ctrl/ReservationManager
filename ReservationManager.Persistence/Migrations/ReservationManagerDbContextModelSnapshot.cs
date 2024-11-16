@@ -162,8 +162,8 @@ namespace ReservationManager.Persistence.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
-                    b.Property<TimeSpan>("End")
-                        .HasColumnType("interval");
+                    b.Property<TimeOnly>("End")
+                        .HasColumnType("time without time zone");
 
                     b.Property<DateTime?>("IsDeleted")
                         .HasColumnType("timestamp with time zone");
@@ -171,8 +171,8 @@ namespace ReservationManager.Persistence.Migrations
                     b.Property<int>("ResourceId")
                         .HasColumnType("integer");
 
-                    b.Property<TimeSpan>("Start")
-                        .HasColumnType("interval");
+                    b.Property<TimeOnly>("Start")
+                        .HasColumnType("time without time zone");
 
                     b.Property<string>("Title")
                         .IsRequired()
