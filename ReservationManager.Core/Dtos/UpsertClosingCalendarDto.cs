@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Dtos
 {
-    public class UpsertEstabilishmentTimetableDto
+    public class UpsertClosingCalendarDto
     {
         public int TypeId { get; set; }
         public DateOnly? StartDate { get; set; }

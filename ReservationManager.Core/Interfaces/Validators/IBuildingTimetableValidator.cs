@@ -4,11 +4,11 @@ namespace ReservationManager.Core.Interfaces.Validators
 {
     public interface IBuildingTimetableValidator
     {
-        bool IsClosureTimetable(UpsertEstabilishmentTimetableDto timetable);
-        bool IsNominalTimetable(UpsertEstabilishmentTimetableDto timetable);
-        bool IsTimeReductionTimetable(UpsertEstabilishmentTimetableDto timetable);
-        bool IsLegalDateRange(UpsertEstabilishmentTimetableDto entity);
-        Task<bool> IsLegalCloseDates(UpsertEstabilishmentTimetableDto entity, bool isCreate, int? id);
-        Task<bool> IsLegalTimeReduction(UpsertEstabilishmentTimetableDto entity, bool isCreate, int? id);
+        bool IsClosureTimetable(UpsertClosingCalendarDto timetable);
+        bool IsNominalTimetable(UpsertClosingCalendarDto timetable);
+        bool IsTimeReductionTimetable(UpsertClosingCalendarDto timetable);
+        bool IsLegalDateRange(UpsertClosingCalendarDto entity);
+        Task<bool> IsLegalCloseDates(UpsertClosingCalendarDto entity, bool isCreate, int? id);
+        Task<bool> IsLegalTimeReduction(UpsertClosingCalendarDto entity, bool isCreate, int? id);
     }
 }

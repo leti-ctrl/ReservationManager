@@ -5,45 +5,45 @@ using ReservationManager.Persistence.Repositories.Base;
 
 namespace ReservationManager.Persistence.Repositories
 {
-    public class BuildingTimetableRepository : CrudBaseEntityRepository<BuildingTimetable>,
-        IBuildingTimetableRepository
+    public class ClosingCalendarRepository : CrudBaseEntityRepository<ClosingCalendar>,
+        IClosingCalendarRepository
     {
-        public BuildingTimetableRepository(ReservationManagerDbContext dbContext) : base(dbContext)
+        public ClosingCalendarRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
         }
 
-        public async Task<IEnumerable<BuildingTimetable>> GetByDateRange(DateOnly startDate, DateOnly endDate)
+        public async Task<IEnumerable<ClosingCalendar>> GetByDateRange(DateOnly startDate, DateOnly endDate)
         {
-            return await Context.Set<BuildingTimetable>()
+            return await Context.Set<ClosingCalendar>()
                                 .Where(x => x.StartDate >= startDate && x.EndDate <= endDate)
                                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<BuildingTimetable>> GetClosingDateIntersection(DateOnly start, DateOnly end, int typeId)
+        public async Task<IEnumerable<ClosingCalendar>> GetClosingDateIntersection(DateOnly start, DateOnly end, int typeId)
         {
-            return await Context.Set<BuildingTimetable>()
+            return await Context.Set<ClosingCalendar>()
                                 .Where(x => x.StartDate <= end && x.EndDate >= start)
                                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<BuildingTimetable>> GetAllTimetableFromToday()
+        public async Task<IEnumerable<ClosingCalendar>> GetAllTimetableFromToday()
         {
-            return await Context.Set<BuildingTimetable>()
+            return await Context.Set<ClosingCalendar>()
                                 .Where(x => x.StartDate == null || 
                                                           x.StartDate >= DateOnly.FromDateTime(DateTime.Now))
                                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<BuildingTimetable>> GetByTypeId(int typeId)
+        public async Task<IEnumerable<ClosingCalendar>> GetByTypeId(int typeId)
         {
-            return await Context.Set<BuildingTimetable>()
+            return await Context.Set<ClosingCalendar>()
                                 .ToListAsync();    
         }
         
-        public async Task<IEnumerable<BuildingTimetable>> GetTimeReductionIntersection(DateOnly startDate, 
+        public async Task<IEnumerable<ClosingCalendar>> GetTimeReductionIntersection(DateOnly startDate, 
             DateOnly endDate, TimeOnly startTime, TimeOnly endTime, int typeId) 
         {
-            return await Context.Set<BuildingTimetable>()
+            return await Context.Set<ClosingCalendar>()
                                 .Where(x => x.StartDate <= endDate && x.EndDate >= startDate)
                                 .Where(x => x.StartTime >= endTime && x.EndTime <= startTime)
                                 .ToListAsync();

@@ -1,5 +1,4 @@
-﻿using ReservationManager.Core.Builders;
-using ReservationManager.Core.Exceptions;
+﻿using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Interfaces.Services;
@@ -24,7 +23,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IResourceService, ResourceService>();
             services.AddScoped<IReservationService, ReservationService>();
-            services.AddScoped<IBuildingTimetableService, BuildingTimetableService>();
+            services.AddScoped<IClosingCalendarService, ClosingCalendarService>();
 
             return services;
         }
@@ -38,7 +37,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IResourceRepository, ResourceRepository>();
             services.AddScoped<IReservationRepository, ReservationRepository>();
-            services.AddScoped<IBuildingTimetableRepository, BuildingTimetableRepository>();
+            services.AddScoped<IClosingCalendarRepository, ClosingCalendarRepository>();
 
             return services;
         }
@@ -50,29 +49,17 @@ namespace ReservationManager.API.Extensions
             opt.MapToStatusCode<InvalidCodeTypeException>(StatusCodes.Status400BadRequest);
             opt.MapToStatusCode<DeleteNotPermittedException>(StatusCodes.Status403Forbidden);
             opt.MapToStatusCode<TimetableExistsException>(StatusCodes.Status400BadRequest);
-            opt.MapToStatusCode<CreateBuildingTimetableException>(StatusCodes.Status400BadRequest);
+            opt.MapToStatusCode<CreateClosingCalendarException>(StatusCodes.Status400BadRequest);
             opt.MapToStatusCode<UpdateNotPermittedException>(StatusCodes.Status403Forbidden);
-            opt.MapToStatusCode<StrategyNotFoundException>(StatusCodes.Status404NotFound);
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
             opt.IncludeExceptionDetails = (_, _) => !webHostEnvironment.IsProduction();
         }
 
-        public static IServiceCollection ConfigureBuilders(this IServiceCollection services)
-        {
-            services.AddScoped<IBuildingTimetableStrategy, ClosedTimetableStrategy>();
-            services.AddScoped<IBuildingTimetableStrategy, OvertimeTimetableStrategy>();
-            services.AddScoped<IBuildingTimetableStrategy, NominalTimetableStrategy>();
-
-            services.AddScoped<IBuildingTimetableStrategyHandler, BuildingTimetableStrategyHandler>();
-
-            return services;
-        }
-
         public static IServiceCollection ConfigureValidators(this IServiceCollection services)
         {
-            services.AddScoped<IBuildingTimetableValidator, BuildingTimetableValidator>();
+            services.AddScoped<IBuildingTimetableValidator, ClosingTimetableValidator>();
             services.AddScoped<IResourceValidator, ResourceValidator>();
             services.AddScoped<IResourceFilterValidator, ResourceFilterValidator>();
             

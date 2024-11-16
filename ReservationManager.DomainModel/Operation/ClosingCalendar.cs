@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReservationManager.DomainModel.Operation
 {
-    public class BuildingTimetable : BaseEntity
+    public class ClosingCalendar : BaseEntity
     {
         public DateOnly? StartDate { get; set; }
         public DateOnly? EndDate { get; set; }

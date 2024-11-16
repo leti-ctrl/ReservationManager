@@ -8,36 +8,36 @@ namespace ReservationManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BuildingTimetableController : ControllerBase
+    public class ClosingCalendarController : ControllerBase
     {
-        private readonly IBuildingTimetableService _buildingTimetableService;
+        private readonly IClosingCalendarService _closingCalendarService;
 
-        public BuildingTimetableController(IBuildingTimetableService buildingTimetableService)
+        public ClosingCalendarController(IClosingCalendarService closingCalendarService)
         {
-            _buildingTimetableService = buildingTimetableService;
+            _closingCalendarService = closingCalendarService;
         }
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<BuildingTimetableDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetAll()
         {
-            var timetableDtos = await _buildingTimetableService.GetAll();
+            var closingCalendarDtos = await _closingCalendarService.GetAll();
 
-            if (!timetableDtos.Any())
+            if (!closingCalendarDtos.Any())
                 return NoContent();
             
-            return Ok(timetableDtos);
+            return Ok(closingCalendarDtos);
         }
 
         [HttpGet("{typeId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<BuildingTimetableDto>>> GetByType(int typeId)
+        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetByType(int typeId)
         {
-            var list = await _buildingTimetableService.GetByTypeId(typeId);
+            var list = await _closingCalendarService.GetByTypeId(typeId);
 
             if (list.Any())
                 return Ok(list);
@@ -49,9 +49,9 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<BuildingTimetableDto>>> GetByDateRange(DateOnly start, DateOnly end)
+        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetByDateRange(DateOnly start, DateOnly end)
         {
-            var list = await _buildingTimetableService.GetByDateRange(start, end);
+            var list = await _closingCalendarService.GetByDateRange(start, end);
              if(list.Any())
                  return Ok(list);
              return NoContent();
@@ -62,11 +62,11 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BuildingTimetableDto>> Create(UpsertBuildingTimetableRequest timetable) 
+        public async Task<ActionResult<ClosingCalendarDto>> Create(UpsertClosingCalendarRequest timetable) 
         {
-            var buildingTimetableDto = await _buildingTimetableService.Create(timetable.Adapt<UpsertEstabilishmentTimetableDto>());
+            var closingCalendarDto = await _closingCalendarService.Create(timetable.Adapt<UpsertClosingCalendarDto>());
             
-            return Ok(buildingTimetableDto);
+            return Ok(closingCalendarDto);
         }
 
         [HttpPut]
@@ -75,10 +75,10 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<BuildingTimetableDto>> Update(int id, UpsertEstabilishmentTimetableDto timetable)
+        public async Task<ActionResult<ClosingCalendarDto>> Update(int id, UpsertClosingCalendarDto timetable)
         {
-            var buildingTimetableDto = await _buildingTimetableService.Update(id, timetable.Adapt<UpsertEstabilishmentTimetableDto>());
-            return Ok(buildingTimetableDto);
+            var closingCalendarDto = await _closingCalendarService.Update(id, timetable.Adapt<UpsertClosingCalendarDto>());
+            return Ok(closingCalendarDto);
         }
 
         [HttpDelete]
@@ -87,7 +87,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Delete(int id)
         {
-            await _buildingTimetableService.Delete(id);
+            await _closingCalendarService.Delete(id);
             return Accepted();
         }
     }

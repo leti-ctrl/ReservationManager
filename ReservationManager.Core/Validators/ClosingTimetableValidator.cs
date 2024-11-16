@@ -5,31 +5,31 @@ using ReservationManager.DomainModel.Operation;
 
 namespace ReservationManager.Core.Validators
 {
-    public class BuildingTimetableValidator : IBuildingTimetableValidator
+    public class ClosingTimetableValidator : IBuildingTimetableValidator
     {
-        private readonly IBuildingTimetableRepository _timetableRepository;
+        private readonly IClosingCalendarRepository _timetableRepository;
 
-        public BuildingTimetableValidator(IBuildingTimetableRepository timetableRepository)
+        public ClosingTimetableValidator(IClosingCalendarRepository timetableRepository)
         {
             _timetableRepository = timetableRepository;
         }
 
-        public bool IsClosureTimetable(UpsertEstabilishmentTimetableDto timetable)
+        public bool IsClosureTimetable(UpsertClosingCalendarDto timetable)
         {
             return timetable is { StartTime: null, EndTime: null,StartDate: not null, EndDate: not null };
         }
 
-        public bool IsNominalTimetable(UpsertEstabilishmentTimetableDto timetable)
+        public bool IsNominalTimetable(UpsertClosingCalendarDto timetable)
         {
             return timetable is { StartTime: not null, EndTime: not null, StartDate: null, EndDate: null };
         }
 
-        public bool IsTimeReductionTimetable(UpsertEstabilishmentTimetableDto timetable)
+        public bool IsTimeReductionTimetable(UpsertClosingCalendarDto timetable)
         {
             return timetable is { StartTime: not null, EndTime: not null, StartDate: not null, EndDate: not null };
         }
         
-        public bool IsLegalDateRange(UpsertEstabilishmentTimetableDto entity)
+        public bool IsLegalDateRange(UpsertClosingCalendarDto entity)
         {
             var start = (DateOnly)entity.StartDate!;
             var end = (DateOnly)entity.EndDate!;
@@ -38,7 +38,7 @@ namespace ReservationManager.Core.Validators
                    end >= DateOnly.FromDateTime(DateTime.Now);
         }
 
-        public async Task<bool> IsLegalCloseDates(UpsertEstabilishmentTimetableDto entity, bool isCreate, int? id)
+        public async Task<bool> IsLegalCloseDates(UpsertClosingCalendarDto entity, bool isCreate, int? id)
         {
             var start = (DateOnly)entity.StartDate!;
             var end = (DateOnly)entity.EndDate!;
@@ -49,7 +49,7 @@ namespace ReservationManager.Core.Validators
                 : CheckForUpdate(existingIntersection.ToList(), id);
         }
 
-        public async Task<bool> IsLegalTimeReduction(UpsertEstabilishmentTimetableDto entity, bool isCreate, int? id)
+        public async Task<bool> IsLegalTimeReduction(UpsertClosingCalendarDto entity, bool isCreate, int? id)
         {
             var startDate = (DateOnly)entity.StartDate!;
             var endDate = (DateOnly)entity.EndDate!;
@@ -64,7 +64,7 @@ namespace ReservationManager.Core.Validators
         }
 
 
-        private bool CheckForUpdate(List<BuildingTimetable> existingIntersection, int? id)
+        private bool CheckForUpdate(List<ClosingCalendar> existingIntersection, int? id)
         {
             var oldBuildingTimetable = existingIntersection.FirstOrDefault(x => x.Id == id);
             return oldBuildingTimetable != null 
