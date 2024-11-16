@@ -23,12 +23,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetAll()
         {
-            var closingCalendarDtos = await _closingCalendarService.GetAll();
-
-            if (!closingCalendarDtos.Any())
-                return NoContent();
-            
-            return Ok(closingCalendarDtos);
+            return NoContent();
         }
 
         [HttpGet("{typeId}")]
@@ -37,10 +32,6 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetByType(int typeId)
         {
-            var list = await _closingCalendarService.GetByTypeId(typeId);
-
-            if (list.Any())
-                return Ok(list);
             return NoContent();
         }
 
@@ -51,9 +42,6 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetByDateRange(DateOnly start, DateOnly end)
         {
-            var list = await _closingCalendarService.GetByDateRange(start, end);
-             if(list.Any())
-                 return Ok(list);
              return NoContent();
         }
 
@@ -64,9 +52,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ClosingCalendarDto>> Create(UpsertClosingCalendarRequest timetable) 
         {
-            var closingCalendarDto = await _closingCalendarService.Create(timetable.Adapt<UpsertClosingCalendarDto>());
-            
-            return Ok(closingCalendarDto);
+            return NoContent();
         }
 
         [HttpPut]
@@ -77,8 +63,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ClosingCalendarDto>> Update(int id, UpsertClosingCalendarDto timetable)
         {
-            var closingCalendarDto = await _closingCalendarService.Update(id, timetable.Adapt<UpsertClosingCalendarDto>());
-            return Ok(closingCalendarDto);
+            return NoContent();
         }
 
         [HttpDelete]
@@ -87,7 +72,6 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Delete(int id)
         {
-            await _closingCalendarService.Delete(id);
             return Accepted();
         }
     }

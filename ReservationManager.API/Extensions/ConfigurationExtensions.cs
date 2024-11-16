@@ -59,7 +59,7 @@ namespace ReservationManager.API.Extensions
 
         public static IServiceCollection ConfigureValidators(this IServiceCollection services)
         {
-            services.AddScoped<IBuildingTimetableValidator, ClosingTimetableValidator>();
+            services.AddScoped<IClosingCalendarValidator, ClosingTimetableValidator>();
             services.AddScoped<IResourceValidator, ResourceValidator>();
             services.AddScoped<IResourceFilterValidator, ResourceFilterValidator>();
             

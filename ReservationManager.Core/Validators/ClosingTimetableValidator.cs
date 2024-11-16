@@ -5,7 +5,7 @@ using ReservationManager.DomainModel.Operation;
 
 namespace ReservationManager.Core.Validators
 {
-    public class ClosingTimetableValidator : IBuildingTimetableValidator
+    public class ClosingTimetableValidator : IClosingCalendarValidator
     {
         private readonly IClosingCalendarRepository _timetableRepository;
 
@@ -38,30 +38,7 @@ namespace ReservationManager.Core.Validators
                    end >= DateOnly.FromDateTime(DateTime.Now);
         }
 
-        public async Task<bool> IsLegalCloseDates(UpsertClosingCalendarDto entity, bool isCreate, int? id)
-        {
-            var start = (DateOnly)entity.StartDate!;
-            var end = (DateOnly)entity.EndDate!;
-            var existingIntersection = 
-                await _timetableRepository.GetClosingDateIntersection(start, end, entity.TypeId);
-            return isCreate 
-                ? existingIntersection.Any()
-                : CheckForUpdate(existingIntersection.ToList(), id);
-        }
-
-        public async Task<bool> IsLegalTimeReduction(UpsertClosingCalendarDto entity, bool isCreate, int? id)
-        {
-            var startDate = (DateOnly)entity.StartDate!;
-            var endDate = (DateOnly)entity.EndDate!;
-            var startTime = (TimeOnly)entity.StartTime!;
-            var endTime = (TimeOnly)entity.EndTime!;
-
-            var existingIntersection = await _timetableRepository.
-                GetTimeReductionIntersection(startDate, endDate, startTime, endTime, entity.TypeId);
-            return isCreate && id != null
-                ? existingIntersection.Any() 
-                : CheckForUpdate(existingIntersection.ToList(), id);
-        }
+       
 
 
         private bool CheckForUpdate(List<ClosingCalendar> existingIntersection, int? id)

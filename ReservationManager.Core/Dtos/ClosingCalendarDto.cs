@@ -9,10 +9,9 @@ namespace ReservationManager.Core.Dtos
     public class ClosingCalendarDto
     {
         public int Id { get; set; }
-        public DateOnly? StartDate { get; set; }
-        public DateOnly? EndDate { get; set; }
-        public TimeOnly? StartTime { get; set; }
-        public TimeOnly? EndTime { get; set; }
+        public DateOnly Day { get; set; }
+        public int RescourseId { get; set; }
+        public ResourceDto Resource { get; set; }
         public string? Description { get; set; }
     }
 }

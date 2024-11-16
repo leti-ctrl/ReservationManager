@@ -7,9 +7,5 @@ namespace ReservationManager.Core.Interfaces.Repositories
     {
         Task<IEnumerable<ClosingCalendar>> GetAllTimetableFromToday();
         Task<IEnumerable<ClosingCalendar>> GetByTypeId(int typeId);
-        Task<IEnumerable<ClosingCalendar>> GetByDateRange(DateOnly startDate, DateOnly endDate);
-        Task<IEnumerable<ClosingCalendar>> GetClosingDateIntersection(DateOnly start, DateOnly end, int typeId);
-        Task<IEnumerable<ClosingCalendar>> GetTimeReductionIntersection(DateOnly startDate, DateOnly endDate, 
-            TimeOnly startTime, TimeOnly endTime, int typeId);
     }
 }

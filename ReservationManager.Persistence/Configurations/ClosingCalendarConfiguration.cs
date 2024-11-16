@@ -17,13 +17,14 @@ namespace ReservationManager.Persistence.Configurations
 
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.StartDate);
+            builder.Property(x => x.Day)
+                   .IsRequired();
             
-            builder.Property(x => x.EndDate);
-            
-            builder.Property(x => x.StartTime);
-            
-            builder.Property(x => x.EndTime);
+            builder.HasOne(x => x.Resource)
+                   .WithMany()
+                   .IsRequired()
+                   .HasForeignKey(x => x.ResourceId)
+                   .OnDelete(DeleteBehavior.NoAction);
             
             builder.Property(x => x.Description)
                    .HasMaxLength(500);
