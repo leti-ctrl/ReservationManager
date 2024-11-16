@@ -1,9 +1,8 @@
 ﻿using Mapster;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
-using ReservationManager.Core.Interfaces;
-using ReservationManager.Persistence.Interfaces;
-using ReservationManager.Persistence.Repositories;
+using ReservationManager.Core.Interfaces.Repositories;
+using ReservationManager.Core.Interfaces.Services;
 
 namespace ReservationManager.Core.Services
 {

@@ -2,15 +2,8 @@
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
-using ReservationManager.Core.Validators;
-using ReservationManager.DomainModel.Meta;
+using ReservationManager.Core.Interfaces.Validators;
 using ReservationManager.DomainModel.Operation;
-using ReservationManager.Persistence.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ReservationManager.Core.Builders
 {

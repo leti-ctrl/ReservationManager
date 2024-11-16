@@ -1,10 +1,12 @@
 ﻿using ReservationManager.Core.Builders;
 using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
+using ReservationManager.Core.Interfaces.Repositories;
+using ReservationManager.Core.Interfaces.Services;
+using ReservationManager.Core.Interfaces.Validators;
 using ReservationManager.Core.Mappers;
 using ReservationManager.Core.Services;
 using ReservationManager.Core.Validators;
-using ReservationManager.Persistence.Interfaces;
 using ReservationManager.Persistence.Repositories;
 using ProblemDetailsOptions = Hellang.Middleware.ProblemDetails.ProblemDetailsOptions;
 

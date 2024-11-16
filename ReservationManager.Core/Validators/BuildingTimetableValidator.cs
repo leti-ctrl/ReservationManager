@@ -1,13 +1,8 @@
 ﻿using ReservationManager.Core.Dtos;
-using ReservationManager.Core.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ReservationManager.Core.Commons;
+using ReservationManager.Core.Interfaces.Repositories;
+using ReservationManager.Core.Interfaces.Validators;
 using ReservationManager.DomainModel.Operation;
-using ReservationManager.Persistence.Interfaces;
 
 namespace ReservationManager.Core.Validators
 {
