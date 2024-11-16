@@ -3,7 +3,7 @@
     public class ResourceReservedDto
     {
         public DateOnly Day { get; set; }
-        public TimeSpan TimeStart { get; set; }
-        public TimeSpan TimeEnd { get; set; }
+        public TimeOnly TimeStart { get; set; }
+        public TimeOnly TimeEnd { get; set; }
     }
 }

@@ -10,6 +10,6 @@ namespace ReservationManager.Core.Interfaces.Repositories
         Task<IEnumerable<Reservation>> GetByUserAsync(int userId);
         Task<IEnumerable<Reservation>> GetByTypeAsync(string code);
         Task<IEnumerable<Reservation>> GetByResourceDateTimeAsync(List<int> resourceIds, DateOnly startDate,
-            DateOnly endDate, TimeSpan startTime, TimeSpan endTime);
+            DateOnly endDate, TimeOnly startTime, TimeOnly endTime);
     }
 }

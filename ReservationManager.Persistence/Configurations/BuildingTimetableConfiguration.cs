@@ -17,12 +17,6 @@ namespace ReservationManager.Persistence.Configurations
 
             builder.HasKey(x => x.Id);
 
-            builder.HasOne(x => x.Type)
-                .WithMany()
-                .IsRequired()
-                .HasForeignKey(x => x.TypeId)
-                .OnDelete(DeleteBehavior.NoAction);
-
             builder.Property(x => x.StartDate);
             
             builder.Property(x => x.EndDate);
@@ -36,7 +30,6 @@ namespace ReservationManager.Persistence.Configurations
 
             builder.HasQueryFilter(x => !x.IsDeleted.HasValue);
 
-            builder.Navigation(e => e.Type).AutoInclude();
         }
     }
 }

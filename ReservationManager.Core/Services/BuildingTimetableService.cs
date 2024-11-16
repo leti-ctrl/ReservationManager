@@ -11,15 +11,12 @@ namespace ReservationManager.Core.Services
     public class BuildingTimetableService : IBuildingTimetableService
     {
         private readonly IBuildingTimetableRepository _buildingTimetableRepository;
-        private readonly ITimetableTypeService _timetableTypeService;
         private readonly IBuildingTimetableStrategyHandler _timetableHandler;
 
         public BuildingTimetableService(IBuildingTimetableRepository buildingTimetableRepository,
-                                        ITimetableTypeService timetableTypeService,
                                         IBuildingTimetableStrategyHandler timetable)
         {
             _buildingTimetableRepository = buildingTimetableRepository;
-            _timetableTypeService = timetableTypeService;
             _timetableHandler = timetable;
         }
 
@@ -32,8 +29,7 @@ namespace ReservationManager.Core.Services
 
         public async Task<BuildingTimetableDto> Create(UpsertEstabilishmentTimetableDto entity)
         {
-            var type = await _timetableTypeService.GetById(entity.TypeId);
-            var model = await _timetableHandler.CreateTimetable(entity, type);
+            var model = await _timetableHandler.CreateTimetable(entity);
 
             var created = await _buildingTimetableRepository.CreateEntityAsync(model);
             
@@ -45,12 +41,9 @@ namespace ReservationManager.Core.Services
             var timetableList = await _buildingTimetableRepository.GetEntityByIdAsync(id) ??
                                 throw new EntityNotFoundException($"Timetable {id} does not exist.");
             
-            var type = await _timetableTypeService.GetById(entity.TypeId);
 
-            if (timetableList.TypeId != type.Id)
-                throw new UpdateNotPermittedException("Timetable type does not match.");
-
-            var model = await _timetableHandler.UpdateTimetable(entity, type, id);
+            
+            var model = await _timetableHandler.UpdateTimetable(entity, id);
             model.Id = id;
             
             var updated = await _buildingTimetableRepository.UpdateEntityAsync(model);

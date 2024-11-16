@@ -22,7 +22,6 @@ namespace ReservationManager.Persistence.Repositories
         public async Task<IEnumerable<BuildingTimetable>> GetClosingDateIntersection(DateOnly start, DateOnly end, int typeId)
         {
             return await Context.Set<BuildingTimetable>()
-                                .Where(x => x.TypeId == typeId && !x.IsDeleted.HasValue)
                                 .Where(x => x.StartDate <= end && x.EndDate >= start)
                                 .ToListAsync();
         }
@@ -30,7 +29,6 @@ namespace ReservationManager.Persistence.Repositories
         public async Task<IEnumerable<BuildingTimetable>> GetAllTimetableFromToday()
         {
             return await Context.Set<BuildingTimetable>()
-                                .Include(x => x.Type )
                                 .Where(x => x.StartDate == null || 
                                                           x.StartDate >= DateOnly.FromDateTime(DateTime.Now))
                                 .ToListAsync();
@@ -39,7 +37,6 @@ namespace ReservationManager.Persistence.Repositories
         public async Task<IEnumerable<BuildingTimetable>> GetByTypeId(int typeId)
         {
             return await Context.Set<BuildingTimetable>()
-                                .Where(x => x.TypeId == typeId && !x.IsDeleted.HasValue)
                                 .ToListAsync();    
         }
         
@@ -47,7 +44,6 @@ namespace ReservationManager.Persistence.Repositories
             DateOnly endDate, TimeOnly startTime, TimeOnly endTime, int typeId) 
         {
             return await Context.Set<BuildingTimetable>()
-                                .Where(x => x.TypeId == typeId && !x.IsDeleted.HasValue)
                                 .Where(x => x.StartDate <= endDate && x.EndDate >= startDate)
                                 .Where(x => x.StartTime >= endTime && x.EndTime <= startTime)
                                 .ToListAsync();

@@ -65,8 +65,8 @@ namespace ReservationManager.Core.Services
             if (resourceFilters.DateFrom.HasValue && resourceFilters.DateTo.HasValue &&
                 !string.IsNullOrEmpty(resourceFilters.TimeFrom)  &&  !string.IsNullOrEmpty(resourceFilters.TimeTo))
             {
-                var timeStart = TimeSpan.Parse(resourceFilters.TimeFrom, CultureInfo.InvariantCulture);
-                var timeEnd = TimeSpan.Parse(resourceFilters.TimeTo, CultureInfo.InvariantCulture);
+                var timeStart = TimeOnly.Parse(resourceFilters.TimeFrom, CultureInfo.InvariantCulture);
+                var timeEnd = TimeOnly.Parse(resourceFilters.TimeTo, CultureInfo.InvariantCulture);
                 
                 
                 var reservationFilteredList = 

@@ -20,9 +20,9 @@ namespace ReservationManager.Core.Builders
             _timetableRepository = timetableRepository;
         }
 
-        public bool IsMatch(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type)
+        public bool IsMatch(UpsertEstabilishmentTimetableDto entity)
         {
-            return _timetableValidator.IsNominalTimetable(entity, type);
+            return _timetableValidator.IsNominalTimetable(entity);
         }
 
         public async Task<BuildingTimetable> Create(UpsertEstabilishmentTimetableDto entity)

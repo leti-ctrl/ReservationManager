@@ -11,7 +11,7 @@ namespace ReservationManager.Core.Interfaces
 {
     public interface IBuildingTimetableStrategyHandler
     {
-        Task<BuildingTimetable> CreateTimetable(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type);
-        Task<BuildingTimetable> UpdateTimetable(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type, int id);
+        Task<BuildingTimetable> CreateTimetable(UpsertEstabilishmentTimetableDto entity);
+        Task<BuildingTimetable> UpdateTimetable(UpsertEstabilishmentTimetableDto entity, int id);
     }
 }

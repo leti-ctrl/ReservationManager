@@ -29,7 +29,7 @@ namespace ReservationManager.Persistence.Repositories
         }
 
         public async Task<IEnumerable<Reservation>> GetByResourceDateTimeAsync(List<int> resourceIds,
-            DateOnly startDate, DateOnly endDate, TimeSpan startTime, TimeSpan endTime)
+            DateOnly startDate, DateOnly endDate, TimeOnly startTime, TimeOnly endTime)
         {
             var query = Context.Set<Reservation>().AsQueryable();
             //query = query.Where(x => resourceIds.Contains(x.ResourceId));

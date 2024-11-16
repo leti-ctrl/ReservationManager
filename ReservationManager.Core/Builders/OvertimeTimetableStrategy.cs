@@ -16,9 +16,9 @@ namespace ReservationManager.Core.Builders
             _timetableValidator = timetableValidator;
         }
 
-        public bool IsMatch(UpsertEstabilishmentTimetableDto entity, TimetableTypeDto type)
+        public bool IsMatch(UpsertEstabilishmentTimetableDto entity)
         {
-            return _timetableValidator.IsTimeReductionTimetable(entity, type);
+            return _timetableValidator.IsTimeReductionTimetable(entity);
         }
 
         public async Task<BuildingTimetable> Create(UpsertEstabilishmentTimetableDto entity)

@@ -1,5 +1,4 @@
 ﻿using ReservationManager.Core.Dtos;
-using ReservationManager.Core.Commons;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Interfaces.Validators;
 using ReservationManager.DomainModel.Operation;
@@ -15,22 +14,19 @@ namespace ReservationManager.Core.Validators
             _timetableRepository = timetableRepository;
         }
 
-        public bool IsClosureTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type)
+        public bool IsClosureTimetable(UpsertEstabilishmentTimetableDto timetable)
         {
-            return timetable is { StartTime: null, EndTime: null,StartDate: not null, EndDate: not null }
-                   && type.Code == FixedTimetableType.Closure;
+            return timetable is { StartTime: null, EndTime: null,StartDate: not null, EndDate: not null };
         }
 
-        public bool IsNominalTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type)
+        public bool IsNominalTimetable(UpsertEstabilishmentTimetableDto timetable)
         {
-            return timetable is { StartTime: not null, EndTime: not null, StartDate: null, EndDate: null }
-                   && type.Code == FixedTimetableType.Nominal;
+            return timetable is { StartTime: not null, EndTime: not null, StartDate: null, EndDate: null };
         }
 
-        public bool IsTimeReductionTimetable(UpsertEstabilishmentTimetableDto timetable, TimetableTypeDto type)
+        public bool IsTimeReductionTimetable(UpsertEstabilishmentTimetableDto timetable)
         {
-            return timetable is { StartTime: not null, EndTime: not null, StartDate: not null, EndDate: not null }
-                   && type.Code == FixedTimetableType.Overtime;
+            return timetable is { StartTime: not null, EndTime: not null, StartDate: not null, EndDate: not null };
         }
         
         public bool IsLegalDateRange(UpsertEstabilishmentTimetableDto entity)

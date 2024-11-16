@@ -14,20 +14,19 @@ namespace ReservationManager.Core.Builders
             _strategies = strategies;
         }
 
-        public async Task<BuildingTimetable> CreateTimetable(UpsertEstabilishmentTimetableDto entity,
-            TimetableTypeDto type)
+        public async Task<BuildingTimetable> CreateTimetable(UpsertEstabilishmentTimetableDto entity)
         {
-            var strategy = _strategies.FirstOrDefault(s => s.IsMatch(entity, type))
-                ?? throw new StrategyNotFoundException($"No strategy found for type {type.Id}.");
+            var strategy = _strategies.FirstOrDefault(s => s.IsMatch(entity))
+                ?? throw new StrategyNotFoundException($"No strategy found for type {entity}.");
 
             return await strategy.Create(entity);
         }
 
         public async Task<BuildingTimetable> UpdateTimetable(UpsertEstabilishmentTimetableDto entity,
-            TimetableTypeDto type, int id)
+            int id)
         {
-            var strategy = _strategies.FirstOrDefault(s => s.IsMatch(entity, type))
-                           ?? throw new StrategyNotFoundException($"No strategy found for type {type.Id}.");
+            var strategy = _strategies.FirstOrDefault(s => s.IsMatch(entity))
+                           ?? throw new StrategyNotFoundException($"No strategy found for type {entity}.");
 
             return await strategy.Update(id, entity);
         }

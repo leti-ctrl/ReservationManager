@@ -10,8 +10,6 @@ namespace ReservationManager.DomainModel.Operation
 {
     public class BuildingTimetable : BaseEntity
     {
-        public int TypeId { get; set; }
-        public required TimetableType Type { get; set; }
         public DateOnly? StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public TimeOnly? StartTime { get; set; }
