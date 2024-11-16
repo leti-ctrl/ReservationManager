@@ -14,7 +14,11 @@ namespace ReservationManager.Persistence.Configurations
 
             builder.Property(x => x.Code)
                 .IsRequired()
-                .HasMaxLength(20);
+                .HasMaxLength(10);
+            
+            builder.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(50);
 
             builder.HasQueryFilter(x => !x.IsDeleted.HasValue);
         }
