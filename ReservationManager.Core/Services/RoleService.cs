@@ -6,40 +6,41 @@ using ReservationManager.Core.Interfaces.Services;
 
 namespace ReservationManager.Core.Services
 {
-    public class UserTypeService : IUserTypeService
+    public class RoleService : IRoleService
     {
         private readonly IUserTypeRepository _userTypeRepository;
         private readonly IUserRepository _userRepository;
 
-        public UserTypeService(IUserTypeRepository userTypeRepository, IUserRepository userRepository)
+        public RoleService(IUserTypeRepository userTypeRepository, IUserRepository userRepository)
         {
             _userTypeRepository = userTypeRepository;
             _userRepository = userRepository;
         }
 
-        public async Task<IEnumerable<UserTypeDto>> GetAllUserTypes()
+        public async Task<IEnumerable<RoleDto>> GetAllUserTypes()
         {
             var userTypes = await _userTypeRepository.GetAllTypesAsync();
             if (userTypes == null)
-                return Enumerable.Empty<UserTypeDto>();
+                return Enumerable.Empty<RoleDto>();
 
-            return userTypes.Select(ut => ut.Adapt<UserTypeDto>());
+            return userTypes.Select(ut => ut.Adapt<RoleDto>());
         }
 
-        public async Task<UserTypeDto> CreateUserType(string code)
+        public async Task<RoleDto> CreateUserType(string code, string name)
         {
-            var userType = await _userTypeRepository.CreateTypeAsync(new DomainModel.Meta.UserType() { Code = code });
-            return userType.Adapt<UserTypeDto>();
+            var userType = await _userTypeRepository.CreateTypeAsync(new DomainModel.Meta.Role() { Code = code , Name = name});
+            return userType.Adapt<RoleDto>();
         }
 
-        public async Task<UserTypeDto> UpdateUserType(int id, string userTypeDto)
+        public async Task<RoleDto> UpdateUserType(int id, string code, string name)
         {
             var oldUserType = await _userTypeRepository.GetTypeById(id)
                 ?? throw new EntityNotFoundException($"User Type with id {id} not found.");
-            oldUserType.Code = userTypeDto;
+            oldUserType.Code = code;
+            oldUserType.Name = name;
 
             var updated = await _userTypeRepository.UpdateTypeAsync(oldUserType);
-            return updated.Adapt<UserTypeDto>();
+            return updated.Adapt<RoleDto>();
         }
 
         public async Task DeleteUserType(int id)
@@ -47,10 +48,6 @@ namespace ReservationManager.Core.Services
             var toDelete = await _userTypeRepository.GetTypeById(id)
                 ?? throw new EntityNotFoundException($"User Type with id {id} not found.");
             
-            var exists = await _userRepository.GetByTypeAsync(toDelete.Code);
-            if (exists.Any())
-                throw new DeleteNotPermittedException($"Cannot delete {toDelete.Code} because exits user with this role");
-
             await _userTypeRepository.DeleteTypeAsync(toDelete);
         }
     }

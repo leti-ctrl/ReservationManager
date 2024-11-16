@@ -4,11 +4,11 @@ using ReservationManager.DomainModel.Meta;
 
 namespace ReservationManager.Persistence.Configurations
 {
-    public class UserTypeConfigration : IEntityTypeConfiguration<UserType>
+    public class RoleConfigration : IEntityTypeConfiguration<Role>
     {
-        public void Configure(EntityTypeBuilder<UserType> builder)
+        public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.ToTable("UserType");
+            builder.ToTable("Role");
 
             builder.HasKey(x => x.Id);
 

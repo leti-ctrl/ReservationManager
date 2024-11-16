@@ -16,7 +16,7 @@ namespace ReservationManager.API.Extensions
     {
         public static IServiceCollection ConfigureServices(this IServiceCollection services)
         {
-            services.AddScoped<IUserTypeService, UserTypeService>();
+            services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IResourceTypeService, ResourceTypeService>();
             services.AddScoped<IReservationTypeService, ReservationTypeService>();
 

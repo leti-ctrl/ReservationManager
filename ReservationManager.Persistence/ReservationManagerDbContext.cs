@@ -16,7 +16,7 @@ namespace ReservationManager.Persistence
             modelBuilder.ApplyConfiguration(new ResourceConfiguration());
             modelBuilder.ApplyConfiguration(new ResourceTypeConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
-            modelBuilder.ApplyConfiguration(new UserTypeConfigration());
+            modelBuilder.ApplyConfiguration(new RoleConfigration());
             modelBuilder.ApplyConfiguration(new ClosingCalendarConfiguration());
         }
 

@@ -41,8 +41,6 @@ namespace ReservationManager.Core.Services
                 ?? throw new InvalidCodeTypeException($"User role {userDto.Role} not found");
 
             var userModel = userDto.Adapt<User>();
-            userModel.Type = type;
-            userModel.TypeId = type.Id;
 
             var user = await _userRepository.CreateEntityAsync(userModel);
 
@@ -56,8 +54,6 @@ namespace ReservationManager.Core.Services
 
             var userModel = userDto.Adapt<User>();
             userModel.Id = id;
-            userModel.Type = type;
-            userModel.TypeId = type.Id;
 
             var updated = await _userRepository.UpdateEntityAsync(userModel);
 

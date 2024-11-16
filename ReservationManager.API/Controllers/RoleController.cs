@@ -6,22 +6,22 @@ namespace ReservationManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserTypeController : ControllerBase
+    public class RoleController : ControllerBase
     {
-        private readonly IUserTypeService _userTypeService;
+        private readonly IRoleService _roleService;
 
-        public UserTypeController(IUserTypeService userTypeService)
+        public RoleController(IRoleService roleService)
         {
-            _userTypeService = userTypeService;
+            _roleService = roleService;
         }
 
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<UserTypeDto>>> GetAllUserTypes()
+        public async Task<ActionResult<IEnumerable<RoleDto>>> GetAllUserTypes()
         {
-            var result = await _userTypeService.GetAllUserTypes();
+            var result = await _roleService.GetAllUserTypes();
 
             if (result == null || !result.Any())
                 return NoContent();
@@ -31,9 +31,9 @@ namespace ReservationManager.API.Controllers
         [HttpPost()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserTypeDto>> CreateUserType(string code)
+        public async Task<ActionResult<RoleDto>> CreateUserType(string code, string name)
         {
-            var result = await _userTypeService.CreateUserType(code);
+            var result = await _roleService.CreateUserType(code, name);
             return Ok(result);
         }
 
@@ -41,9 +41,9 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserTypeDto>> UpdateUserType(int id, string newCode)
+        public async Task<ActionResult<RoleDto>> UpdateUserType(int id, string code, string name)
         {
-            var result = await _userTypeService.UpdateUserType(id, newCode);
+            var result = await _roleService.UpdateUserType(id, code, name);
             return Ok(result);
         }
 
@@ -54,7 +54,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteUserType(int id)
         {
-            await _userTypeService.DeleteUserType(id);
+            await _roleService.DeleteUserType(id);
             return Accepted();
 
         }

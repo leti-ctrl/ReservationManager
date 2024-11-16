@@ -4,7 +4,7 @@ using ReservationManager.Persistence.Repositories.Base;
 
 namespace ReservationManager.Persistence.Repositories
 {
-    public class UserTypeRepository : CrudEditableTypeRepository<UserType>, IUserTypeRepository
+    public class UserTypeRepository : CrudEditableTypeRepository<Role>, IUserTypeRepository
     {
         public UserTypeRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {

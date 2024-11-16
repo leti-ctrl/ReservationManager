@@ -21,11 +21,6 @@ namespace ReservationManager.Persistence.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<User>> GetByTypeAsync(string code)
-        {
-            return await Context.Set<User>()
-                                .Where(x => x.Type.Code == code)
-                                .ToListAsync();
-        }
+        
     }
 }

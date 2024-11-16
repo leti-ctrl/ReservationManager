@@ -8,7 +8,7 @@ namespace ReservationManager.DomainModel.Operation
         public string Name { get; set; }
         public string Surname { get; set; }
         public string Email { get; set; }
-        public int TypeId { get; set; }
-        public UserType Type { get; set; }
+        
+        public virtual ICollection<Role> Roles { get; set; } = new List<Role>();    
     }
 }

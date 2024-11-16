@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ReservationManager.DomainModel.Meta;
 using ReservationManager.DomainModel.Operation;
 
 namespace ReservationManager.Persistence.Configurations
@@ -24,15 +25,14 @@ namespace ReservationManager.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.HasOne(x => x.Type)
+            builder.HasMany(x => x.Roles)
                 .WithMany()
-                .IsRequired()
-                .HasForeignKey(x => x.TypeId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .UsingEntity<RoleUser>(
+                    x => x.HasOne<Role>().WithMany().OnDelete(DeleteBehavior.NoAction),
+                    x => x.HasOne<User>().WithMany().OnDelete(DeleteBehavior.NoAction)
+                );
 
             builder.HasQueryFilter(x => !x.IsDeleted.HasValue);
-
-            builder.Navigation(t => t.Type).AutoInclude();
         }
     }
 }
