@@ -9,5 +9,8 @@ namespace ReservationManager.Core.Interfaces.Repositories
         Task<IEnumerable<ClosingCalendar>> GetFiltered(int? id, DateOnly? fromDate, DateOnly? toDate,
             int? resourceId, int? resourceTypeId);
         Task<IEnumerable<ClosingCalendar>> GetByTypeId(int typeId);
+        Task<IEnumerable<ClosingCalendar>> CreateEntitiesAsync(IEnumerable<ClosingCalendar> entities);
+        Task<IEnumerable<ClosingCalendar>> GetExistingClosingCalendars(IEnumerable<int> resourceIds,
+            IEnumerable<DateOnly> days);
     }
 }

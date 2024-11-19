@@ -43,5 +43,20 @@ namespace ReservationManager.Persistence.Repositories
             return await Context.Set<ClosingCalendar>()
                                 .ToListAsync();    
         }
+        
+        public async Task<IEnumerable<ClosingCalendar>> GetExistingClosingCalendars(IEnumerable<int> resourceIds, IEnumerable<DateOnly> days)
+        {
+            return await Context.Set<ClosingCalendar>().AsQueryable()
+                .Where(c => resourceIds.Contains(c.ResourceId) && days.Contains(c.Day))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<ClosingCalendar>> CreateEntitiesAsync(IEnumerable<ClosingCalendar> entities)
+        {
+            await Context.Set<ClosingCalendar>().AddRangeAsync(entities);
+            await Context.SaveChangesAsync();
+            return entities;
+        }
+
     }
 }
