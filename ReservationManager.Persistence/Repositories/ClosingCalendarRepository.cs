@@ -12,7 +12,7 @@ namespace ReservationManager.Persistence.Repositories
         {
         }
 
-        public async Task<IEnumerable<ClosingCalendar>> GetAllTimetableFromToday()
+        public async Task<IEnumerable<ClosingCalendar>> GetAllFromToday()
         {
             return await Context.Set<ClosingCalendar>()
                                 .Where(x => x.Day == null || 

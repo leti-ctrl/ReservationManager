@@ -64,6 +64,16 @@ namespace ReservationManager.API.Controllers
             var updated = await _userService.UpdateUser(id, user.Adapt<UpsertUserDto>());
             return Ok(updated);
         }
+        
+        [HttpPut("role/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserDto>> AddRoleToUser(int id, int role)
+        {
+            return new UserDto(){Name = "", Surname = "", Email = ""};
+        }
 
         [HttpDelete]
         [HttpDelete("{id}")]

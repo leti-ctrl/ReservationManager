@@ -30,7 +30,7 @@ namespace ReservationManager.API.Extensions
 
         public static IServiceCollection ConfigureRepositories(this IServiceCollection services)
         {
-            services.AddScoped<IUserTypeRepository, UserTypeRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<IResourceTypeRepository, ResourceTypeRepository>();
             services.AddScoped<IReservationTypeRepository, ReservationTypeRepository>();
 
@@ -59,7 +59,7 @@ namespace ReservationManager.API.Extensions
 
         public static IServiceCollection ConfigureValidators(this IServiceCollection services)
         {
-            services.AddScoped<IClosingCalendarValidator, ClosingTimetableValidator>();
+            services.AddScoped<IClosingCalendarValidator, ClosingCalendarValidator>();
             services.AddScoped<IResourceValidator, ResourceValidator>();
             services.AddScoped<IResourceFilterValidator, ResourceFilterValidator>();
             

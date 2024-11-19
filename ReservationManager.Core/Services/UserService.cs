@@ -10,12 +10,12 @@ namespace ReservationManager.Core.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly IUserTypeRepository _userTypeRepository;
+        private readonly IRoleRepository _roleRepository;
 
-        public UserService(IUserRepository userRepository, IUserTypeRepository userTypeRepository)
+        public UserService(IUserRepository userRepository, IRoleRepository roleRepository)
         {
             _userRepository = userRepository;
-            _userTypeRepository = userTypeRepository;
+            _roleRepository = roleRepository;
         }
 
         public async Task<IEnumerable<UserDto>> GetAllUsers()
@@ -37,7 +37,7 @@ namespace ReservationManager.Core.Services
 
         public async Task<UserDto> CreateUser(UpsertUserDto userDto)
         {
-            var type = await _userTypeRepository.GetTypeByCode(userDto.Role)
+            var type = await _roleRepository.GetTypeByCode(userDto.Role)
                 ?? throw new InvalidCodeTypeException($"User role {userDto.Role} not found");
 
             var userModel = userDto.Adapt<User>();
@@ -49,7 +49,7 @@ namespace ReservationManager.Core.Services
 
         public async Task<UserDto> UpdateUser(int id, UpsertUserDto userDto)
         {
-            var type = await _userTypeRepository.GetTypeByCode(userDto.Role)
+            var type = await _roleRepository.GetTypeByCode(userDto.Role)
                 ?? throw new InvalidCodeTypeException($"User role {userDto.Role} not found");
 
             var userModel = userDto.Adapt<User>();

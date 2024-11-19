@@ -5,7 +5,7 @@ namespace ReservationManager.Core.Interfaces.Repositories
 {
     public interface IClosingCalendarRepository : ICrudBaseEntityRepository<ClosingCalendar>
     {
-        Task<IEnumerable<ClosingCalendar>> GetAllTimetableFromToday();
+        Task<IEnumerable<ClosingCalendar>> GetAllFromToday();
         Task<IEnumerable<ClosingCalendar>> GetByTypeId(int typeId);
     }
 }

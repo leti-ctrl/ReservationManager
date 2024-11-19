@@ -5,11 +5,11 @@ using ReservationManager.DomainModel.Operation;
 
 namespace ReservationManager.Core.Validators
 {
-    public class ClosingTimetableValidator : IClosingCalendarValidator
+    public class ClosingCalendarValidator : IClosingCalendarValidator
     {
         private readonly IClosingCalendarRepository _timetableRepository;
 
-        public ClosingTimetableValidator(IClosingCalendarRepository timetableRepository)
+        public ClosingCalendarValidator(IClosingCalendarRepository timetableRepository)
         {
             _timetableRepository = timetableRepository;
         }
