@@ -42,6 +42,8 @@ app.UseHttpsRedirection();
 
 app.UseProblemDetails();
 await app.UseMigration<ReservationManagerDbContext>();
+await app.UseSeed();
+
 
 app.UseAuthorization();
 
