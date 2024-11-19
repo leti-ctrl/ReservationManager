@@ -1,12 +1,9 @@
-﻿using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Dtos;
 
-namespace ReservationManager.Core.Interfaces.Validators
+namespace ReservationManager.Core.Interfaces.Validators;
+
+public interface IClosingCalendarValidator
 {
-    public interface IClosingCalendarValidator
-    {
-        bool IsClosureTimetable(UpsertClosingCalendarDto timetable);
-        bool IsNominalTimetable(UpsertClosingCalendarDto timetable);
-        bool IsTimeReductionTimetable(UpsertClosingCalendarDto timetable);
-        bool IsLegalDateRange(UpsertClosingCalendarDto entity);
-    }
+    Task<bool> ValidateIfAlreadyExistsClosingCalendar(ClosingCalendarDto closingCalendar, int? id);
+    bool ValidateClosingCalendarBucket(ClosingCalendarBucketDto closingCalendar);
 }

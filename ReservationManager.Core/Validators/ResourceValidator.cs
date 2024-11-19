@@ -6,10 +6,13 @@ namespace ReservationManager.Core.Validators;
 public class ResourceValidator : IResourceValidator
 {
     private readonly IResourceTypeRepository _resourceTypeRepository;
+    private readonly IResourceRepository _resourceRepository;
 
-    public ResourceValidator(IResourceTypeRepository resourceTypeRepository)
+    public ResourceValidator(IResourceTypeRepository resourceTypeRepository, 
+        IResourceRepository resourceRepository)
     {
         _resourceTypeRepository = resourceTypeRepository;
+        _resourceRepository = resourceRepository;
     }
 
     public async Task<bool> ValidateResourceType(int typeId)
@@ -17,5 +20,8 @@ public class ResourceValidator : IResourceValidator
         return await _resourceTypeRepository.GetTypeById(typeId) != null;
     }
 
-
+    public async Task<bool> ExistingResouceId(int id)
+    {
+        return await _resourceRepository.GetEntityByIdAsync(id) != null;
+    }
 }

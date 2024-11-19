@@ -1,11 +1,10 @@
 ﻿
 namespace ReservationManager.API.Request
 {
-    public class UpsertClosingCalendarRequest
+    public class ClosingCalendarUpsertRequest
     {
         public DateOnly Day { get; set; }
         public int ResourceId { get; set; }
-        public int ResourceTypeId { get; set; }
         public string? Description { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace ReservationManager.Core.Dtos
     {
         public int Id { get; set; }
         public DateOnly Day { get; set; }
-        public int RescourseId { get; set; }
+        public int ResourceId { get; set; }
         public ResourceDto Resource { get; set; }
         public string? Description { get; set; }
     }

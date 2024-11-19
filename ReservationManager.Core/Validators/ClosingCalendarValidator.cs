@@ -1,52 +1,31 @@
-﻿using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Dtos;
+using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Interfaces.Validators;
-using ReservationManager.DomainModel.Operation;
 
-namespace ReservationManager.Core.Validators
+namespace ReservationManager.Core.Validators;
+
+public class ClosingCalendarValidator : IClosingCalendarValidator
 {
-    public class ClosingCalendarValidator : IClosingCalendarValidator
+    private readonly IClosingCalendarRepository _closingCalendarRepository;
+
+    public ClosingCalendarValidator(IResourceValidator resourceValidator, IClosingCalendarRepository closingCalendarRepository)
     {
-        private readonly IClosingCalendarRepository _timetableRepository;
+        _closingCalendarRepository = closingCalendarRepository;
+    }
 
-        public ClosingCalendarValidator(IClosingCalendarRepository timetableRepository)
-        {
-            _timetableRepository = timetableRepository;
-        }
+    public async Task<bool> ValidateIfAlreadyExistsClosingCalendar(ClosingCalendarDto closingCalendarDto, int? id)
+    {
+           
+        var closingCalendars = await _closingCalendarRepository.GetFiltered(null, 
+            closingCalendarDto.Day, null, closingCalendarDto.ResourceId, null);
+        if (id == null)
+            return closingCalendars.Any(); 
+        return closingCalendars.Any(x => x.ResourceId != id);
+    }
 
-        public bool IsClosureTimetable(UpsertClosingCalendarDto timetable)
-        {
-            return timetable is { StartTime: null, EndTime: null,StartDate: not null, EndDate: not null };
-        }
-
-        public bool IsNominalTimetable(UpsertClosingCalendarDto timetable)
-        {
-            return timetable is { StartTime: not null, EndTime: not null, StartDate: null, EndDate: null };
-        }
-
-        public bool IsTimeReductionTimetable(UpsertClosingCalendarDto timetable)
-        {
-            return timetable is { StartTime: not null, EndTime: not null, StartDate: not null, EndDate: not null };
-        }
-        
-        public bool IsLegalDateRange(UpsertClosingCalendarDto entity)
-        {
-            var start = (DateOnly)entity.StartDate!;
-            var end = (DateOnly)entity.EndDate!;
-
-            return start <= end && start >= DateOnly.FromDateTime(DateTime.Now) &&
-                   end >= DateOnly.FromDateTime(DateTime.Now);
-        }
-
-       
-
-
-        private bool CheckForUpdate(List<ClosingCalendar> existingIntersection, int? id)
-        {
-            var oldBuildingTimetable = existingIntersection.FirstOrDefault(x => x.Id == id);
-            return oldBuildingTimetable != null 
-                ? existingIntersection.Any(x => x.Id != id) 
-                : existingIntersection.Any();
-        }
+    public bool ValidateClosingCalendarBucket(ClosingCalendarBucketDto closingCalendar)
+    {
+        return closingCalendar.From <= closingCalendar.To;
     }
 }

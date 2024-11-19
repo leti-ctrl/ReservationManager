@@ -21,28 +21,24 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetAllFromToday()
         {
+            var model = await _closingCalendarService.GetAllFromToday();
+            if(model.Any())
+                return Ok(model);
             return NoContent();
         }
 
-        [HttpGet("{typeId}")]
+        [HttpPost("getFiltered")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetByType(int typeId)
+        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetFiltered(ClosingCalendarFilterDto closingCalendarFilterDto)
         {
+            var model = await _closingCalendarService.GetFiltered(closingCalendarFilterDto);
+            if(model.Any())
+                return Ok(model);
             return NoContent();
-        }
-
-        [HttpGet("dateRange")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetByDateRange(DateOnly start, DateOnly end)
-        {
-             return NoContent();
         }
 
         [HttpPost]
@@ -50,9 +46,21 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ClosingCalendarDto>> Create(UpsertClosingCalendarRequest timetable) 
+        public async Task<ActionResult<ClosingCalendarDto>> Create(ClosingCalendarUpsertRequest request) 
         {
-            return NoContent();
+            var closingCalendar = await _closingCalendarService.Create(request.Adapt<ClosingCalendarDto>());
+            return Ok(closingCalendar);
+        }
+        
+        [HttpPost("bucket")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> CreateBucket(ClosingCalendarBucketRequest request) 
+        {
+            var closingCalendar = await _closingCalendarService.CreateBucket(request.Adapt<ClosingCalendarBucketDto>());
+            return Ok(closingCalendar);
         }
 
         [HttpPut]
@@ -61,9 +69,10 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ClosingCalendarDto>> Update(int id, UpsertClosingCalendarDto timetable)
+        public async Task<ActionResult<ClosingCalendarDto>> Update(int id, ClosingCalendarUpsertRequest request)
         {
-            return NoContent();
+            var closingCalendar = await _closingCalendarService.Update(id,request.Adapt<ClosingCalendarDto>());
+            return Ok(closingCalendar);
         }
 
         [HttpDelete]
@@ -72,6 +81,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Delete(int id)
         {
+            await _closingCalendarService.Delete(id);
             return Accepted();
         }
     }
