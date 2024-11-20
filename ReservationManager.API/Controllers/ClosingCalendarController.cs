@@ -52,14 +52,14 @@ namespace ReservationManager.API.Controllers
             return Ok(closingCalendar);
         }
         
-        [HttpPost("bucket")]
+        [HttpPost("bulk")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> CreateBucket(ClosingCalendarBucketRequest request) 
+        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> BulkCreate(ClosingCalendarBucketRequest request) 
         {
-            var closingCalendar = await _closingCalendarService.CreateBucket(request.Adapt<ClosingCalendarBucketDto>());
+            var closingCalendar = await _closingCalendarService.BulkCreate(request.Adapt<ClosingCalendarBucketDto>());
             return Ok(closingCalendar);
         }
 
