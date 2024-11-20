@@ -59,7 +59,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> BulkCreate(ClosingCalendarBucketRequest request) 
         {
-            var closingCalendar = await _closingCalendarService.BulkCreate(request.Adapt<ClosingCalendarBucketDto>());
+            var closingCalendar = await _closingCalendarService.BulkCreate(request.Adapt<BulkClosingCalendarDto>());
             return Ok(closingCalendar);
         }
 

@@ -5,5 +5,5 @@ namespace ReservationManager.Core.Interfaces.Validators;
 public interface IClosingCalendarValidator
 {
     Task<bool> ValidateIfAlreadyExistsClosingCalendar(ClosingCalendarDto closingCalendar, int? id);
-    bool ValidateClosingCalendarBucket(ClosingCalendarBucketDto closingCalendar);
+    bool ValidateClosingCalendarBucket(BulkClosingCalendarDto bulkClosingCalendar);
 }

@@ -24,8 +24,8 @@ public class ClosingCalendarValidator : IClosingCalendarValidator
         return closingCalendars.Any(x => x.ResourceId != id);
     }
 
-    public bool ValidateClosingCalendarBucket(ClosingCalendarBucketDto closingCalendar)
+    public bool ValidateClosingCalendarBucket(BulkClosingCalendarDto bulkClosingCalendar)
     {
-        return closingCalendar.From <= closingCalendar.To;
+        return bulkClosingCalendar.From <= bulkClosingCalendar.To;
     }
 }

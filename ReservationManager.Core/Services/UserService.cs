@@ -1,8 +1,11 @@
 ﻿using Mapster;
+using ReservationManager.Core.Consts;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Interfaces.Services;
+using ReservationManager.Core.Interfaces.Validators;
+using ReservationManager.DomainModel.Meta;
 using ReservationManager.DomainModel.Operation;
 
 namespace ReservationManager.Core.Services
@@ -18,46 +21,48 @@ namespace ReservationManager.Core.Services
             _roleRepository = roleRepository;
         }
 
-        public async Task<IEnumerable<UserDto>> GetAllUsers()
+        public async Task<IEnumerable<UserDto>> GetUserInfo()
         {
             var users = await _userRepository.GetAllEntitiesAsync();
-            if (users == null)
-                return Enumerable.Empty<UserDto>();
-
+            
             return users.Select(x => x.Adapt<UserDto>());
-        }
-
-        public async Task<UserDto> GetUser(int id)
-        {
-            var user = await _userRepository.GetEntityByIdAsync(id)
-                ?? throw new EntityNotFoundException($"User {id} not found.");
-
-            return user.Adapt<UserDto>();
         }
 
         public async Task<UserDto> CreateUser(UpsertUserDto userDto)
         {
-            var type = await _roleRepository.GetTypeByCode(userDto.Role)
-                ?? throw new InvalidCodeTypeException($"User role {userDto.Role} not found");
-
+            var employeeRole = await _roleRepository.GetTypeByCode(FixedUserRole.Employee);
             var userModel = userDto.Adapt<User>();
+            userModel.Roles.Add(employeeRole!);
 
-            var user = await _userRepository.CreateEntityAsync(userModel);
+            var user = await _userRepository.AddUserAsync(userModel);
 
             return user.Adapt<UserDto>();
         }
 
-        public async Task<UserDto> UpdateUser(int id, UpsertUserDto userDto)
+        public async Task<UserDto?> UpdateUser(int id, UpsertUserDto userDto)
         {
-            var type = await _roleRepository.GetTypeByCode(userDto.Role)
-                ?? throw new InvalidCodeTypeException($"User role {userDto.Role} not found");
-
+            //nella modifica non si può modificare il ruolo
+            var user = await _userRepository.GetEntityByIdAsync(id);
+            if (user == null)
+                return null;
+            
             var userModel = userDto.Adapt<User>();
             userModel.Id = id;
 
             var updated = await _userRepository.UpdateEntityAsync(userModel);
 
             return updated.Adapt<UserDto>();
+        }
+
+        public async Task<UserDto?> UpdateUserRoles(int userId, Role[] newRoles)
+        {
+            var user = await _userRepository.GetEntityByIdAsync(userId);
+            if (user == null) return null;
+
+            if (newRoles.Length == 0) throw new ArgumentException("User roles must not be empty");
+
+            var updated = await _userRepository.UpdateUserRolesAsync(user, newRoles);
+            return updated?.Adapt<UserDto>();
         }
 
         public async Task DeleteUser(int id)

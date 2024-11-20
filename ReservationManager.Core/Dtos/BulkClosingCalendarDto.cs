@@ -1,6 +1,6 @@
 namespace ReservationManager.Core.Dtos;
 
-public class ClosingCalendarBucketDto
+public class BulkClosingCalendarDto
 {
     public int ResourceTypeId { get; set; }
     public DateOnly From { get; set; }

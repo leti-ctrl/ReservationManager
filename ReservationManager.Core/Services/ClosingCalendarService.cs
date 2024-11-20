@@ -62,19 +62,19 @@ namespace ReservationManager.Core.Services
         }
 
 
-        public async Task<IEnumerable<ClosingCalendarDto>> BulkCreate(ClosingCalendarBucketDto closingCalendarBucketDto)
+        public async Task<IEnumerable<ClosingCalendarDto>> BulkCreate(BulkClosingCalendarDto bulkClosingCalendarDto)
         {
-            if (!await _resourceValidator.ValidateResourceType(closingCalendarBucketDto.ResourceTypeId))
+            if (!await _resourceValidator.ValidateResourceType(bulkClosingCalendarDto.ResourceTypeId))
                 throw new CreateClosingCalendarException(
-                    $"Resource type {closingCalendarBucketDto.ResourceTypeId} does not exist.");
+                    $"Resource type {bulkClosingCalendarDto.ResourceTypeId} does not exist.");
 
             var resources = (await _resourceService.GetFilteredResources(new ResourceFilterDto
             {
-                TypeId = closingCalendarBucketDto.ResourceTypeId
+                TypeId = bulkClosingCalendarDto.ResourceTypeId
             })).ToList();
 
-            var daysRange = Enumerable.Range(0, closingCalendarBucketDto.To.DayNumber - closingCalendarBucketDto.From.DayNumber + 1)
-                .Select(offset => closingCalendarBucketDto.From.AddDays(offset))
+            var daysRange = Enumerable.Range(0, bulkClosingCalendarDto.To.DayNumber - bulkClosingCalendarDto.From.DayNumber + 1)
+                .Select(offset => bulkClosingCalendarDto.From.AddDays(offset))
                 .ToList();
 
             var existingClosingCalendars = (await _closingCalendarRepository
@@ -92,7 +92,7 @@ namespace ReservationManager.Core.Services
                     {
                         ResourceId = resource.Id,
                         Day = day,
-                        Description = closingCalendarBucketDto.Description,
+                        Description = bulkClosingCalendarDto.Description,
                     };
                     newClosingCalendars.Add(closingCalendar);
                 }
