@@ -22,13 +22,13 @@ namespace ReservationManager.API.Controllers
         
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUserInfo(int id)
         {
             var user = await _userService.GetUserById(id);
             if (user == null)
-                return NoContent();
+                return NotFound();
 
             return Ok(user);
         }
@@ -49,7 +49,6 @@ namespace ReservationManager.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> CreateUser(UserCreateRequest request)
         {
@@ -60,13 +59,15 @@ namespace ReservationManager.API.Controllers
         
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<UserDto>> UpdateUser(int id, UserCreateRequest request)
         {
-            var created = await _userService.UpdateUser(id, request.Adapt<UpsertUserDto>());
+            var updated = await _userService.UpdateUser(id, request.Adapt<UpsertUserDto>());
+            if (updated == null)
+                return NotFound();
 
-            return Ok(created);
+            return Ok(updated);
         }
         
         [HttpPatch("{id}/role")]

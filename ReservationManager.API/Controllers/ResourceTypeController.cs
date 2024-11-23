@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Mapster;
+using Microsoft.AspNetCore.Mvc;
+using ReservationManager.API.Request;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces.Services;
 
@@ -31,9 +33,9 @@ namespace ReservationManager.API.Controllers
         [HttpPost()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ResourceTypeDto>> CreateResourceType(string code)
+        public async Task<ActionResult<ResourceTypeDto>> CreateResourceType(ResoruceTypeUpsertRequest request)
         {
-            var resourceType = await _resourceTypeService.CreateResourceType(code);
+            var resourceType = await _resourceTypeService.CreateResourceType(request.Adapt<UpsertResourceTypeDto>());
             return Ok(resourceType);
         }
 
@@ -41,15 +43,16 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ResourceTypeDto>> UpdateResourceType(int id, string code)
+        public async Task<ActionResult<ResourceTypeDto>> UpdateResourceType(int id, ResoruceTypeUpsertRequest request)
         {
-            var updated = await _resourceTypeService.UpdateResourceType(id, code);
+            var updated = await _resourceTypeService.UpdateResourceType(id, request.Adapt<UpsertResourceTypeDto>());
+            if (updated == null)
+                return NotFound();
             return Ok(updated);
         }
 
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteResourceType(int id)

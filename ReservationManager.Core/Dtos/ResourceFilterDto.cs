@@ -3,7 +3,7 @@
     public class ResourceFilterDto
     {
         public int? TypeId { get; set; }
-        public int? ResoruceId { get; set; }
+        public int? ResourceId { get; set; }
         public DateOnly? DateFrom { get; set; }
         public DateOnly? DateTo { get; set; }
         public string? TimeFrom { get; set; }

@@ -65,9 +65,11 @@ namespace ReservationManager.Core.Services
         public async Task<UserDto?> UpdateUserRoles(int userId, Role[] newRoles)
         {
             var user = await _userRepository.GetEntityByIdAsync(userId);
-            if (user == null) return null;
+            if (user == null) 
+                return null;
 
-            if (newRoles.Length == 0) throw new ArgumentException("User roles must not be empty");
+            if (newRoles.Length == 0) 
+                throw new ArgumentException("User roles must not be empty");
 
             var updated = await _userRepository.UpdateUserRolesAsync(user, newRoles);
             return updated?.Adapt<UserDto>();

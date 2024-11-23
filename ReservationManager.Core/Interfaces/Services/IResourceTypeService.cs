@@ -5,8 +5,8 @@ namespace ReservationManager.Core.Interfaces.Services
     public interface IResourceTypeService
     {
         Task<IEnumerable<ResourceTypeDto>> GetAllResourceTypes();
-        Task<ResourceTypeDto> CreateResourceType(string code);
-        Task<ResourceTypeDto> UpdateResourceType(int id, string code);
+        Task<ResourceTypeDto> CreateResourceType(UpsertResourceTypeDto resource);
+        Task<ResourceTypeDto?> UpdateResourceType(int id, UpsertResourceTypeDto resource);
         Task DeleteResourceType(int id);
     }
 }

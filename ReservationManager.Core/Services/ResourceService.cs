@@ -57,7 +57,7 @@ namespace ReservationManager.Core.Services
             }
 
             // Retrieve filtered resources
-            var resources = await _resourceRepository.GetFiltered(resourceFilters.TypeId, resourceFilters.ResoruceId);
+            var resources = await _resourceRepository.GetFiltered(resourceFilters.TypeId, resourceFilters.ResourceId);
             var resourceList = resources.ToList();
             if (!resourceList.Any()) return Enumerable.Empty<ResourceDto>();
 
