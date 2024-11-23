@@ -21,7 +21,15 @@ namespace ReservationManager.Core.Services
             _roleRepository = roleRepository;
         }
 
-        public async Task<IEnumerable<UserDto>> GetUserInfo()
+        public async Task<UserDto?> GetUserById(int id)
+        {
+            var user = await _userRepository.GetEntityByIdAsync(id);
+            if (user == null)
+                return null;
+            return user.Adapt<UserDto>();
+        }
+
+        public async Task<IEnumerable<UserDto>> GetAllUsers()
         {
             var users = await _userRepository.GetAllEntitiesAsync();
             

@@ -19,14 +19,27 @@ namespace ReservationManager.API.Controllers
         {
             _userService = userService;
         }
+        
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUserInfo(int id)
+        {
+            var user = await _userService.GetUserById(id);
+            if (user == null)
+                return NoContent();
+
+            return Ok(user);
+        }
 
         [HttpGet()]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetUserInfo()
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers()
         {
-            var users = await _userService.GetUserInfo();
+            var users = await _userService.GetAllUsers();
             if (!users.Any())
                 return NoContent();
 
@@ -41,6 +54,17 @@ namespace ReservationManager.API.Controllers
         public async Task<ActionResult<UserDto>> CreateUser(UserCreateRequest request)
         {
             var created = await _userService.CreateUser(request.Adapt<UpsertUserDto>());
+
+            return Ok(created);
+        }
+        
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<UserDto>> UpdateUser(int id, UserCreateRequest request)
+        {
+            var created = await _userService.UpdateUser(id, request.Adapt<UpsertUserDto>());
 
             return Ok(created);
         }

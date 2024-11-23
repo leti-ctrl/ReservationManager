@@ -5,8 +5,10 @@ namespace ReservationManager.Core.Interfaces.Services
 {
     public interface IUserService
     {
-        Task<IEnumerable<UserDto>> GetUserInfo();
+        Task<IEnumerable<UserDto>> GetAllUsers();
+        Task<UserDto?> GetUserById(int id);
         Task<UserDto> CreateUser(UpsertUserDto userDto);
+        Task<UserDto?> UpdateUser(int id, UpsertUserDto userDto);
         Task<UserDto?> UpdateUserRoles(int userId, Role[] newRoles);
         Task DeleteUser(int id);
     }
