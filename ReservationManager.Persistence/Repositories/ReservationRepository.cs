@@ -11,23 +11,6 @@ namespace ReservationManager.Persistence.Repositories
         {
         }
 
-        public async Task<IEnumerable<Reservation>> GetByDayAsync(DateOnly day)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<Reservation>> GetByResourceAsync(int resourceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<Reservation>> GetByTypeAsync(string code)
-        {
-            return await Context.Set<Reservation>()
-                                .Where(x => x.Type.Code == code)
-                                .ToListAsync();
-        }
-
         public async Task<IEnumerable<Reservation>> GetReservationByResourceDateTimeAsync(List<int> resourceIds,
             DateOnly startDate, TimeOnly startTime, TimeOnly endTime)
         {
@@ -48,9 +31,12 @@ namespace ReservationManager.Persistence.Repositories
                                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Reservation>> GetByUserAsync(int userId)
+        public async Task<IEnumerable<Reservation>> GetReservationByTypeIdAfterTodayAsync(int typeId)
         {
-            throw new NotImplementedException();
+            return await Context.Set<Reservation>()
+                .Where(x => typeId == x.TypeId
+                            && x.Day >= DateOnly.FromDateTime(DateTime.Now))
+                .ToListAsync();
         }
     }
 }

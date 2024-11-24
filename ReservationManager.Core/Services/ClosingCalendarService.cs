@@ -51,10 +51,10 @@ namespace ReservationManager.Core.Services
         public async Task<ClosingCalendarDto> Create(ClosingCalendarDto closingCalendarDto)
         {
             if (!await _resourceValidator.ExistingResouceId(closingCalendarDto.ResourceId))
-                throw new CreateClosingCalendarException("Resource id does not exists.");
+                throw new CreateNotPermittedException("Resource id does not exists.");
 
             if (await _closingCalendarValidator.ValidateIfAlreadyExistsClosingCalendar(closingCalendarDto, null))
-                throw new CreateClosingCalendarException("This closing calendar is already exists.");
+                throw new CreateNotPermittedException("This closing calendar is already exists.");
 
             var model = closingCalendarDto.Adapt<ClosingCalendar>();
             var newEntity = await _closingCalendarRepository.CreateEntityAsync(model);
@@ -65,7 +65,7 @@ namespace ReservationManager.Core.Services
         public async Task<IEnumerable<ClosingCalendarDto>> BulkCreate(BulkClosingCalendarDto bulkClosingCalendarDto)
         {
             if (!await _resourceValidator.ValidateResourceType(bulkClosingCalendarDto.ResourceTypeId))
-                throw new CreateClosingCalendarException(
+                throw new CreateNotPermittedException(
                     $"Resource type {bulkClosingCalendarDto.ResourceTypeId} does not exist.");
 
             var resources = (await _resourceService.GetFilteredResources(new ResourceFilterDto
@@ -105,10 +105,10 @@ namespace ReservationManager.Core.Services
         public async Task<ClosingCalendarDto> Update(int id, ClosingCalendarDto closingCalendarDto)
         {
             if (!await _resourceValidator.ExistingResouceId(closingCalendarDto.ResourceId))
-                throw new CreateClosingCalendarException("Resource id does not exists.");
+                throw new CreateNotPermittedException("Resource id does not exists.");
 
             if (await _closingCalendarValidator.ValidateIfAlreadyExistsClosingCalendar(closingCalendarDto, id))
-                throw new CreateClosingCalendarException("This closing calendar is already exists.");
+                throw new CreateNotPermittedException("This closing calendar is already exists.");
 
             var closingCalendar = closingCalendarDto.Adapt<ClosingCalendar>();
             closingCalendar.Id = id;

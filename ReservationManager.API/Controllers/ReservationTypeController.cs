@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Mapster;
+using Microsoft.AspNetCore.Mvc;
 using ReservationManager.API.Request;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces.Services;
@@ -13,7 +14,7 @@ namespace ReservationManager.API.Controllers
 
         public ReservationTypeController(IReservationTypeService reservationTypeService)
         {
-            this._reservationTypeService = reservationTypeService;
+            _reservationTypeService = reservationTypeService;
         }
 
         [HttpGet()]
@@ -35,7 +36,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ReservationTypeDto>> CreateReservationType(ReservationTypeUpsertRequest request)
         {
-            var created = await _reservationTypeService.CreateReservationType(request.Code, request.StartTime, request.EndTime);
+            var created = await _reservationTypeService.CreateReservationType(request.Adapt<UpsertReservationTypeDto>());
             return Ok(created);
         }
 
@@ -44,9 +45,12 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ReservationTypeDto>> UpdateReservationType(int id, ReservationTypeUpsertRequest reservationTypeUpsertReservation)
+        public async Task<ActionResult<ReservationTypeDto>> UpdateReservationType(int id, ReservationTypeUpsertRequest request)
         {
-            var updated = await _reservationTypeService.UpdateReservationType(id, reservationTypeUpsertReservation.Code, reservationTypeUpsertReservation.StartTime, reservationTypeUpsertReservation.EndTime);
+            var updated = await _reservationTypeService.UpdateReservationType(id, request.Adapt<UpsertReservationTypeDto>());
+            if(updated == null)
+                return NotFound();
+            
             return Ok(updated);
         }
 

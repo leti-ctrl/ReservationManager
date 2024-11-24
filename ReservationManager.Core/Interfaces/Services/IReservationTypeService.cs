@@ -5,8 +5,8 @@ namespace ReservationManager.Core.Interfaces.Services
     public interface IReservationTypeService
     {
         Task<IEnumerable<ReservationTypeDto>> GetAllReservationType();
-        Task<ReservationTypeDto> CreateReservationType(string code, string start, string end);
-        Task<ReservationTypeDto> UpdateReservationType(int id, string code, string start, string end);
+        Task<ReservationTypeDto> CreateReservationType(UpsertReservationTypeDto request);
+        Task<ReservationTypeDto?> UpdateReservationType(int id, UpsertReservationTypeDto model);
         Task DeleteReservationType(int id);
     }
 }

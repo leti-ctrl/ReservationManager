@@ -48,9 +48,7 @@ namespace ReservationManager.API.Extensions
             opt.MapToStatusCode<TimeOnlyException>(StatusCodes.Status400BadRequest);
             opt.MapToStatusCode<InvalidCodeTypeException>(StatusCodes.Status400BadRequest);
             opt.MapToStatusCode<DeleteNotPermittedException>(StatusCodes.Status403Forbidden);
-            opt.MapToStatusCode<TimetableExistsException>(StatusCodes.Status400BadRequest);
-            opt.MapToStatusCode<CreateClosingCalendarException>(StatusCodes.Status400BadRequest);
-            opt.MapToStatusCode<UpdateNotPermittedException>(StatusCodes.Status403Forbidden);
+            opt.MapToStatusCode<CreateNotPermittedException>(StatusCodes.Status400BadRequest);
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
@@ -63,6 +61,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IClosingCalendarValidator, ClosingCalendarValidator>();
             services.AddScoped<IResourceValidator, ResourceValidator>();
             services.AddScoped<IResourceFilterValidator, ResourceFilterValidator>();
+            services.AddScoped<IReservationTypeValidator, ReservationTypeValidator>();
             
             return services;
         }
