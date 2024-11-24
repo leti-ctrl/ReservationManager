@@ -5,6 +5,7 @@ namespace ReservationManager.Core.Interfaces;
 
 public interface IResourceReservedMapper
 {
-    IEnumerable<ResourceDto> Map(IEnumerable<Resource> resources, IEnumerable<Reservation> reservations);
+    IEnumerable<ResourceDto> Map(List<Resource> resources, List<Reservation> reservations,
+        List<ClosingCalendarDto> closingCalendar);
 }
 

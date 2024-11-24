@@ -24,6 +24,9 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IResourceService, ResourceService>();
             services.AddScoped<IReservationService, ReservationService>();
             services.AddScoped<IClosingCalendarService, ClosingCalendarService>();
+            
+            services.AddScoped<IResourceFilterService, ResourceFilterService>();
+            services.AddScoped<IClosingCalendarFilterService, ClosingCalendarFilterService>();
 
             return services;
         }
@@ -45,10 +48,10 @@ namespace ReservationManager.API.Extensions
         public static void ConfigureProblemDetails(ProblemDetailsOptions opt, IHostEnvironment webHostEnvironment)
         {
             opt.MapToStatusCode<EntityNotFoundException>(StatusCodes.Status404NotFound);
-            opt.MapToStatusCode<TimeOnlyException>(StatusCodes.Status400BadRequest);
             opt.MapToStatusCode<InvalidCodeTypeException>(StatusCodes.Status400BadRequest);
-            opt.MapToStatusCode<DeleteNotPermittedException>(StatusCodes.Status403Forbidden);
+            opt.MapToStatusCode<DeleteNotPermittedException>(StatusCodes.Status409Conflict);
             opt.MapToStatusCode<CreateNotPermittedException>(StatusCodes.Status400BadRequest);
+            opt.MapToStatusCode<OperationNotPermittedException>(StatusCodes.Status403Forbidden);
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
@@ -62,6 +65,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IResourceValidator, ResourceValidator>();
             services.AddScoped<IResourceFilterValidator, ResourceFilterValidator>();
             services.AddScoped<IReservationTypeValidator, ReservationTypeValidator>();
+            services.AddScoped<IUpsertReservationValidator, UpsertReservationValidator>();
             
             return services;
         }

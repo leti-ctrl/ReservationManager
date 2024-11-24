@@ -11,19 +11,19 @@ namespace ReservationManager.Core.Services
     public class ClosingCalendarService : IClosingCalendarService
     {
         private readonly IClosingCalendarRepository _closingCalendarRepository;
-        private readonly IClosingCalendarFilterValidator _closingCalendarFilterValidator;
-        private readonly IResourceValidator _resourceValidator;
         private readonly IClosingCalendarValidator _closingCalendarValidator;
+        private readonly IClosingCalendarFilterService _closingCalendarFilterService;
+        
+        private readonly IResourceValidator _resourceValidator;
         private readonly IResourceService _resourceService;
 
         public ClosingCalendarService(IClosingCalendarRepository closingCalendarRepository,
-            IClosingCalendarFilterValidator closingCalendarFilterValidator,
+            IClosingCalendarFilterService closingCalendarFilterService,
             IResourceValidator resourceValidator,
-            IClosingCalendarValidator closingCalendarValidator,
-            IResourceService resourceService)
+            IClosingCalendarValidator closingCalendarValidator, IResourceService resourceService)
         {
             _closingCalendarRepository = closingCalendarRepository;
-            _closingCalendarFilterValidator = closingCalendarFilterValidator;
+            _closingCalendarFilterService = closingCalendarFilterService;
             _resourceValidator = resourceValidator;
             _closingCalendarValidator = closingCalendarValidator;
             _resourceService = resourceService;
@@ -37,15 +37,7 @@ namespace ReservationManager.Core.Services
 
         public async Task<IEnumerable<ClosingCalendarDto>> GetFiltered(ClosingCalendarFilterDto filter)
         {
-            if (!_closingCalendarFilterValidator.IsLegalDateRange(filter))
-                throw new InvalidFiltersException("You cannot set end date without a start date.");
-
-            var closingCalendars = (await _closingCalendarRepository.GetFiltered(filter.Id,
-                filter.StartDay, filter.EndDay, filter.RescourceId, filter.ResourceTypeId)).ToList();
-
-            if (closingCalendars.Any())
-                return closingCalendars.Select(x => x.Adapt<ClosingCalendarDto>());
-            return Enumerable.Empty<ClosingCalendarDto>();
+            return await _closingCalendarFilterService.GetFiltered(filter);
         }
 
         public async Task<ClosingCalendarDto> Create(ClosingCalendarDto closingCalendarDto)
@@ -68,10 +60,8 @@ namespace ReservationManager.Core.Services
                 throw new CreateNotPermittedException(
                     $"Resource type {bulkClosingCalendarDto.ResourceTypeId} does not exist.");
 
-            var resources = (await _resourceService.GetFilteredResources(new ResourceFilterDto
-            {
-                TypeId = bulkClosingCalendarDto.ResourceTypeId
-            })).ToList();
+            var resources = (await _resourceService.GetFilteredResources(
+                new ResourceFilterDto(){TypeId = bulkClosingCalendarDto.ResourceTypeId})).ToList();
 
             var daysRange = Enumerable.Range(0, bulkClosingCalendarDto.To.DayNumber - bulkClosingCalendarDto.From.DayNumber + 1)
                 .Select(offset => bulkClosingCalendarDto.From.AddDays(offset))

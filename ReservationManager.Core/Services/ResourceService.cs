@@ -1,7 +1,6 @@
 ﻿using Mapster;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
-using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Interfaces.Services;
 using ReservationManager.Core.Interfaces.Validators;
@@ -13,19 +12,17 @@ namespace ReservationManager.Core.Services
     {
         private readonly IResourceRepository _resourceRepository;
         private readonly IResourceValidator _resourceValidator;
-        private readonly IResourceFilterValidator _resourceFilterValidator;
+        private readonly IResourceFilterService _resourceFilterService;
+        
         private readonly IReservationRepository _reservationRepository;
-        private readonly IResourceReservedMapper _resourceReservedMapper;
 
         public ResourceService(IResourceRepository resourceRepository, IResourceValidator resourceValidator,
-            IResourceFilterValidator resourceFilterValidator, IReservationRepository reservationRepository,
-            IResourceReservedMapper resourceReservedMapper)
+            IReservationRepository reservationRepository, IResourceFilterService resourceFilterService)
         {
             _resourceRepository = resourceRepository;
             _resourceValidator = resourceValidator;
-            _resourceFilterValidator = resourceFilterValidator;
             _reservationRepository = reservationRepository;
-            _resourceReservedMapper = resourceReservedMapper;
+            _resourceFilterService = resourceFilterService;
         }
 
         public async Task<IEnumerable<ResourceDto>> GetAllResources()
@@ -34,57 +31,12 @@ namespace ReservationManager.Core.Services
 
             return !resources.Any()
                 ? Enumerable.Empty<ResourceDto>()
-                : resources.Select(x => x.Adapt<ResourceDto>());
+                : resources.Select(x => x.Adapt<ResourceDto>()).OrderBy(r => r.Type.Code);
         }
 
         public async Task<IEnumerable<ResourceDto>> GetFilteredResources(ResourceFilterDto resourceFilters)
         {
-            // Validate filters
-            var validationResult = await _resourceFilterValidator.ValidateAsync(resourceFilters);
-            if (!validationResult.IsValid)
-            {
-                var errorMsg = string.Join(", ", validationResult.Errors.Select(x => x.ErrorMessage));
-                throw new ArgumentException(errorMsg);
-            }
-
-            return await RetrieveFilteredResources(resourceFilters);
-        }
-
-        private async Task<IEnumerable<ResourceDto>> RetrieveFilteredResources(ResourceFilterDto resourceFilters)
-        {
-            var resourceList = await GetBaseFilteredResources(resourceFilters);
-            if (!resourceList.Any())
-                return Enumerable.Empty<ResourceDto>();
-
-            if (AreDateTimeFiltersApplied(resourceFilters))
-            {
-                var reservationFilteredList = await GetReservationFilteredResources(resourceList, resourceFilters);
-                if (reservationFilteredList.Any())
-                    return _resourceReservedMapper.Map(resourceList, reservationFilteredList);
-            }
-
-            return resourceList.Select(x => x.Adapt<ResourceDto>());
-        }
-
-        private async Task<List<Resource>> GetBaseFilteredResources(ResourceFilterDto resourceFilters)
-        {
-            return (await _resourceRepository.GetFiltered(resourceFilters.TypeId, resourceFilters.ResourceId)).ToList();
-        }
-
-        private static bool AreDateTimeFiltersApplied(ResourceFilterDto resourceFilters)
-        {
-            return resourceFilters is { Day: not null, TimeFrom: not null, TimeTo: not null };
-        }
-
-        private async Task<List<Reservation>> GetReservationFilteredResources(IEnumerable<Resource> resourceList,
-            ResourceFilterDto resourceFilters)
-        {
-            var resourceIds = resourceList.Select(x => x.Id).ToList();
-            return (await _reservationRepository.GetReservationByResourceDateTimeAsync(
-                resourceIds,
-                resourceFilters.Day!.Value,
-                resourceFilters.TimeFrom!.Value,
-                resourceFilters.TimeTo!.Value)).ToList();
+            return await _resourceFilterService.GetFilteredResources(resourceFilters);
         }
 
         public async Task<ResourceDto> CreateResource(UpsertResourceDto resource)

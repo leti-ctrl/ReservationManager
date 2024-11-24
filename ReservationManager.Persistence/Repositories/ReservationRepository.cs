@@ -11,6 +11,14 @@ namespace ReservationManager.Persistence.Repositories
         {
         }
 
+        public async Task<IEnumerable<Reservation>> GetReservationByUserIdFromToday(int userId)
+        {
+            return await Context.Set<Reservation>()
+                                .Include(r => r.Resource)
+                                .Where(r => r.UserId == userId && r.Day >= DateOnly.FromDateTime(DateTime.Now))
+                                .ToListAsync();
+        }
+
         public async Task<IEnumerable<Reservation>> GetReservationByResourceDateTimeAsync(List<int> resourceIds,
             DateOnly startDate, TimeOnly startTime, TimeOnly endTime)
         {

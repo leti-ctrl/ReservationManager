@@ -7,32 +7,41 @@ namespace ReservationManager.Core.Mappers;
 
 public class ResourceReservedMapper : IResourceReservedMapper
 {
-    public IEnumerable<ResourceDto> Map(IEnumerable<Resource> resources, IEnumerable<Reservation> reservations)
+    public IEnumerable<ResourceDto> Map(List<Resource> resources, List<Reservation> reservations,
+        List<ClosingCalendarDto> closingCalendar)
     {
-        // Group reservations by ResourceId for more efficient lookup
-        var reservationsByResourceId = reservations
-            .GroupBy(r => r.ResourceId)
-            .ToDictionary(g => g.Key, g => g.Select(r => new ResourceReservedDto
-            {
-                Day = r.Day,
-                TimeStart = r.Start,
-                TimeEnd = r.End
-            }).ToList());
-
-        // Map each resource to ResourceDto, including its reservations if any
-        var model = resources.Select(resource =>
+        var toRet = new List<ResourceDto>();
+        foreach (var resource in resources)
         {
-            var resDto = resource.Adapt<ResourceDto>();
-        
-            // Get reservations for the current resource, if any
-            resDto.ResourceReservedDtos = reservationsByResourceId.TryGetValue(resource.Id, out var reservedList)
-                ? reservedList
-                : new List<ResourceReservedDto>();
+            var item = resource.Adapt<ResourceDto>();
+            item.ResourceReservedDtos = new List<ResourceReservedDto>(); 
+            
+            foreach (var reservation in reservations.Where(r => r.ResourceId == resource.Id))
+            {
+                var reserved = new ResourceReservedDto
+                {
+                    IsClosed = false,
+                    Day = reservation.Day,
+                    TimeStart = reservation.Start,
+                    TimeEnd = reservation.End
+                };
+                item.ResourceReservedDtos.Add(reserved);
+            }
 
-            return resDto;
-        });
-
-        return model;
+            foreach (var closingDay in closingCalendar.Where(x => x.ResourceId == resource.Id))
+            {
+                var closed = new ResourceReservedDto
+                {
+                    IsClosed = true,
+                    Day = closingDay.Day,
+                    TimeStart = TimeOnly.MinValue,
+                    TimeEnd = TimeOnly.MaxValue
+                };
+                item.ResourceReservedDtos.Add(closed);
+            }
+            toRet.Add(item);
+        }
+        return toRet;
     }
 
 }

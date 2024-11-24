@@ -25,16 +25,16 @@ namespace ReservationManager.Persistence.Repositories
             var set = Context.Set<ClosingCalendar>()
                                                     .Include(x => x.Resource)
                                                     .AsQueryable();
-            if(id != null)
-                set = set.Where(c => c.Id == id);
-            if (fromDate != null)
-                set = set.Where(c => c.Day >= fromDate);
-            if(toDate != null)
-                set = set.Where(x => x.Day <= toDate);
-            if(resourceId != null)
-                set = set.Where(c => resourceId == c.ResourceId);
-            if(resourceTypeId != null)
-                set = set.Where(c => c.Resource.Type.Id == resourceTypeId);
+            if(id.HasValue && id.Value != 0)
+                set = set.Where(c => c.Id == id.Value);
+            if (fromDate.HasValue)
+                set = set.Where(c => c.Day >= fromDate.Value);
+            if(toDate.HasValue)
+                set = set.Where(x => x.Day <= toDate.Value);
+            if(resourceId.HasValue && resourceId.Value != 0)
+                set = set.Where(c => resourceId.Value == c.ResourceId);
+            if(resourceTypeId.HasValue && resourceTypeId.Value != 0)
+                set = set.Where(c => c.Resource.Type.Id == resourceTypeId.Value);
             return await set.ToListAsync();
         }
 
@@ -47,7 +47,7 @@ namespace ReservationManager.Persistence.Repositories
         public async Task<IEnumerable<ClosingCalendar>> GetExistingClosingCalendars(IEnumerable<int> resourceIds, IEnumerable<DateOnly> days)
         {
             return await Context.Set<ClosingCalendar>().AsQueryable()
-                .Where(c => resourceIds.Contains(c.ResourceId) && days.Contains(c.Day))
+                .Where(c => resourceIds.Any(id => id == c.ResourceId) && days.Contains(c.Day))
                 .ToListAsync();
         }
 
