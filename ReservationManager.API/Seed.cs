@@ -12,7 +12,8 @@ internal static class Seed
 
         await using var db = scope.ServiceProvider.GetRequiredService<ReservationManagerDbContext>();
 
-        var dbSet = db.Set<Role>();
+        //Add fixed user role
+        var roleTable = db.Set<Role>();
         var roles = new List<Role>()
         {
             new() { Code = FixedUserRole.Employee, Name = "Employee" },
@@ -21,11 +22,23 @@ internal static class Seed
             new() { Code = FixedUserRole.HumanResources, Name = "Human Resources" },
             new() { Code = FixedUserRole.Admin, Name = "Admin" }
         };
-        foreach (var role in roles.Where(role => !dbSet.Any(x => x.Code == role.Code)))
+        foreach (var role in roles.Where(role => !roleTable.Any(x => x.Code == role.Code)))
         {
-            dbSet.AddRange(role);
+            roleTable.AddRange(role);
         }
+        
+        //Add standard reservation type 
+        var reservationTypeTable = db.Set<ReservationType>();
+        var reservationType = new ReservationType()
+        {
+            Code = FixedReservationType.Customizable,
+            Name = "Customizable reservation time",
+            Start = TimeOnly.MinValue,
+            End = TimeOnly.MaxValue,
+        };
+        if(!reservationTypeTable.Any(x => x.Code == reservationType.Code))
+            reservationTypeTable.Add(reservationType);
+        
         await db.SaveChangesAsync();
-
     }
 }
