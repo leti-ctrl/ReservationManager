@@ -28,14 +28,24 @@ namespace ReservationManager.Persistence.Repositories
                                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Reservation>> GetByResourceDateTimeAsync(List<int> resourceIds,
-            DateOnly startDate, DateOnly endDate, TimeOnly startTime, TimeOnly endTime)
+        public async Task<IEnumerable<Reservation>> GetReservationByResourceDateTimeAsync(List<int> resourceIds,
+            DateOnly startDate, TimeOnly startTime, TimeOnly endTime)
         {
-            var query = Context.Set<Reservation>().AsQueryable();
-            //query = query.Where(x => resourceIds.Contains(x.ResourceId));
-            query = query.Where(x => startDate == x.Day && x.Day == endDate);
-            query = query.Where(x => x.Start == startTime && x.End == endTime);
-            return await query.ToListAsync();
+            return await Context.Set<Reservation>()
+                                .Include(r => r.Resource)
+                                .Where(x => resourceIds.Contains(x.Resource.Id))
+                                .Where(x => startDate == x.Day)
+                                .Where(x => x.Start >= startTime && x.End <= endTime)
+                                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Reservation>> GetReservationByResourceIdAfterTodayAsync(int resourceId)
+        {
+            return await Context.Set<Reservation>()
+                                .Include(r => r.Resource)
+                                .Where(x => resourceId == x.Resource.Id)
+                                .Where(x => x.Day >= DateOnly.FromDateTime(DateTime.Now))
+                                .ToListAsync();
         }
 
         public async Task<IEnumerable<Reservation>> GetByUserAsync(int userId)

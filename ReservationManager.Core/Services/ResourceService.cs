@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Mapster;
+﻿using Mapster;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
@@ -18,8 +17,8 @@ namespace ReservationManager.Core.Services
         private readonly IReservationRepository _reservationRepository;
         private readonly IResourceReservedMapper _resourceReservedMapper;
 
-        public ResourceService(IResourceRepository resourceRepository, IResourceValidator resourceValidator, 
-            IResourceFilterValidator resourceFilterValidator, IReservationRepository reservationRepository, 
+        public ResourceService(IResourceRepository resourceRepository, IResourceValidator resourceValidator,
+            IResourceFilterValidator resourceFilterValidator, IReservationRepository reservationRepository,
             IResourceReservedMapper resourceReservedMapper)
         {
             _resourceRepository = resourceRepository;
@@ -33,17 +32,9 @@ namespace ReservationManager.Core.Services
         {
             var resources = (await _resourceRepository.GetAllEntitiesAsync()).ToList();
 
-            return !resources.Any() 
-                ? Enumerable.Empty<ResourceDto>() 
+            return !resources.Any()
+                ? Enumerable.Empty<ResourceDto>()
                 : resources.Select(x => x.Adapt<ResourceDto>());
-        }
-
-        public async Task<ResourceDto> GetResourceById(int resourceId)
-        {
-            var resource = await _resourceRepository.GetEntityByIdAsync(resourceId) 
-                ?? throw new EntityNotFoundException($"Resource id {resourceId} not found");
-
-            return resource.Adapt<ResourceDto>();
         }
 
         public async Task<IEnumerable<ResourceDto>> GetFilteredResources(ResourceFilterDto resourceFilters)
@@ -53,65 +44,84 @@ namespace ReservationManager.Core.Services
             if (!validationResult.IsValid)
             {
                 var errorMsg = string.Join(", ", validationResult.Errors.Select(x => x.ErrorMessage));
-                throw new InvalidFiltersException(errorMsg);
+                throw new ArgumentException(errorMsg);
             }
 
-            // Retrieve filtered resources
-            var resources = await _resourceRepository.GetFiltered(resourceFilters.TypeId, resourceFilters.ResourceId);
-            var resourceList = resources.ToList();
-            if (!resourceList.Any()) return Enumerable.Empty<ResourceDto>();
+            return await RetrieveFilteredResources(resourceFilters);
+        }
 
-            // If date filters are applied, filter by reservations
-            if (resourceFilters.DateFrom.HasValue && resourceFilters.DateTo.HasValue &&
-                !string.IsNullOrEmpty(resourceFilters.TimeFrom)  &&  !string.IsNullOrEmpty(resourceFilters.TimeTo))
+        private async Task<IEnumerable<ResourceDto>> RetrieveFilteredResources(ResourceFilterDto resourceFilters)
+        {
+            var resourceList = await GetBaseFilteredResources(resourceFilters);
+            if (!resourceList.Any())
+                return Enumerable.Empty<ResourceDto>();
+
+            if (AreDateTimeFiltersApplied(resourceFilters))
             {
-                var timeStart = TimeOnly.Parse(resourceFilters.TimeFrom, CultureInfo.InvariantCulture);
-                var timeEnd = TimeOnly.Parse(resourceFilters.TimeTo, CultureInfo.InvariantCulture);
-                
-                
-                var reservationFilteredList = 
-                    await _reservationRepository.GetByResourceDateTimeAsync(resourceList.Select(x => x.Id).ToList(), 
-                        resourceFilters.DateFrom.Value, resourceFilters.DateTo.Value, timeStart, timeEnd);
-
+                var reservationFilteredList = await GetReservationFilteredResources(resourceList, resourceFilters);
                 if (reservationFilteredList.Any())
-                {
                     return _resourceReservedMapper.Map(resourceList, reservationFilteredList);
-                }
             }
 
-            // If no reservations are found or date filters are not applied, map resources directly
             return resourceList.Select(x => x.Adapt<ResourceDto>());
         }
 
-        
+        private async Task<List<Resource>> GetBaseFilteredResources(ResourceFilterDto resourceFilters)
+        {
+            return (await _resourceRepository.GetFiltered(resourceFilters.TypeId, resourceFilters.ResourceId)).ToList();
+        }
+
+        private static bool AreDateTimeFiltersApplied(ResourceFilterDto resourceFilters)
+        {
+            return resourceFilters is { Day: not null, TimeFrom: not null, TimeTo: not null };
+        }
+
+        private async Task<List<Reservation>> GetReservationFilteredResources(IEnumerable<Resource> resourceList,
+            ResourceFilterDto resourceFilters)
+        {
+            var resourceIds = resourceList.Select(x => x.Id).ToList();
+            return (await _reservationRepository.GetReservationByResourceDateTimeAsync(
+                resourceIds,
+                resourceFilters.Day!.Value,
+                resourceFilters.TimeFrom!.Value,
+                resourceFilters.TimeTo!.Value)).ToList();
+        }
+
         public async Task<ResourceDto> CreateResource(UpsertResourceDto resource)
         {
             var existType = await _resourceValidator.ValidateResourceType(resource.TypeId);
-            if(!existType)
+            if (!existType)
                 throw new InvalidCodeTypeException($"Resource type {resource.TypeId} is not valid");
-            
+
             var added = await _resourceRepository.CreateEntityAsync(resource.Adapt<Resource>());
             return added.Adapt<ResourceDto>();
         }
 
-        public async Task<ResourceDto> UpdateResource(int id, UpsertResourceDto resource)
+        public async Task<ResourceDto?> UpdateResource(int id, UpsertResourceDto resource)
         {
-            var existType = await _resourceRepository.GetEntityByIdAsync(id) ??
-                            throw new EntityNotFoundException($"Resource id {id} not found");
-            if(existType.TypeId != resource.TypeId)
-                throw new UpdateNotPermittedException($"Resource type {resource.TypeId} does not match the previous one.");
+            var validateModel = await _resourceValidator.ValidateResourceType(resource.TypeId) 
+                                    && await _resourceValidator.ExistingResouceId(id);
+            if (!validateModel)
+                return null;
 
             var toUpdate = resource.Adapt<Resource>();
             toUpdate.Id = id;
-            
+
             var updated = await _resourceRepository.UpdateEntityAsync(toUpdate);
-            
+
             return updated.Adapt<ResourceDto>();
         }
 
-        public Task DeleteResource(int id)
+        public async Task DeleteResource(int id)
         {
-            throw new NotImplementedException();
+            var entity = await _resourceRepository.GetEntityByIdAsync(id) 
+                         ?? throw new EntityNotFoundException($"Resource with id {id} not found");
+            
+            var reservations = await _reservationRepository.GetReservationByResourceIdAfterTodayAsync(id);
+            if(reservations.Any())
+                throw new DeleteNotPermittedException("Resource cannot be deleted because of existing reservation");
+            
+            await _resourceRepository.DeleteEntityAsync(entity);
         }
     }
 }

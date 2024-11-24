@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Mapster;
+using Microsoft.AspNetCore.Mvc;
+using ReservationManager.API.Request;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Interfaces.Services;
@@ -29,25 +31,14 @@ namespace ReservationManager.API.Controllers
             return Ok(resources);
         }
 
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<ResourceDto>> GetResource(int id)
-        {
-            var resource = await _resourceService.GetResourceById(id);
-
-            return Ok(resource);
-        }
-
         [HttpPost("filtered")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<ResourceDto>>> GetFilteredResource([FromBody]ResourceFilterDto resourceFilter)
+        public async Task<ActionResult<IEnumerable<ResourceDto>>> GetFilteredResource([FromBody] ResourceFilterRequest resourceFilter)
         {
-            var resources = await _resourceService.GetFilteredResources(resourceFilter);
+            var resources = await _resourceService.GetFilteredResources(resourceFilter.Adapt<ResourceFilterDto>());
             
             if(resources.Any())
                 return Ok(resources);
@@ -72,14 +63,21 @@ namespace ReservationManager.API.Controllers
         public async Task<ActionResult<ResourceDto>> UpdateResource(int id, UpsertResourceDto resource)
         {
             var updated = await _resourceService.UpdateResource(id, resource);
+            if(updated == null)
+                return NotFound();
 
             return Ok(updated);
         }
 
         [HttpDelete]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteResource(int id)
         {
-            throw new NotImplementedException();
+            await _resourceService.DeleteResource(id);
+            return Accepted();
         }
     }
 }

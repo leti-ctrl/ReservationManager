@@ -1,6 +1,5 @@
 using FluentValidation;
 using ReservationManager.Core.Dtos;
-using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Interfaces.Validators;
 
 namespace ReservationManager.Core.Validators;
@@ -9,34 +8,41 @@ public class ResourceFilterValidator : AbstractValidator<ResourceFilterDto>, IRe
 {
     public ResourceFilterValidator()
     {
-        // Rule for DateFrom, DateTo, TimeFrom, TimeTo:
-        // They must either all have values or all be null
-        RuleFor(x => x.DateFrom)
+        RuleFor(x => x.TypeId)
             .NotNull()
-            .When(x => x.DateTo.HasValue || !string.IsNullOrEmpty(x.TimeFrom) || !string.IsNullOrEmpty(x.TimeTo))
-            .WithMessage("If DateTo, TimeFrom, or TimeTo have a value, DateFrom must also be set.");
-
-        RuleFor(x => x.DateTo)
+            .When(x => !x.ResourceId.HasValue)
+            .WithMessage("TypeId and ResourceId cannot both be null");
+        
+        RuleFor(x => x.ResourceId)
             .NotNull()
-            .When(x => x.DateFrom.HasValue)
-            .WithMessage("If DateFrom has a value, DateTo must also be set.");
-
+            .When(x => !x.TypeId.HasValue)
+            .WithMessage("TypeId and ResourceId cannot both be null");
+        
+        RuleFor(x => x.Day)
+            .NotNull()
+            .When(x => x.TimeFrom.HasValue && x.TimeTo.HasValue)
+            .WithMessage("If TimeFrom and TimeTo has a value, DateFrom must also be set.");
+        
         RuleFor(x => x.TimeFrom)
             .NotNull()
-            .When(x => x.DateFrom.HasValue)
-            .WithMessage("If DateFrom has a value, TimeFrom must also be set.");
+            .When(x => x.Day.HasValue && x.TimeTo.HasValue)
+            .WithMessage("If DateFrom and TimeTo has a value, TimeFrom must also be set.");
 
         RuleFor(x => x.TimeTo)
             .NotNull()
-            .When(x => x.DateFrom.HasValue)
-            .WithMessage("If DateFrom has a value, TimeTo must also be set.");
+            .When(x => x.Day.HasValue && x.TimeFrom.HasValue)
+            .WithMessage("If DateFrom and TimeFrom has a value, TimeTo must also be set.");
+        
+        RuleFor(x => x.TimeTo)
+            .GreaterThan(x => x.TimeFrom)
+            .When(x => x.Day.HasValue && x.TimeFrom.HasValue && x.TimeTo.HasValue)
+            .WithMessage("TimeFrom cannot be less than TimeTo.");
 
-        // Rule to ensure that all date/time fields are either all null or all set
         RuleFor(x => x)
-            .Must(x =>
-                (x.DateFrom.HasValue && x.DateTo.HasValue && !string.IsNullOrEmpty(x.TimeFrom) && !string.IsNullOrEmpty(x.TimeTo)) ||
-                (!x.DateFrom.HasValue && !x.DateTo.HasValue && string.IsNullOrEmpty(x.TimeFrom) && string.IsNullOrEmpty(x.TimeTo))
-            )
-            .WithMessage("DateFrom, DateTo, TimeFrom, and TimeTo must either all have values or all be null.");
+            .Must(x => (x.TypeId.HasValue || x.ResourceId.HasValue) &&
+            (
+                (x.Day.HasValue && x.TimeFrom.HasValue && x.TimeTo.HasValue) ||
+                (!x.Day.HasValue && !x.TimeFrom.HasValue && !x.TimeTo.HasValue)
+            ));
     }
 }
