@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using ReservationManager.API.Request;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces.Services;
-using ReservationManager.DomainModel.Operation;
 
 namespace ReservationManager.API.Controllers
 {

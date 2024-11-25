@@ -107,15 +107,15 @@ namespace ReservationManager.Core.Services
             
             var resourceReserved = (await _resourceService.GetFilteredResources(new ResourceFilterDto()
             {
-                ResourceId = reservationType.Id,
+                ResourceId = reservation.ResourceId,
                 Day = reservation.Day,
                 TimeFrom = reservation.Start,
                 TimeTo = reservation.End,
             })).FirstOrDefault();
             if (resourceReserved == null)
                 throw new ArgumentException("Invalid resource for reservation");
-            if(resourceReserved.ResourceReservedDtos != null && resourceReserved.ResourceReservedDtos.Any())
-                throw new ArgumentException("Invalid resource for reservation");
+            if(resourceReserved.ResourceReservedDtos != null)
+                throw new ArgumentException("Resource is busy.");
         }
 
         public async Task DeleteReservation(int id, int userId)
@@ -125,7 +125,7 @@ namespace ReservationManager.Core.Services
                 throw new EntityNotFoundException("Reservation not found.");
             
             if(toDelete.UserId != userId)
-                throw new OperationNotPermittedException("Cannot update because user does not belong to this reservation.");
+                throw new OperationNotPermittedException("Cannot delete because user does not belong to this reservation.");
             
             await _reservationRepository.DeleteEntityAsync(toDelete);
         }

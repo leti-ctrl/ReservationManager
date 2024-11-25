@@ -24,9 +24,9 @@ namespace ReservationManager.Persistence.Repositories
         {
             return await Context.Set<Reservation>()
                                 .Include(r => r.Resource)
-                                .Where(x => resourceIds.Contains(x.Resource.Id))
+                                .Where(x => resourceIds.Any(id => id == x.ResourceId))
                                 .Where(x => startDate == x.Day)
-                                .Where(x => x.Start >= startTime && x.End <= endTime)
+                                .Where(x => x.Start < endTime && x.End > startTime)
                                 .ToListAsync();
         }
 
