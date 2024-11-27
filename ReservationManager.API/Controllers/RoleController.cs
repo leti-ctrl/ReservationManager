@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ReservationManager.API.Authorization;
+using ReservationManager.API.Controllers.Base;
+using ReservationManager.Core.Consts;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces.Services;
 
@@ -6,7 +9,9 @@ namespace ReservationManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RoleController : ControllerBase
+    [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin , FixedUserRole.HumanResources })]
+
+    public class RoleController : SessionController
     {
         private readonly IRoleService _roleService;
 

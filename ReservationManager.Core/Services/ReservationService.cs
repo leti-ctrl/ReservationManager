@@ -16,16 +16,18 @@ namespace ReservationManager.Core.Services
         private readonly IResourceService _resourceService;
         private readonly IUpsertReservationValidator _upsertReservationValidator;
         private readonly IReservationTypeRepository _reservationTypeRepository;
+        private readonly IUserService _userService;
 
 
         public ReservationService(IReservationRepository reservationRepository,
             IUpsertReservationValidator upsertReservationValidator, IResourceService resourceService,
-            IReservationTypeRepository reservationTypeRepository)
+            IReservationTypeRepository reservationTypeRepository, IUserService userService)
         {
             _reservationRepository = reservationRepository;
             _upsertReservationValidator = upsertReservationValidator;
             _resourceService = resourceService;
             _reservationTypeRepository = reservationTypeRepository;
+            _userService = userService;
         }
 
         public async Task<IEnumerable<ReservationDto>> GetUserReservation(int userId)
@@ -35,25 +37,32 @@ namespace ReservationManager.Core.Services
             return reservationList.ToList().Select(x => x.Adapt<ReservationDto>());
         }
 
-        public async Task<ReservationDto?> GetById(int id, int userId)
+        public async Task<ReservationDto?> GetById(int id, SessionInfo session)
         {
+            var user = await _userService.GetUserByEmail(session.UserEmail);
+            if (user is null)
+                throw new OperationNotPermittedException("Cannot retrieve reservation because user does not exist");
+            
             var reservation = await _reservationRepository.GetEntityByIdAsync(id);
             if (reservation == null)
                 return null;
             
-            if(reservation.UserId != userId)
+            if(reservation.UserId != user.Id)
                 throw new OperationNotPermittedException("Cannot update because user does not belong to this reservation.");
 
             return reservation.Adapt<ReservationDto>();
         }
 
         
-        public async Task<ReservationDto> CreateReservation(int userId, UpsertReservationDto reservation)
+        public async Task<ReservationDto> CreateReservation(SessionInfo session, UpsertReservationDto reservation)
         {
-            var rezType = await GetLegalReservationType(reservation);
+            var user = await _userService.GetUserByEmail(session.UserEmail);
+            if(user == null)
+                throw new OperationNotPermittedException("Cannot create reservation because user does not exist.");
 
+            var rezType = await GetLegalReservationType(reservation);
             var toCreate = reservation.Adapt<Reservation>();
-            toCreate.UserId = userId;
+            toCreate.UserId = user.Id;
             await CheckResourceIsFreeOrOpen(rezType!, toCreate);
 
             var created = await _reservationRepository.CreateEntityAsync(toCreate);
@@ -74,20 +83,24 @@ namespace ReservationManager.Core.Services
         }
 
 
-        public async Task<ReservationDto?> UpdateReservation(int reservationId, int userId,
+        public async Task<ReservationDto?> UpdateReservation(int reservationId, SessionInfo session,
             UpsertReservationDto reservation)
         {
+            var user = await _userService.GetUserByEmail(session.UserEmail);
+            if(user == null)
+                throw new OperationNotPermittedException("Cannot create reservation because user does not exist.");
+            
             var oldRez = await _reservationRepository.GetEntityByIdAsync(reservationId);
             if (oldRez == null)
                 return null;
-            if(oldRez.UserId != userId)
+            if(oldRez.UserId != user.Id)
                 throw new OperationNotPermittedException("Cannot update because user does not belong to this reservation.");
             
             var rezType =  await GetLegalReservationType(reservation);
 
             var toUpdate = reservation.Adapt<Reservation>();
             toUpdate.Id = reservationId;
-            toUpdate.UserId = userId;
+            toUpdate.UserId = user.Id;
             await CheckResourceIsFreeOrOpen(rezType!, toUpdate);
 
 
@@ -118,13 +131,18 @@ namespace ReservationManager.Core.Services
                 throw new ArgumentException("Resource is busy.");
         }
 
-        public async Task DeleteReservation(int id, int userId)
+        public async Task DeleteReservation(int id, SessionInfo session)
         {
+            var user = await _userService.GetUserByEmail(session.UserEmail);
+            if(user == null)
+                throw new OperationNotPermittedException("Cannot create reservation because user does not exist.");
+
+            
             var toDelete = await _reservationRepository.GetEntityByIdAsync(id);
             if (toDelete == null)
                 throw new EntityNotFoundException("Reservation not found.");
             
-            if(toDelete.UserId != userId)
+            if(toDelete.UserId != user.Id)
                 throw new OperationNotPermittedException("Cannot delete because user does not belong to this reservation.");
             
             await _reservationRepository.DeleteEntityAsync(toDelete);

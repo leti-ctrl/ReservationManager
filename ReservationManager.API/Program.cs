@@ -19,7 +19,10 @@ builder.Services.AddProblemDetails(
 
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.OperationFilter<EmailFilter>();
+});
 builder.Services.AddDbContext<ReservationManagerDbContext>(option =>
     option.UseNpgsql(builder.Configuration.GetConnectionString("ReservationManagerDb")));
 

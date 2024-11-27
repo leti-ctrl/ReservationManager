@@ -1,7 +1,10 @@
 ﻿
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using ReservationManager.API.Authorization;
+using ReservationManager.API.Controllers.Base;
 using ReservationManager.API.Request;
+using ReservationManager.Core.Consts;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Interfaces.Services;
@@ -11,7 +14,9 @@ namespace ReservationManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin , FixedUserRole.HumanResources })]
+
+    public class UserController : SessionController
     {
         private readonly IUserService _userService;
 

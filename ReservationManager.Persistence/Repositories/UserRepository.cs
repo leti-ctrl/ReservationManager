@@ -36,6 +36,11 @@ namespace ReservationManager.Persistence.Repositories
             return user;
         }
 
-        
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            return await Context.Set<User>()
+                                .Include(r => r.Roles)
+                                .FirstOrDefaultAsync(x => x.Email == email);
+        }
     }
 }

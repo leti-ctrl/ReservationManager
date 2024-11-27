@@ -29,6 +29,12 @@ namespace ReservationManager.Core.Services
             return user.Adapt<UserDto>();
         }
 
+        public async Task<UserDto?> GetUserByEmail(string email)
+        {
+            var user = await _userRepository.GetUserByEmailAsync(email);
+            return user == null ? null : user.Adapt<UserDto>();
+        }
+
         public async Task<IEnumerable<UserDto>> GetAllUsers()
         {
             var users = await _userRepository.GetAllEntitiesAsync();

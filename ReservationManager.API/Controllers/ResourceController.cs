@@ -1,6 +1,9 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using ReservationManager.API.Authorization;
+using ReservationManager.API.Controllers.Base;
 using ReservationManager.API.Request;
+using ReservationManager.Core.Consts;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Interfaces.Services;
@@ -9,7 +12,8 @@ namespace ReservationManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ResourceController : ControllerBase
+    [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin , FixedUserRole.GeneralServices })]
+    public class ResourceController : SessionController
     {
         private readonly IResourceService _resourceService;
 
@@ -36,6 +40,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin , FixedUserRole.Employee })]
         public async Task<ActionResult<IEnumerable<ResourceDto>>> GetFilteredResource([FromBody] ResourceFilterRequest resourceFilter)
         {
             var resources = await _resourceService.GetFilteredResources(resourceFilter.Adapt<ResourceFilterDto>());

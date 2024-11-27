@@ -1,6 +1,9 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using ReservationManager.API.Authorization;
+using ReservationManager.API.Controllers.Base;
 using ReservationManager.API.Request;
+using ReservationManager.Core.Consts;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces.Services;
 
@@ -8,7 +11,8 @@ namespace ReservationManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ClosingCalendarController : ControllerBase
+    [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin , FixedUserRole.FacilityManagement })]
+    public class ClosingCalendarController : SessionController
     {
         private readonly IClosingCalendarService _closingCalendarService;
 
@@ -23,7 +27,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetAllFromToday()
         {
-            var model = await _closingCalendarService.GetAllFromToday();
+            var model = await _closingCalendarService.GetAllFromToday(GetSession());
             if(model.Any())
                 return Ok(model);
             return NoContent();

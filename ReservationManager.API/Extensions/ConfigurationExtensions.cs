@@ -52,6 +52,9 @@ namespace ReservationManager.API.Extensions
             opt.MapToStatusCode<DeleteNotPermittedException>(StatusCodes.Status409Conflict);
             opt.MapToStatusCode<CreateNotPermittedException>(StatusCodes.Status400BadRequest);
             opt.MapToStatusCode<OperationNotPermittedException>(StatusCodes.Status403Forbidden);
+            opt.MapToStatusCode<BadHttpRequestException>(StatusCodes.Status403Forbidden);
+            opt.MapToStatusCode<NonExistentUserException>(StatusCodes.Status403Forbidden);
+            opt.MapToStatusCode<UnauthorizedAccessException>(StatusCodes.Status401Unauthorized);
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);
