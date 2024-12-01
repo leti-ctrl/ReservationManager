@@ -1,6 +1,6 @@
 namespace ReservationManager.API.Request;
 
-public class ClosingCalendarBucketRequest
+public class ClosingCalendarBulkRequest
 {
     public int ResourceTypeId { get; set; }
     public DateOnly From { get; set; }

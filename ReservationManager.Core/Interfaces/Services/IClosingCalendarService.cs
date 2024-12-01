@@ -4,7 +4,7 @@ namespace ReservationManager.Core.Interfaces.Services
 {
     public interface IClosingCalendarService
     {
-        Task<IEnumerable<ClosingCalendarDto>> GetAllFromToday(SessionInfo session);
+        Task<IEnumerable<ClosingCalendarDto>> GetAllFromToday();
         Task<IEnumerable<ClosingCalendarDto>> GetFiltered(ClosingCalendarFilterDto filter);
         Task<ClosingCalendarDto> Create(ClosingCalendarDto closingCalendarDto);
         Task<IEnumerable<ClosingCalendarDto>> BulkCreate(BulkClosingCalendarDto bulkClosingCalendarDto);

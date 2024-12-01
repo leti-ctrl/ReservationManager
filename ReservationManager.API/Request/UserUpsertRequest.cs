@@ -1,6 +1,6 @@
 ﻿namespace ReservationManager.API.Request
 {
-    public class UserCreateRequest
+    public class UserUpsertRequest
     {
         public required string Name { get; set; }
         public required string Surname { get; set; }

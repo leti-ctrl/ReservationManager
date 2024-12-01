@@ -29,7 +29,7 @@ namespace ReservationManager.Core.Services
             _resourceService = resourceService;
         }
 
-        public async Task<IEnumerable<ClosingCalendarDto>> GetAllFromToday(SessionInfo session)
+        public async Task<IEnumerable<ClosingCalendarDto>> GetAllFromToday()
         {
             var list = await _closingCalendarRepository.GetAllFromToday();
             return list.Select(x => x.Adapt<ClosingCalendarDto>());

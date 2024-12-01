@@ -24,9 +24,9 @@ namespace ReservationManager.API.Controllers
         [HttpGet("user/{userId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<ReservationDto>>> GetUserReservations(int userId)
+        public async Task<ActionResult<IEnumerable<ReservationDto>>> GetUserReservations()
         {
-            var rezList = await _reservationService.GetUserReservation(userId);
+            var rezList = await _reservationService.GetUserReservation(GetSession());
             return Ok(rezList);
         }
 

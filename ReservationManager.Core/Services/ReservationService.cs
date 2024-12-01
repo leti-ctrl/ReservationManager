@@ -30,9 +30,13 @@ namespace ReservationManager.Core.Services
             _userService = userService;
         }
 
-        public async Task<IEnumerable<ReservationDto>> GetUserReservation(int userId)
+        public async Task<IEnumerable<ReservationDto>> GetUserReservation(SessionInfo session)
         {
-            var reservationList = await _reservationRepository.GetReservationByUserIdFromToday(userId);
+            var user = await _userService.GetUserByEmail(session.UserEmail);
+            if (user is null)
+                throw new OperationNotPermittedException("Cannot retrieve reservation because user does not exist");
+
+            var reservationList = await _reservationRepository.GetReservationByUserIdFromToday(user.Id);
             
             return reservationList.ToList().Select(x => x.Adapt<ReservationDto>());
         }

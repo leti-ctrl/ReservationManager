@@ -13,11 +13,7 @@ public class ResourceFilterService : IResourceFilterService
     private readonly IResourceFilterValidator _resourceFilterValidator;
     private readonly IResourceReservedMapper _resourceReservedMapper;
     private readonly IResourceRepository _resourceRepository;
-    
     private readonly IReservationRepository _reservationRepository;
-
-
-
     private readonly IClosingCalendarFilterService _closingCalendarFilterService;
 
 

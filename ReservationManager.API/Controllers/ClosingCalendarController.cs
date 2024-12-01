@@ -27,7 +27,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> GetAllFromToday()
         {
-            var model = await _closingCalendarService.GetAllFromToday(GetSession());
+            var model = await _closingCalendarService.GetAllFromToday();
             if(model.Any())
                 return Ok(model);
             return NoContent();
@@ -61,7 +61,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> BulkCreate(ClosingCalendarBucketRequest request) 
+        public async Task<ActionResult<IEnumerable<ClosingCalendarDto>>> BulkCreate(ClosingCalendarBulkRequest request) 
         {
             var closingCalendar = await _closingCalendarService.BulkCreate(request.Adapt<BulkClosingCalendarDto>());
             return Ok(closingCalendar);

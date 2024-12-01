@@ -10,14 +10,6 @@ namespace ReservationManager.Persistence.Repositories
         public ResourceRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
         }
-
-        public async Task<IEnumerable<Resource>> GetByTypeAsync(string code)
-        {
-            return await Context.Set<Resource>()
-                .Where(x => x.Type.Code == code)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<Resource>> GetFiltered(int? typeId, int? resourceId)
         {
             var query = Context.Set<Resource>().AsQueryable();

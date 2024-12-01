@@ -55,7 +55,7 @@ namespace ReservationManager.API.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDto>> CreateUser(UserCreateRequest request)
+        public async Task<ActionResult<UserDto>> CreateUser(UserUpsertRequest request)
         {
             var created = await _userService.CreateUser(request.Adapt<UpsertUserDto>());
 
@@ -66,7 +66,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<UserDto>> UpdateUser(int id, UserCreateRequest request)
+        public async Task<ActionResult<UserDto>> UpdateUser(int id, UserUpsertRequest request)
         {
             var updated = await _userService.UpdateUser(id, request.Adapt<UpsertUserDto>());
             if (updated == null)
