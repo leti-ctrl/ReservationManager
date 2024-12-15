@@ -32,8 +32,6 @@ namespace ReservationManager.Persistence.Configurations
                     x => x.HasOne<User>().WithMany().OnDelete(DeleteBehavior.NoAction)
                 );
             
-            builder.Navigation(b => b.Roles).AutoInclude();
-
             builder.HasQueryFilter(x => !x.IsDeleted.HasValue);
         }
     }
