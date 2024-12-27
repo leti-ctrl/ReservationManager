@@ -35,7 +35,7 @@ public class UserServiceShould
         var basicUser = userGen.GetBasicUser();
 
         _mockRoleRepository.GetTypeByCode(FixedUserRole.Employee)
-            .Returns(new Role { Name = "Employee", Code = FixedUserRole.Employee });
+                           .Returns(new Role { Name = "Employee", Code = FixedUserRole.Employee });
         _mockUserRepository.AddUserAsync(Arg.Any<User>()).Returns(ci =>
         {
             var user = ci.Arg<User>();

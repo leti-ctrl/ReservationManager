@@ -5,9 +5,16 @@ namespace Tests.EntityGenerators;
 
 public class RoleGenerator
 {
-    public Role GetRole(string roleName, string roleCode)
+    public List<Role> GetAllRoles()
     {
-        return new Role { Name = roleName, Code = roleCode };
+        return new List<Role>()
+        {
+            new Role() {Code = FixedUserRole.Employee, Name = "Employee"},
+            new Role() {Code = FixedUserRole.Admin, Name = "Admin"},
+            new Role() {Code = FixedUserRole.HumanResources, Name = "Human Resources"},
+            new Role() {Code = FixedUserRole.FacilityManagement, Name = "Facility Management"},
+            new Role() {Code = FixedUserRole.GeneralServices, Name = "General Services"},
+        };
     }
 
     public Role GetAdminRole()
