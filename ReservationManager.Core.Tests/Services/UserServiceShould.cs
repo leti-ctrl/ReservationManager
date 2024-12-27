@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using FluentAssertions;
 using Mapster;
 using NSubstitute;
@@ -102,6 +103,41 @@ public class UserServiceShould
     }
 
     [Fact]
+    public async Task UpdateUserDetails_WhenValidInputProvided()
+    {
+        var userId = 1;
+        var existingUser = new UserGenerator().GetBasicUser();
+        var updateUserDto = new UpsertUserDto
+        {
+            Email = "updated@mail.com",
+            Name = "UpdatedName",
+            Surname = "UpdatedSurname"
+        };
+
+        _mockUserRepository.GetEntityByIdAsync(userId).Returns(existingUser);
+
+        _mockUserRepository.UpdateEntityAsync(Arg.Is<User>(u =>
+            u.Id == userId &&
+            u.Email == updateUserDto.Email &&
+            u.Name == updateUserDto.Name &&
+            u.Surname == updateUserDto.Surname
+        )).Returns(ci =>
+        {
+            var updatedUser = ci.Arg<User>();
+            return updatedUser;
+        });
+
+        var result = await _sut.UpdateUser(userId, updateUserDto);
+
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(userId);
+        result.Email.Should().Be(updateUserDto.Email);
+        result.Name.Should().Be(updateUserDto.Name);
+        result.Surname.Should().Be(updateUserDto.Surname);
+    }
+
+
+    [Fact]
     public async Task ReturnNull_WhenUpdatingNonExistentUser()
     {
         var userId = 999;
@@ -119,6 +155,7 @@ public class UserServiceShould
         result.Should().BeNull();
     }
 
+
     [Fact]
     public async Task DeleteUser_WhenUserExists()
     {
@@ -133,4 +170,84 @@ public class UserServiceShould
         await _mockUserRepository.Received(1).DeleteEntityAsync(user);
     }
 
+    [Fact]
+    public async Task ReturnUser_WhenUserExistsById()
+    {
+        var userId = 1;
+        var user = new UserGenerator().GetBasicUser();
+
+        _mockUserRepository.GetEntityByIdAsync(userId).Returns(user);
+
+        var result = await _sut.GetUserById(userId);
+
+        result.Should().NotBeNull();
+        result!.Id.Should().Be(user.Id);
+        result.Email.Should().Be(user.Email);
+        result.Name.Should().Be(user.Name);
+    }
+
+    [Fact]
+    public async Task ReturnNull_WhenUserDoesNotExistById()
+    {
+        var userId = 999;
+        _mockUserRepository.GetEntityByIdAsync(userId).Returns((User?)null);
+
+        var result = await _sut.GetUserById(userId);
+
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ReturnUser_WhenUserExistsByEmail()
+    {
+        var email = "test@mail.com";
+        var user = new UserGenerator().GetBasicUser();
+        user.Email = email;
+
+        _mockUserRepository.GetUserByEmailAsync(email).Returns(user);
+
+        var result = await _sut.GetUserByEmail(email);
+
+        result.Should().NotBeNull();
+        result!.Email.Should().Be(email);
+        result.Name.Should().Be(user.Name);
+    }
+
+    [Fact]
+    public async Task ReturnNull_WhenUserDoesNotExistByEmail()
+    {
+        var email = "nonexistent@mail.com";
+        _mockUserRepository.GetUserByEmailAsync(email).Returns((User?)null);
+
+        var result = await _sut.GetUserByEmail(email);
+
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ReturnAllUsers_WhenUsersExist()
+    {
+        var users = new UserGenerator().GenerateList();
+
+        _mockUserRepository.GetAllEntitiesAsync().Returns(users);
+
+        var result = await _sut.GetAllUsers();
+
+        result.Should().NotBeNull();
+        result.Should().HaveCount(users.Count);
+        result.Should().BeEquivalentTo(users.Adapt<IEnumerable<UserDto>>());
+    }
+
+    [Fact]
+    public async Task ReturnEmptyList_WhenNoUsersExist()
+    {
+        _mockUserRepository.GetAllEntitiesAsync().Returns(new List<User>());
+
+        var result = await _sut.GetAllUsers();
+
+        result.Should().NotBeNull();
+        result.Should().BeEmpty();
+    }
+
+    
 }

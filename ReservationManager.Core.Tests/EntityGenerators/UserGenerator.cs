@@ -17,14 +17,24 @@ public class UserGenerator
         };
     }
 
-    public User GetUserWithRoles(params Role[] roles)
+    public List<User> GenerateList()
     {
-        return new User
-        {
-            Email = "userwithroles@mail.it",
-            Name = "RoleUser",
-            Surname = "WithRoles",
-            Roles = roles.ToList()
+        return new List<User>
+        { 
+            new User()
+            {
+                Email = "userwithroles@mail.it",
+                Name = "RoleUser",
+                Surname = "WithRoles",
+                Roles = new List<Role> { new Role { Name = "Employee", Code = FixedUserRole.Employee } }
+            },
+            new User
+            {
+                Email = "basic@mail.it",
+                Name = "Basic",
+                Surname = "Basic",
+                Roles = new List<Role> { new Role { Name = "Employee", Code = FixedUserRole.Employee } }
+            }
         };
     }
 }
