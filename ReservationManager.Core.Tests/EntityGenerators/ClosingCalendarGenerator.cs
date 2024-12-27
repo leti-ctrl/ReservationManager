@@ -13,4 +13,13 @@ public class ClosingCalendarGenerator
             new ClosingCalendar { Day = DateOnly.FromDateTime(DateTime.Now) }
         };
     }
+
+    public ClosingCalendar GenerateSingleClosingCalendar()
+    {
+        return new ClosingCalendar
+        {
+            ResourceId = 1,
+            Day = DateOnly.FromDateTime(DateTime.Now)
+        };
+    }
 }
