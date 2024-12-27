@@ -7,6 +7,7 @@ using Tests.EntityGenerators;
 
 namespace Tests.Services;
 
+[Trait("Category", "Unit")]
 public class RoleServiceShould
 {
     private readonly IRoleRepository _mockRoleRepository;
