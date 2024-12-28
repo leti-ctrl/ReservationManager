@@ -25,4 +25,14 @@ public class ResourceGenerator
         }
         return resources;
     }
+    
+    public List<Resource> CreateResourceList(int count)
+    {
+        var resources = new List<Resource>();
+        for (int i = 1; i <= count; i++)
+        {
+            resources.Add(CreateResource(i, i));
+        }
+        return resources;
+    }
 }
