@@ -8,6 +8,7 @@ using ReservationManager.Core.Interfaces.Validators;
 using ReservationManager.Core.Services;
 using ReservationManager.DomainModel.Operation;
 using FluentValidation.Results;
+using Tests.EntityGenerators;
 
 namespace Tests.Services
 {
@@ -20,6 +21,9 @@ namespace Tests.Services
         private readonly IResourceRepository _mockResourceRepository;
         private readonly IReservationRepository _mockReservationRepository;
         private readonly IClosingCalendarFilterService _mockClosingCalendarFilterService;
+        
+        private readonly ResourceGenerator _generator;
+
 
         public ResourceFilterServiceShould()
         {
@@ -27,6 +31,7 @@ namespace Tests.Services
             _mockResourceRepository = Substitute.For<IResourceRepository>();
             _mockReservationRepository = Substitute.For<IReservationRepository>();
             _mockClosingCalendarFilterService = Substitute.For<IClosingCalendarFilterService>();
+            
             _sut = new ResourceFilterService(
                 _mockClosingCalendarFilterService,
                 _mockResourceFilterValidator,
@@ -34,12 +39,14 @@ namespace Tests.Services
                 _mockResourceRepository,
                 _mockReservationRepository
             );
+            
+            _generator = new ResourceGenerator();
         }
 
         [Fact]
         public async Task ThrowArgumentException_WhenFiltersAreInvalid()
         {
-            var invalidFilter = new ResourceFilterDtoGenerator().CreateInvalidFilter();
+            var invalidFilter = _generator.GenerateInvalidFilter();
             var validationResult = new ValidationResult(new[]
                 {
                     new ValidationFailure("Day", "Invalid Day filter")
@@ -58,7 +65,7 @@ namespace Tests.Services
         [Fact]
         public async Task ReturnEmpty_WhenNoResourcesFound()
         {
-            var validFilter = new ResourceFilterDtoGenerator().CreateValidFilter();
+            var validFilter = _generator.GenerateValidFilter();
             _mockResourceFilterValidator.ValidateAsync(validFilter)
                 .Returns(Task.FromResult(new ValidationResult()));
             _mockResourceRepository.GetFiltered(validFilter.TypeId, validFilter.ResourceId)
@@ -72,10 +79,10 @@ namespace Tests.Services
         [Fact]
         public async Task ReturnFilteredResources_WhenValidFiltersAndResourcesFound()
         {
-            var validFilter = new ResourceFilterDtoGenerator().CreateValidFilter();
+            var validFilter = _generator.GenerateValidFilter();
             _mockResourceFilterValidator.ValidateAsync(validFilter)
                                         .Returns(Task.FromResult(new ValidationResult()));
-            var resourceList = new ResourceGenerator().CreateResourceList(5, 1);
+            var resourceList = new ResourceGenerator().GenerateResourceList(5, 1);
             _mockResourceRepository.GetFiltered(validFilter.TypeId, validFilter.ResourceId)
                                    .Returns(resourceList);
 
@@ -88,10 +95,10 @@ namespace Tests.Services
         [Fact]
         public async Task ApplyClosingCalendarAndReservationFilters_WhenDateFiltersAreApplied()
         {
-            var validFilter = new ResourceFilterDtoGenerator().CreateValidFilter();
+            var validFilter = _generator.GenerateValidFilter();
             _mockResourceFilterValidator.ValidateAsync(validFilter)
                 .Returns(Task.FromResult(new ValidationResult()));
-            var resourceList = new ResourceGenerator().CreateResourceList(5, 1);
+            var resourceList = new ResourceGenerator().GenerateResourceList(5, 1);
             _mockResourceRepository.GetFiltered(validFilter.TypeId, validFilter.ResourceId)
                 .Returns(resourceList);
             _mockClosingCalendarFilterService.GetFiltered(Arg.Any<ClosingCalendarFilterDto>())
@@ -109,10 +116,11 @@ namespace Tests.Services
         [Fact]
         public async Task ReturnEmpty_WhenNoResourcesMatchAfterFiltering()
         {
-            var validFilter = new ResourceFilterDtoGenerator().CreateValidFilter();
+            var validFilter = _generator.GenerateValidFilter();
             _mockResourceFilterValidator.ValidateAsync(validFilter)
                 .Returns(Task.FromResult(new ValidationResult()));
-            var resourceList = new ResourceGenerator().CreateResourceList(5, 1);
+            
+            var resourceList = new ResourceGenerator().GenerateResourceList(5, 1);
             _mockResourceRepository.GetFiltered(validFilter.TypeId, validFilter.ResourceId).Returns(resourceList);
             _mockClosingCalendarFilterService.GetFiltered(Arg.Any<ClosingCalendarFilterDto>())
                 .Returns(new List<ClosingCalendarDto>());

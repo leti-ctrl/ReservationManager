@@ -3,6 +3,7 @@ using NSubstitute;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces.Repositories;
+using ReservationManager.Core.Interfaces.Services;
 using ReservationManager.Core.Interfaces.Validators;
 using ReservationManager.Core.Services;
 using ReservationManager.DomainModel.Operation;
@@ -13,21 +14,28 @@ namespace Tests.Services;
 [Trait("Category", "Unit")]
 public class ClosingCalendarFilterServiceShould
 {
+    private readonly IClosingCalendarFilterService _sut;
+    
     private readonly IClosingCalendarFilterValidator _mockValidator;
     private readonly IClosingCalendarRepository _mockRepository;
-    private readonly ClosingCalendarFilterService _sut;
+    
+    public readonly ClosingCalendarFilterGenerator _generator;
+
 
     public ClosingCalendarFilterServiceShould()
     {
         _mockValidator = Substitute.For<IClosingCalendarFilterValidator>();
         _mockRepository = Substitute.For<IClosingCalendarRepository>();
+        
         _sut = new ClosingCalendarFilterService(_mockValidator, _mockRepository);
+        
+        _generator = new ClosingCalendarFilterGenerator(); 
     }
 
     [Fact]
     public async Task ThrowsInvalidFiltersException_WhenInvalidDateRangePassed()
     {
-        var filter = new ClosingCalendarFilterGenerator().GenerateInvalidFilter();
+        var filter = _generator.GenerateInvalidFilter();
 
         _mockValidator.IsLegalDateRange(filter).Returns(false);
 
@@ -40,7 +48,7 @@ public class ClosingCalendarFilterServiceShould
     [Fact]
     public async Task ReturnsEmptyList_WhenRepositoryReturnsNoResults()
     {
-        var filter = new ClosingCalendarFilterGenerator().GenerateValidFilter();
+        var filter = _generator.GenerateValidFilter();
 
         _mockValidator.IsLegalDateRange(filter).Returns(true);
         _mockRepository.GetFiltered(Arg.Any<int?>(), Arg.Any<DateOnly?>(), Arg.Any<DateOnly?>(), Arg.Any<int?>(), Arg.Any<int?>())
@@ -55,7 +63,7 @@ public class ClosingCalendarFilterServiceShould
     [Fact]
     public async Task ReturnsFilteredAndOrderedResults_WhenRepositoryReturnsData()
     {
-        var filter =new ClosingCalendarFilterGenerator().GenerateValidFilter();
+        var filter = _generator.GenerateValidFilter();
         var dataFromRepo = new ClosingCalendarGenerator().GenerateList();
 
         _mockValidator.IsLegalDateRange(filter).Returns(true);
@@ -73,7 +81,7 @@ public class ClosingCalendarFilterServiceShould
     [Fact]
     public async Task CallsRepositoryWithCorrectParameters_WhenValidFilterIsPassed()
     {
-        var filter = new ClosingCalendarFilterGenerator().GenerateFilter();
+        var filter = _generator.GenerateFilter();
 
         _mockValidator.IsLegalDateRange(filter).Returns(true);
 

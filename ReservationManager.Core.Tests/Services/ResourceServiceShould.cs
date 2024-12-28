@@ -6,25 +6,23 @@ using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Interfaces.Services;
 using ReservationManager.Core.Interfaces.Validators;
 using ReservationManager.DomainModel.Operation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Mapster;
 using ReservationManager.Core.Services;
 using Tests.EntityGenerators;
-using Xunit;
 
 namespace Tests.Services
 {
     [Trait("Category", "Unit")]
     public class ResourceServiceShould
     {
+        private readonly IResourceService _sut;
+        
         private readonly IResourceRepository _mockResourceRepository;
         private readonly IResourceValidator _mockResourceValidator;
         private readonly IReservationRepository _mockReservationRepository;
         private readonly IResourceFilterService _mockResourceFilterService;
-        private readonly IResourceService _sut;
+        
+        private readonly ResourceGenerator _generator;
 
 
         public ResourceServiceShould()
@@ -40,6 +38,8 @@ namespace Tests.Services
                 _mockReservationRepository,
                 _mockResourceFilterService
             );
+            
+            _generator = new ResourceGenerator();
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace Tests.Services
         [Fact]
         public async Task ReturnSortedResources_WhenResourcesExist()
         {
-            var resources = new ResourceGenerator().CreateResourceList(2);
+            var resources = _generator.GenerateResourceList(2);
             _mockResourceRepository.GetAllEntitiesAsync()
                 .Returns(resources);
 
@@ -70,7 +70,7 @@ namespace Tests.Services
         [Fact]
         public async Task DelegateToResourceFilterService_WhenGetFilteredResourcesIsCalled()
         {
-            var filterDto = new ResourceFilterDtoGenerator().CreateValidFilter();
+            var filterDto = _generator.GenerateValidFilter();
             var resources = new List<ResourceDto>
             {
                 new ResourceDto { Id = 1, Description = "Resource 1", Type = new ResourceTypeDto { Code = "T1" } }
@@ -87,7 +87,7 @@ namespace Tests.Services
         [Fact]
         public async Task ThrowInvalidCodeTypeException_WhenResourceTypeIsInvalid()
         {
-            var resourceDto = new UpsertResourceDtoGenerator().Generate(999, "");
+            var resourceDto = _generator.GenerateUpsert(999, "");
             _mockResourceValidator.ValidateResourceType(999)
                 .Returns(false);
 
@@ -101,7 +101,7 @@ namespace Tests.Services
         [Fact]
         public async Task CreateResource_WhenValidDataIsProvided()
         {
-            var resourceDto = new UpsertResourceDtoGenerator().Generate(1, "New Resource");
+            var resourceDto = _generator.GenerateUpsert(1, "New Resource");
             _mockResourceValidator.ValidateResourceType(1)
                 .Returns(true);
             _mockResourceRepository.CreateEntityAsync(Arg.Any<Resource>())
@@ -116,7 +116,7 @@ namespace Tests.Services
         [Fact]
         public async Task ReturnNull_WhenResourceTypeIsInvalidOrIdDoesNotExist()
         {
-            var resourceDto = new UpsertResourceDtoGenerator().Generate(1,"Updated Resource");
+            var resourceDto = _generator.GenerateUpsert(1,"Updated Resource");
             _mockResourceValidator.ValidateResourceType(1)
                 .Returns(true);
             _mockResourceValidator.ExistingResouceId(1)
@@ -130,7 +130,7 @@ namespace Tests.Services
         [Fact]
         public async Task UpdateResource_WhenValidIdAndTypeAreProvided()
         {
-            var resourceDto = new UpsertResourceDtoGenerator().Generate(1, "Updated Resource");
+            var resourceDto = _generator.GenerateUpsert(1, "Updated Resource");
             var resource = resourceDto.Adapt<Resource>();
             resource.Id = 1;
             _mockResourceValidator.ValidateResourceType(1)
@@ -150,7 +150,8 @@ namespace Tests.Services
         [Fact]
         public async Task ThrowEntityNotFoundException_WhenResourceDoesNotExist()
         {
-            _mockResourceRepository.GetEntityByIdAsync(1).Returns((Resource)null);
+            _mockResourceRepository.GetEntityByIdAsync(1)
+                .Returns((Resource)null);
 
             var act = async () => await _sut.DeleteResource(1);
 
@@ -162,7 +163,7 @@ namespace Tests.Services
         [Fact]
         public async Task ThrowDeleteNotPermittedException_WhenResourceHasReservations()
         {
-            var resource = new ResourceGenerator().CreateResource(1, 1);
+            var resource = _generator.GenerateResource(1, 1);
             _mockResourceRepository.GetEntityByIdAsync(1)
                 .Returns(resource);
             _mockReservationRepository.GetReservationByResourceIdAfterTodayAsync(1)
@@ -178,7 +179,7 @@ namespace Tests.Services
         [Fact]
         public async Task DeleteResource_WhenNoReservationsExist()
         {
-            var resource = new ResourceGenerator().CreateResource(1, 1);
+            var resource = _generator.GenerateResource(1, 1);
             _mockResourceRepository.GetEntityByIdAsync(1)
                 .Returns(resource);
             _mockReservationRepository.GetReservationByResourceIdAfterTodayAsync(1)

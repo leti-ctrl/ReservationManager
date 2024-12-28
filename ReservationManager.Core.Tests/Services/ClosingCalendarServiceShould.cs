@@ -15,12 +15,15 @@ namespace Tests.Services;
 [Trait("Category", "Unit")]
 public class ClosingCalendarServiceShould
 {
+    private readonly IClosingCalendarService _sut;
+    
     private readonly IClosingCalendarRepository _mockRepository;
     private readonly IResourceValidator _mockResourceValidator;
     private readonly IClosingCalendarValidator _mockValidator;
     private readonly IClosingCalendarFilterService _mockFilterService;
     private readonly IResourceService _mockResourceService;
-    private readonly ClosingCalendarService _sut;
+
+    private readonly ClosingCalendarGenerator _generator;
 
     public ClosingCalendarServiceShould()
     {
@@ -37,12 +40,14 @@ public class ClosingCalendarServiceShould
             _mockValidator,
             _mockResourceService
         );
+        
+        _generator = new ClosingCalendarGenerator();
     }
 
     [Fact]
     public async Task GetsAllFromToday()
     {
-        var calendars = new ClosingCalendarGenerator().GenerateList();
+        var calendars = _generator.GenerateList();
         _mockRepository.GetAllFromToday().Returns(calendars);
 
         var result = await _sut.GetAllFromToday();
@@ -55,7 +60,7 @@ public class ClosingCalendarServiceShould
     [Fact]
     public async Task CreatesNewClosingCalendar_WhenValidInputIsProvided()
     {
-        var model = new ClosingCalendarGenerator().GenerateSingleClosingCalendar();
+        var model = _generator.GenerateSingleClosingCalendar();
         var dto = model.Adapt<ClosingCalendarDto>();
 
         _mockResourceValidator.ExistingResouceId(dto.ResourceId).Returns(true);
@@ -77,7 +82,7 @@ public class ClosingCalendarServiceShould
     [Fact]
     public async Task ThrowsException_WhenResourceDoesNotExist_OnCreate()
     {
-        var model = new ClosingCalendarGenerator().GenerateSingleClosingCalendar();
+        var model = _generator.GenerateSingleClosingCalendar();
         var dto = model.Adapt<ClosingCalendarDto>();
 
         _mockResourceValidator.ExistingResouceId(dto.ResourceId).Returns(false);
@@ -93,7 +98,7 @@ public class ClosingCalendarServiceShould
     [Fact]
     public async Task ThrowsException_WhenClosingCalendarAlreadyExists_OnCreate()
     {
-        var model = new ClosingCalendarGenerator().GenerateSingleClosingCalendar();
+        var model = _generator.GenerateSingleClosingCalendar();
         var dto = model.Adapt<ClosingCalendarDto>();
 
         _mockResourceValidator.ExistingResouceId(dto.ResourceId).Returns(true);
@@ -110,7 +115,7 @@ public class ClosingCalendarServiceShould
     [Fact]
     public async Task DeletesClosingCalendar_WhenValidIdIsProvided()
     {
-        var model = new ClosingCalendarGenerator().GenerateSingleClosingCalendar();
+        var model = _generator.GenerateSingleClosingCalendar();
         _mockRepository.GetEntityByIdAsync(model.Id).Returns(model);
 
         await _sut.Delete(model.Id);
@@ -135,7 +140,7 @@ public class ClosingCalendarServiceShould
     public async Task GetsFilteredClosingCalendars_WhenValidFilterIsProvided()
     {
         var filter = new ClosingCalendarFilterDto { StartDay = DateOnly.FromDateTime(DateTime.Now) };
-        var filteredResults = new ClosingCalendarGenerator().GenerateList().Adapt<List<ClosingCalendarDto>>();
+        var filteredResults = _generator.GenerateList().Adapt<List<ClosingCalendarDto>>();
 
         _mockFilterService.GetFiltered(filter).Returns(filteredResults);
 
@@ -173,7 +178,7 @@ public class ClosingCalendarServiceShould
             }
         };
 
-        var newClosingCalendars = new ClosingCalendarGenerator().GenerateList();
+        var newClosingCalendars = _generator.GenerateList();
 
         _mockResourceValidator.ValidateResourceType(bulkDto.ResourceTypeId).Returns(true);
         _mockResourceService.GetFilteredResources(Arg.Any<ResourceFilterDto>()).Returns(resources);
@@ -198,7 +203,6 @@ public class ClosingCalendarServiceShould
     [Fact]
     public async Task ThrowsException_WhenResourceTypeDoesNotExist_OnBulkCreate()
     {
-        // Arrange
         var bulkDto = new BulkClosingCalendarDto { ResourceTypeId = 999 };
 
         _mockResourceValidator.ValidateResourceType(bulkDto.ResourceTypeId).Returns(false);
@@ -216,7 +220,7 @@ public class ClosingCalendarServiceShould
     [Fact]
     public async Task UpdatesClosingCalendar_WhenValidInputIsProvided()
     {
-        var model = new ClosingCalendarGenerator().GenerateSingleClosingCalendar();
+        var model = _generator.GenerateSingleClosingCalendar();
         var dto = model.Adapt<ClosingCalendarDto>();
         var updatedModel = model;
         updatedModel.Description = "Updated Description";
@@ -239,7 +243,7 @@ public class ClosingCalendarServiceShould
     [Fact]
     public async Task ThrowsException_WhenResourceDoesNotExist_OnUpdate()
     {
-        var model = new ClosingCalendarGenerator().GenerateSingleClosingCalendar();
+        var model = _generator.GenerateSingleClosingCalendar();
         var dto = model.Adapt<ClosingCalendarDto>();
 
         _mockResourceValidator.ExistingResouceId(dto.ResourceId).Returns(false);
@@ -255,7 +259,7 @@ public class ClosingCalendarServiceShould
     [Fact]
     public async Task ThrowsException_WhenClosingCalendarAlreadyExists_OnUpdate()
     {
-        var model = new ClosingCalendarGenerator().GenerateSingleClosingCalendar();
+        var model = _generator.GenerateSingleClosingCalendar();
         var dto = model.Adapt<ClosingCalendarDto>();
 
         _mockResourceValidator.ExistingResouceId(dto.ResourceId).Returns(true);

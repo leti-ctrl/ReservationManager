@@ -37,7 +37,8 @@ namespace Tests.Services
         [Fact]
         public async Task ReturnsEmptyCollectionWhenNoRoles()
         {
-            _mockRoleRepository.GetAllTypesAsync().Returns((IEnumerable<Role>)null);
+            _mockRoleRepository.GetAllTypesAsync()
+                .Returns((IEnumerable<Role>)null);
 
             var result = await _sut.GetAllRoles();
 
@@ -50,7 +51,7 @@ namespace Tests.Services
         {
             _mockRoleRepository.GetAllTypesAsync().Throws(new Exception("Repository error"));
 
-            Func<Task> act = async () => { await _sut.GetAllRoles(); };
+            var act = async () => { await _sut.GetAllRoles(); };
 
             await act.Should().ThrowAsync<Exception>()
                 .WithMessage("Repository error");
@@ -60,7 +61,8 @@ namespace Tests.Services
         public async Task CallsRepositoryGetAllTypesAsyncOnce()
         {
             var roles = new RoleGenerator().GetAllRoles();
-            _mockRoleRepository.GetAllTypesAsync().Returns(roles);
+            _mockRoleRepository.GetAllTypesAsync()
+                .Returns(roles);
 
             await _sut.GetAllRoles();
 
@@ -71,7 +73,8 @@ namespace Tests.Services
         public async Task MapsRolesCorrectlyToRoleDto()
         {
             var roles = new RoleGenerator().GetAllRoles();
-            _mockRoleRepository.GetAllTypesAsync().Returns(roles);
+            _mockRoleRepository.GetAllTypesAsync()
+                .Returns(roles);
 
             var result = await _sut.GetAllRoles();
 
