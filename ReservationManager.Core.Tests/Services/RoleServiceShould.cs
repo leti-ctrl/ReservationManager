@@ -35,7 +35,7 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task ReturnsEmptyCollectionWhenNoRoles()
+        public async Task ReturnsEmptyCollection_WhenNoRoles()
         {
             _mockRoleRepository.GetAllTypesAsync()
                 .Returns((IEnumerable<Role>)null);
@@ -47,7 +47,7 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task ReturnsEmptyCollectionWhenRepositoryThrowsException()
+        public async Task ReturnsEmptyCollection_WhenRepositoryThrowsException()
         {
             _mockRoleRepository.GetAllTypesAsync().Throws(new Exception("Repository error"));
 
