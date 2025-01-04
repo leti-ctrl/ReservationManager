@@ -21,7 +21,7 @@ public class ClosingCalendarValidator : IClosingCalendarValidator
             closingCalendarDto.Day, null, closingCalendarDto.ResourceId, null);
         if (id == null)
             return closingCalendars.Any(); 
-        return closingCalendars.Any(x => x.ResourceId != id);
+        return closingCalendars.Any(x => x.Id != id);
     }
 
     public bool ValidateClosingCalendarBucket(BulkClosingCalendarDto bulkClosingCalendar)

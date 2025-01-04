@@ -23,7 +23,8 @@ public class ResourceReservedMapper : IResourceReservedMapper
                     IsClosed = false,
                     Day = reservation.Day,
                     TimeStart = reservation.Start,
-                    TimeEnd = reservation.End
+                    TimeEnd = reservation.End,
+                    ReservationId = reservation.Id
                 };
                 item.ResourceReservedDtos.Add(reserved);
             }
@@ -34,8 +35,9 @@ public class ResourceReservedMapper : IResourceReservedMapper
                 {
                     IsClosed = true,
                     Day = closingDay.Day,
-                    TimeStart = TimeOnly.MinValue,
-                    TimeEnd = TimeOnly.MaxValue
+                    TimeStart = null,
+                    TimeEnd = null,
+                    ReservationId = null,
                 };
                 item.ResourceReservedDtos.Add(closed);
             }

@@ -23,7 +23,7 @@ namespace ReservationManager.Core.Services
 
         public async Task<UserDto?> GetUserById(int id)
         {
-            var user = await _userRepository.GetEntityByIdAsync(id);
+            var user = await _userRepository.GetUserByIdWithRoleAsync(id);
             if (user == null)
                 return null;
             return user.Adapt<UserDto>();
@@ -38,13 +38,15 @@ namespace ReservationManager.Core.Services
         public async Task<IEnumerable<UserDto>> GetAllUsers()
         {
             var users = await _userRepository.GetAllEntitiesAsync();
-            
+
             return users.Select(x => x.Adapt<UserDto>());
         }
 
         public async Task<UserDto> CreateUser(UpsertUserDto userDto)
         {
             var employeeRole = await _roleRepository.GetTypeByCode(FixedUserRole.Employee);
+            CheckEmail(userDto.Email);
+
             var userModel = userDto.Adapt<User>();
             userModel.Roles.Add(employeeRole!);
 
@@ -53,13 +55,24 @@ namespace ReservationManager.Core.Services
             return user.Adapt<UserDto>();
         }
 
+        public void CheckEmail(string email, int id = 0)
+        {
+            if (email == String.Empty || !email.Contains('@') || !email.Contains('.'))
+                throw new ArgumentException("Invalid Email");
+            var user = _userRepository.GetUserByEmailAsync(email).Result;
+            if (user != null && (id == 0 || user.Id != id))
+                throw new ArgumentException("Email already exists");
+        }
+
         public async Task<UserDto?> UpdateUser(int id, UpsertUserDto userDto)
         {
             //nella modifica non si può modificare il ruolo
             var user = await _userRepository.GetEntityByIdAsync(id);
             if (user == null)
                 return null;
-            
+
+            CheckEmail(userDto.Email, id);
+
             var userModel = userDto.Adapt<User>();
             userModel.Id = id;
 
@@ -71,10 +84,10 @@ namespace ReservationManager.Core.Services
         public async Task<UserDto?> UpdateUserRoles(int userId, Role[] newRoles)
         {
             var user = await _userRepository.GetEntityByIdAsync(userId);
-            if (user == null) 
+            if (user == null)
                 return null;
 
-            if (newRoles.Length == 0) 
+            if (newRoles.Length == 0)
                 throw new ArgumentException("User roles must not be empty");
 
             var updated = await _userRepository.UpdateUserRolesAsync(user, newRoles);
@@ -84,7 +97,7 @@ namespace ReservationManager.Core.Services
         public async Task DeleteUser(int id)
         {
             var user = await _userRepository.GetEntityByIdAsync(id)
-                ?? throw new EntityNotFoundException($"User {id} not found.");
+                       ?? throw new EntityNotFoundException($"User {id} not found.");
 
             await _userRepository.DeleteEntityAsync(user);
         }

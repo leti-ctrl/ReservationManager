@@ -55,6 +55,7 @@ namespace ReservationManager.API.Extensions
             opt.MapToStatusCode<BadHttpRequestException>(StatusCodes.Status403Forbidden);
             opt.MapToStatusCode<NonExistentUserException>(StatusCodes.Status403Forbidden);
             opt.MapToStatusCode<UnauthorizedAccessException>(StatusCodes.Status401Unauthorized);
+            opt.MapToStatusCode<ReservationException>(StatusCodes.Status400BadRequest);
 
             //fallback
             opt.MapToStatusCode<Exception>(StatusCodes.Status500InternalServerError);

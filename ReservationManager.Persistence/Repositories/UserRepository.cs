@@ -42,5 +42,12 @@ namespace ReservationManager.Persistence.Repositories
                                 .Include(r => r.Roles)
                                 .FirstOrDefaultAsync(x => x.Email == email);
         }
+
+        public async Task<User?> GetUserByIdWithRoleAsync(int userId)
+        {
+            return await Context.Set<User>()
+                .Include(r => r.Roles)
+                .FirstOrDefaultAsync(x => x.Id == userId);
+        }
     }
 }

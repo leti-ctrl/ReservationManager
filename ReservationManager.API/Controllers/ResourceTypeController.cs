@@ -11,7 +11,6 @@ namespace ReservationManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin })]
     public class ResourceTypeController : SessionController
     {
         private readonly IResourceTypeService _resourceTypeService;
@@ -22,6 +21,7 @@ namespace ReservationManager.API.Controllers
         }
 
         [HttpGet()]
+        [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin, FixedUserRole.Employee })]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -35,6 +35,7 @@ namespace ReservationManager.API.Controllers
         }
 
         [HttpPost()]
+        [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin })]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<ResourceTypeDto>> CreateResourceType(ResoruceTypeUpsertRequest request)
@@ -44,6 +45,7 @@ namespace ReservationManager.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin })]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -56,6 +58,7 @@ namespace ReservationManager.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin })]
         [ProducesResponseType(StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]

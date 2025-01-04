@@ -9,5 +9,6 @@ namespace ReservationManager.Core.Interfaces.Repositories
         Task<User> AddUserAsync(User user);
         Task<User> UpdateUserRolesAsync(User user, Role[] roles);
         Task<User?> GetUserByEmailAsync(string email);
+        Task<User?> GetUserByIdWithRoleAsync(int userId);
     }
 }

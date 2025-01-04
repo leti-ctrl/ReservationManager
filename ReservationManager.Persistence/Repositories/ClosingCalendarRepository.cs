@@ -15,7 +15,7 @@ namespace ReservationManager.Persistence.Repositories
         public async Task<IEnumerable<ClosingCalendar>> GetAllFromToday()
         {
             return await Context.Set<ClosingCalendar>()
-                                .Where(x => x.Day >= DateOnly.FromDateTime(DateTime.Now))
+                                .Where(x => x.Day.CompareTo(DateOnly.FromDateTime(DateTime.Now)) >= 0)
                                 .ToListAsync();
         }
 

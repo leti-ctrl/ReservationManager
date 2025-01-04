@@ -114,7 +114,7 @@ namespace ReservationManager.Core.Services
             return toRet.Adapt<ReservationDto>();
         }
 
-        private async Task CheckResourceIsFreeOrOpen(ReservationType reservationType, Reservation reservation)
+        private async Task CheckResourceIsFreeOrOpen(ReservationType reservationType, Reservation reservation, int reservationIdToUpdate = 0)
         {
             if (reservationType.Code != FixedReservationType.Customizable)
             {
@@ -130,9 +130,15 @@ namespace ReservationManager.Core.Services
                 TimeTo = reservation.End,
             })).FirstOrDefault();
             if (resourceReserved == null)
-                throw new ArgumentException("Invalid resource for reservation");
-            if(resourceReserved.ResourceReservedDtos != null)
-                throw new ArgumentException("Resource is busy.");
+                throw new ReservationException("Invalid resource for reservation");
+            if (resourceReserved.ResourceReservedDtos != null)
+            {
+                if (resourceReserved.ResourceReservedDtos.Count == 1 &&
+                    resourceReserved.ResourceReservedDtos.First().ReservationId == reservation.Id)
+                    return;
+                
+                throw new ReservationException("Cannot reserve resource because is closed or is already reserved.");
+            }
         }
 
         public async Task DeleteReservation(int id, SessionInfo session)

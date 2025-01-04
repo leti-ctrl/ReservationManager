@@ -40,7 +40,7 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task UpdateResourceType_ReturnsUpdatedDto_WhenResourceTypeExists()
+        public async Task ReturnsUpdatedDto_WhenResourceTypeExists()
         {
             var existingResourceType = new ResourceTypeGenerator().GenerateSingle();
             var updatedDto = new UpsertResourceTypeDto { Code = "RT1", Name = "Updated Name" };
@@ -55,7 +55,7 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task UpdateResourceType_ReturnsNull_WhenResourceTypeDoesNotExist()
+        public async Task ReturnsNull_WhenResourceTypeDoesNotExist()
         {
             var updatedDto = new UpsertResourceTypeDto { Code = "RT1", Name = "Updated Name" };
             _mockResourceTypeRepository.GetTypeById(1).Returns((ResourceType)null);
@@ -66,7 +66,7 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task CreateResourceType_ReturnsCreatedDto()
+        public async Task ReturnsCreatedDto()
         {
             var newResourceType = new ResourceTypeGenerator().GenerateSingle();
             var newResourceDto = newResourceType.Adapt<UpsertResourceTypeDto>();
@@ -80,7 +80,7 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task DeleteResourceType_ThrowsException_WhenResourceTypeDoesNotExist()
+        public async Task ThrowsException_WhenResourceTypeDoesNotExist()
         {
             _mockResourceTypeRepository.GetTypeById(1).Returns((ResourceType)null);
 
@@ -91,7 +91,7 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task DeleteResourceType_ThrowsException_WhenResourcesExist()
+        public async Task ThrowsException_WhenResourcesExist()
         {
             var resourceType = new ResourceTypeGenerator().GenerateSingle();
             _mockResourceTypeRepository.GetTypeById(1).Returns(resourceType);
@@ -109,7 +109,7 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task DeleteResourceType_DeletesResource_WhenNoResourcesExist()
+        public async Task DeletesResource_WhenNoResourcesExist()
         {
             var resourceType = new ResourceTypeGenerator().GenerateSingle();
             _mockResourceTypeRepository.GetTypeById(1).Returns(resourceType);

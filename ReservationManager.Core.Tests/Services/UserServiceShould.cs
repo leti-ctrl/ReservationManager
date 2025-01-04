@@ -176,7 +176,7 @@ public class UserServiceShould
         var userId = 1;
         var user = new UserGenerator().GetBasicUser();
 
-        _mockUserRepository.GetEntityByIdAsync(userId).Returns(user);
+        _mockUserRepository.GetUserByIdWithRoleAsync(userId).Returns(user);
 
         var result = await _sut.GetUserById(userId);
 

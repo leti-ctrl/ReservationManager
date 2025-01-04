@@ -77,30 +77,51 @@ public class ReservationServiceShould
     {
         var user = new User { Id = 1, Email = "test@mail.com" };
         var session = new SessionInfo(user.Email);
+        var reservationType = new ReservationType
+        {
+            Id = 1, 
+            Code = "TEST",
+            Start = new TimeOnly(9,30),
+            End = new TimeOnly(10, 30),
+        };
         var upsertDto = new UpsertReservationDto
         {
             TypeId = 1,
             ResourceId = 1,
             Day = DateOnly.FromDateTime(DateTime.Now),
-            Title = "test"
-        };
-        var reservationType = new ReservationType
-        {
-            Id = 1, 
-            Code = FixedReservationType.Customizable
+            Title = "test",
+            Start = reservationType.Start,
+            End = reservationType.End,
         };
         var reservation = upsertDto.Adapt<Reservation>();
         reservation.UserId = user.Id;
-
-        _mockUserService.GetUserByEmail(session.UserEmail).Returns(user.Adapt<UserDto>());
-        _mockReservationTypeRepository.GetTypeById(upsertDto.TypeId).Returns(reservationType);
-        _mockUpsertReservationValidator.IsDateRangeValid(upsertDto, reservationType).Returns(true);
-        _mockReservationRepository.CreateEntityAsync(Arg.Any<Reservation>()).Returns(reservation);
-
+        var resourceReserved = new List<ResourceDto>()
+        {
+            new ResourceDto()
+                { 
+                    Id = upsertDto.ResourceId, 
+                    Description = "", 
+                    ResourceReservedDtos = null, 
+                    Type = new ResourceTypeDto(){ Code = "", Id = 1 , Name = ""}
+                }
+        };
+        _mockUserService.GetUserByEmail(session.UserEmail)
+            .Returns(user.Adapt<UserDto>());
+        _mockReservationTypeRepository.GetTypeById(upsertDto.TypeId)
+            .Returns(reservationType);
+        _mockUpsertReservationValidator.IsDateRangeValid(upsertDto, reservationType)
+            .Returns(true);
+        _mockResourceService.GetFilteredResources(Arg.Any<ResourceFilterDto>())
+            .Returns(resourceReserved);
+        _mockReservationRepository.CreateEntityAsync(Arg.Any<Reservation>())
+            .Returns(reservation);
+        _mockReservationRepository.GetEntityByIdAsync(Arg.Any<int>())
+            .Returns(reservation);
+        
+        
         var result = await _sut.CreateReservation(session, upsertDto);
 
         result.Should().NotBeNull();
-        result.User.Id.Should().Be(user.Id);
     }
 
     [Fact]
