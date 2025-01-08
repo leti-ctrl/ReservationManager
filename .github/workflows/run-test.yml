@@ -5,7 +5,8 @@ on:
     branches: [ main, develop ]
 
 env:
-  DOTNET_VERSION: '7.0.X' 
+  DOTNET_VERSION: '7.0.X'
+  WORKING_FOLDER: './ReservationManager.Core.Tests'
 
 jobs:
   build-and-test:
@@ -21,10 +22,13 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Install dependencies #lancia comandi da cli per build e test
+        working-directory: ${{env.WORKING_FOLDER}}
         run: dotnet restore
 
       - name: Build
+        working-directory: ${{env.WORKING_FOLDER}}
         run: dotnet build --configuration Release --no-restore
 
       - name: Test
+        working-directory: ${{env.WORKING_FOLDER}}
         run: dotnet test --no-restore --verbosity normal
