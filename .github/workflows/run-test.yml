@@ -32,3 +32,12 @@ jobs:
       - name: Test
         working-directory: ${{env.WORKING_FOLDER}}
         run: dotnet test --no-restore --verbosity normal
+  
+  fake-deploy:
+    name: fake-deploy
+    runs-on: ubuntu-latest
+    needs: build-and-test  #se lo step precedente fallisce non vienefatto il deploy dell'applicazione
+    
+    steps:
+      - name: deploy
+        run: printf "deployed"
