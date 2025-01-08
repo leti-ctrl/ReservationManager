@@ -1,0 +1,30 @@
+name: build and test
+
+on:
+  push:
+    branches: [ main, develop ]
+
+env:
+  DOTNET_VERSION: '7.0.X' 
+
+jobs:
+  build-and-test:
+
+    name: build-and-test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3 #scarica da git il sorgente e lo mette nell'ambiente dove runna (nel caso ubuntu)
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3 #installa .net nell'ambiente
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install dependencies #lancia comandi da cli per build e test
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
