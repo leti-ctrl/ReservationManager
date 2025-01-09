@@ -10,7 +10,7 @@ using ReservationManager.Core.Interfaces.Validators;
 using ReservationManager.Core.Services;
 using ReservationManager.DomainModel.Meta;
 using ReservationManager.DomainModel.Operation;
-using Xunit;
+namespace Tests.Services;
 
 [Trait("Category", "Unit")]
 public class ReservationServiceShould

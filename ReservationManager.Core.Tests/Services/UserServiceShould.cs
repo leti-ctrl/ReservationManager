@@ -114,7 +114,7 @@ public class UserServiceShould
             Surname = "UpdatedSurname"
         };
 
-        _mockUserRepository.GetEntityByIdAsync(userId).Returns(existingUser);
+        //_mockUserRepository.GetEntityByIdAsync(userId).Returns(existingUser);
 
         _mockUserRepository.UpdateEntityAsync(Arg.Is<User>(u =>
             u.Id == userId &&

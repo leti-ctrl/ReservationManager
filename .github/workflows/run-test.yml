@@ -10,12 +10,11 @@ env:
 
 jobs:
   build-and-test:
-
     name: build-and-test
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v3 #scarica da git il sorgente e lo mette nell'ambiente dove runna (nel caso ubuntu)
+      - uses: actions/checkout@v3 #scarica da git il sorgente e lo mette nell'ambiente (nel caso ubuntu)
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v3 #installa .net nell'ambiente
         with:
@@ -36,7 +35,7 @@ jobs:
   fake-deploy:
     name: fake-deploy
     runs-on: ubuntu-latest
-    needs: build-and-test  #se lo step precedente fallisce non vienefatto il deploy dell'applicazione
+    needs: build-and-test  #se lo step precedente fallisce non viene fatto il deploy dell'applicazione
     
     steps:
       - name: deploy
