@@ -3,6 +3,7 @@ using Mapster;
 using Microsoft.EntityFrameworkCore;
 using ReservationManager.API;
 using ReservationManager.API.Extensions;
+using ReservationManager.Core.Services;
 using ReservationManager.Persistence;
 using ConfigurationExtensions = ReservationManager.API.Extensions.ConfigurationExtensions;
 
@@ -18,6 +19,15 @@ builder.Services.AddProblemDetails(
 );
 
 
+// Aggiungi il servizio RepositorySwitcher
+builder.Services.AddSingleton<IRepositorySwitcher>(sp => 
+    new RepositorySwitcher(
+        sp.GetRequiredService<IConfiguration>(),
+        sp.GetRequiredService<ILogger<RepositorySwitcher>>())
+);
+
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -30,6 +40,8 @@ builder.Services.ConfigureRepositories()
                 .ConfigureServices()
                 .ConfigureValidators()
                 .ConfigureMappers();
+
+
 
 
 var app = builder.Build();
