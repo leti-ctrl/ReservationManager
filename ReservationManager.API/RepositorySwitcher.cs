@@ -15,7 +15,7 @@ public class RepositorySwitcher : IRepositorySwitcher
 
     public IMockReservationRepository CurrentRepository => _currentRepository;
 
-    public RepositorySwitcher(IConfiguration configuration, ILogger<RepositorySwitcher> logger)
+    public RepositorySwitcher(IConfiguration configuration)
     {
         _configuration = configuration;
         _currentRepository = LoadRepository("EF");  // carica il repository di default
