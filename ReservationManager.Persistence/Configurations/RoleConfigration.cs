@@ -20,7 +20,7 @@ namespace ReservationManager.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
-            builder.HasQueryFilter(x => !x.IsDeleted.HasValue);
+            //builder.HasQueryFilter(x => !x.IsDeleted.HasValue);
         }
     }
 }

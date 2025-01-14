@@ -3,7 +3,7 @@ using ReservationManager.DomainModel.Meta;
 
 namespace ReservationManager.Core.Interfaces.Repositories
 {
-    public interface IRoleRepository : ICrudEditableTypeRepository<Role>
+    public interface IRoleRepository : ICrudBaseTypeRepository<Role>
     {
     }
 }
