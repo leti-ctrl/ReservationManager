@@ -6,31 +6,26 @@ namespace ReservationManager.API.Controllers;
 
 public class DllLoaderController : ControllerBase
 {
-    private readonly IRepositorySwitcher _repositorySwitcher;
+    private readonly IRepositoryProvider _iRepositoryProvider;
 
-    public DllLoaderController(IRepositorySwitcher repositorySwitcher)
+    public DllLoaderController(IRepositoryProvider iRepositoryProvider)
     {
-        _repositorySwitcher = repositorySwitcher;
+        _iRepositoryProvider = iRepositoryProvider;
     }
 
     [HttpGet("/getAllSpike")]
-    public IActionResult GetAllSpike()
-    {
-        var service = new MockReservationService(_repositorySwitcher.CurrentRepository);
-        return Ok(service.GetAllReservations());
-    }
-
-    [HttpPost("/switch-repository")]
-    public IActionResult SwitchRepository(string repositoryType)
+    public IActionResult GetAllSpike(string repositoryType)
     {
         try
         {
-            _repositorySwitcher.SwitchRepository(repositoryType);
-            return Ok($"Repository cambiato a {repositoryType}");
+            _iRepositoryProvider.SwitchRepository(repositoryType);
+            var service = new MockReservationService(_iRepositoryProvider.CurrentRepository);
+            return Ok(service.GetAllReservations());
         }
         catch (ArgumentException ex)
         {
             return BadRequest(ex.Message);
         }
+        
     }
 }

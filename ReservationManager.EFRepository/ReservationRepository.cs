@@ -4,7 +4,7 @@ using ReservationManager.Core.Interfaces.Services;
 
 namespace ReservationManager.EFRepository;
 
-public class EFReservationRepository : IMockReservationRepository
+public class ReservationRepository : IMockReservationRepository
 {
     public IEnumerable<string> GetReservations()
     {

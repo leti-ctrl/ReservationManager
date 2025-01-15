@@ -19,8 +19,7 @@ builder.Services.AddProblemDetails(
 
 
 // Aggiungi il servizio RepositorySwitcher
-builder.Services.AddSingleton<IRepositorySwitcher>(sp => 
-    new RepositorySwitcher(sp.GetRequiredService<IConfiguration>()));
+builder.Services.AddSingleton<IRepositoryProvider>(sp => new RepositoryProvider());
 
 
 

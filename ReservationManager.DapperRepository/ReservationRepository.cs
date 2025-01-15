@@ -4,7 +4,7 @@ using ReservationManager.DomainModel.Operation;
 
 namespace ReservationManager.DapperRepository;
 
-public class DapperReservationRepository : IMockReservationRepository
+public class ReservationRepository : IMockReservationRepository
 {
     public IEnumerable<string> GetReservations()
     {
