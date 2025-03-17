@@ -27,10 +27,13 @@ jobs:
       - name: Build
         working-directory: ${{env.WORKING_FOLDER}}
         run: dotnet build --configuration Release --no-restore
+        
+      - name: Crea la cartella TestResults se non esiste
+        run: mkdir -p ${{env.WORKING_FOLDER}}/TestResults
 
       - name: Test
         working-directory: ${{env.WORKING_FOLDER}}
-        run: dotnet test --no-restore --verbosity normal  --collect:"XPlat Code Coverage" --collect:"XPlat Code Coverage" --results-directory TestResults
+        run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage" --results-directory TestResults
 
       - name: Installa ReportGenerator
         run: |
@@ -39,9 +42,9 @@ jobs:
 
       - name: Genera Report di Coverage
         run: |
-          reportgenerator -reports:./ReservationManager.Core.Tests/TestResults/coverage.cobertura.xml \
-                   -targetdir:coveragereport \
-                   -reporttypes:Html
+          reportgenerator -reports:${{env.WORKING_FOLDER}}/TestResults/**/coverage.cobertura.xml \
+                         -targetdir:coveragereport \
+                         -reporttypes:Html
 
       - name: Pubblica Report di Code Coverage
         uses: actions/upload-artifact@v4
