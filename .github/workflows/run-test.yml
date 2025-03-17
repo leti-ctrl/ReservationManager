@@ -33,7 +33,9 @@ jobs:
         run: dotnet test --no-restore --verbosity normal  --collect:"XPlat Code Coverage" --collect:"XPlat Code Coverage" --results-directory ./TestResults
 
       - name: Installa ReportGenerator
-        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          dotnet tool list -g
 
       - name: Genera Report di Coverage
         run: |
