@@ -5,10 +5,8 @@ using ReservationManager.DomainModel.Base;
 
 namespace ReservationManager.Persistence.Repositories.Base
 {
-    public class CrudBaseEntityRepository<T> : RepositoryBase<T>, ICrudBaseEntityRepository<T>
-        where T : BaseEntity
+    public class CrudBaseEntityRepository<T> : RepositoryBase<T>, ICrudBaseEntityRepository<T> where T : BaseEntity
     {
-
         protected readonly ReservationManagerDbContext Context;
 
         public CrudBaseEntityRepository(ReservationManagerDbContext dbContext) : base(dbContext)
@@ -36,7 +34,6 @@ namespace ReservationManager.Persistence.Repositories.Base
             dbEntity.IsDeleted = DateTime.UtcNow;
             await base.UpdateAsync(dbEntity, cancellationToken);
         }
-
 
         public async Task<T?> UpdateEntityAsync(T entity, CancellationToken cancellationToken = default)
         {
