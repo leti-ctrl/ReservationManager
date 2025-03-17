@@ -5,7 +5,7 @@ on:
     branches: [ main, develop ]
 
 env:
-  DOTNET_VERSION: '7.0.X'
+  DOTNET_VERSION: '8.0.X'
   WORKING_FOLDER: './ReservationManager.Core.Tests'
 
 jobs:
