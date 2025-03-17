@@ -30,23 +30,23 @@ jobs:
 
       - name: Test
         working-directory: ${{env.WORKING_FOLDER}}
-        run: dotnet test --no-restore --verbosity normal  --collect:"XPlat Code Coverage"
+        run: dotnet test --no-restore --verbosity normal  --collect:"XPlat Code Coverage" --collect:"XPlat Code Coverage" --results-directory ./TestResults
 
       - name: Installa ReportGenerator
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
       - name: Genera Report di Coverage
         run: |
-          reportgenerator -reports:**/coverage.cobertura.xml \
+          reportgenerator -reports:${{ env.WORKING_FOLDER }}/TestResults/**/coverage.copertura.xml \
                           -targetdir:coveragereport \
                           -reporttypes:Html
-      
+
       - name: Pubblica Report di Code Coverage
         uses: actions/upload-artifact@v3
         with:
           name: Code-Coverage-Report
           path: coveragereport
-    
+
   fake-deploy:
     name: fake-deploy
     runs-on: ubuntu-latest
