@@ -9,6 +9,7 @@
     <DockerServiceName>reservationmanager.api</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="coverlet.runsettings" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
