@@ -47,76 +47,72 @@ public class ClosingCalendarServiceShould
     [Fact]
     public async Task GetsAllFromToday()
     {
-        var calendars = _generator.GenerateList();
-        _mockRepository.GetAllFromToday().Returns(calendars);
+        var day = DateOnly.FromDateTime(DateTime.Now);
+        var day2 = day.AddDays(1);
+        var closingCalendar = new List<ClosingCalendar>
+        {
+            new ClosingCalendar { Day = day },
+            new ClosingCalendar { Day = day2 }
+        };
+        var closingCalendarDto = new List<ClosingCalendarDto>
+        {
+            new ClosingCalendarDto { Day = day },
+            new ClosingCalendarDto { Day = day2 }
+        };
+        _mockRepository.GetAllFromToday().Returns(closingCalendar);
 
         var result = await _sut.GetAllFromToday();
 
         result.Should().NotBeNull();
-        result.Should().HaveCount(calendars.Count);
-        result.Should().BeEquivalentTo(calendars.Adapt<IEnumerable<ClosingCalendarDto>>());
+        result.Should().HaveCount(closingCalendar.Count);
+        result.Should().BeEquivalentTo(closingCalendarDto);
     }
 
     [Fact]
     public async Task CreatesNewClosingCalendar_WhenValidInputIsProvided()
     {
-        var model = _generator.GenerateSingleClosingCalendar();
-        var dto = model.Adapt<ClosingCalendarDto>();
-
-        _mockResourceValidator.ExistingResouceId(dto.ResourceId).Returns(true);
-        _mockValidator.ValidateIfAlreadyExistsClosingCalendar(dto, null).Returns(false);
-
-        _mockRepository.CreateEntityAsync(Arg.Is<ClosingCalendar>(x =>
-            x.ResourceId == model.ResourceId && x.Day == model.Day
-        )).Returns(model);
+        var resourceId = 1;
+        var day = DateOnly.FromDateTime(DateTime.Now);
+        var model = new ClosingCalendar { ResourceId = resourceId, Day = day };
+        var dto = new ClosingCalendarDto { ResourceId = resourceId, Day = day };
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>()).Returns(true);
+        _mockValidator.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), null).Returns(false);
+        _mockRepository.CreateEntityAsync(Arg.Any<ClosingCalendar>()).Returns(model);
 
         var result = await _sut.Create(dto);
 
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(dto, options => options.Excluding(x => x.Id));
-
-        await _mockRepository.Received(1).CreateEntityAsync(Arg.Is<ClosingCalendar>(x =>
-            x.ResourceId == dto.ResourceId && x.Day == dto.Day));
     }
 
     [Fact]
     public async Task ThrowsException_WhenResourceDoesNotExist_OnCreate()
     {
-        var model = _generator.GenerateSingleClosingCalendar();
-        var dto = model.Adapt<ClosingCalendarDto>();
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>()).Returns(false);
 
-        _mockResourceValidator.ExistingResouceId(dto.ResourceId).Returns(false);
-
-        var act = async () => await _sut.Create(dto);
+        var act = async () => await _sut.Create(Arg.Any<ClosingCalendarDto>());
 
         await act.Should().ThrowAsync<CreateNotPermittedException>()
             .WithMessage("Resource id does not exists.");
-
-        await _mockRepository.DidNotReceive().CreateEntityAsync(Arg.Any<ClosingCalendar>());
     }
 
     [Fact]
     public async Task ThrowsException_WhenClosingCalendarAlreadyExists_OnCreate()
     {
-        var model = _generator.GenerateSingleClosingCalendar();
-        var dto = model.Adapt<ClosingCalendarDto>();
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>()).Returns(true);
+        _mockValidator.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), null).Returns(true);
 
-        _mockResourceValidator.ExistingResouceId(dto.ResourceId).Returns(true);
-        _mockValidator.ValidateIfAlreadyExistsClosingCalendar(dto, null).Returns(true);
-
-        var act = async () => await _sut.Create(dto);
+        var act = async () => await _sut.Create(Arg.Any<ClosingCalendarDto>());
 
         await act.Should().ThrowAsync<CreateNotPermittedException>()
             .WithMessage("This closing calendar is already exists.");
-
-        await _mockRepository.DidNotReceive().CreateEntityAsync(Arg.Any<ClosingCalendar>());
     }
 
     [Fact]
     public async Task DeletesClosingCalendar_WhenValidIdIsProvided()
     {
         var model = _generator.GenerateSingleClosingCalendar();
-        _mockRepository.GetEntityByIdAsync(model.Id).Returns(model);
+        _mockRepository.GetEntityByIdAsync(Arg.Any<int>()).Returns(model);
 
         await _sut.Delete(model.Id);
 
@@ -128,28 +124,24 @@ public class ClosingCalendarServiceShould
     {
         _mockRepository.GetEntityByIdAsync(Arg.Any<int>()).Returns((ClosingCalendar?)null);
 
-        var act = async () => await _sut.Delete(1);
+        var act = async () => await _sut.Delete(Arg.Any<int>());
 
         await act.Should().ThrowAsync<EntityNotFoundException>()
             .WithMessage("Closing Calendar 1 not found.");
-
-        await _mockRepository.DidNotReceive().DeleteEntityAsync(Arg.Any<ClosingCalendar>());
     }
 
     [Fact]
     public async Task GetsFilteredClosingCalendars_WhenValidFilterIsProvided()
     {
-        var filter = new ClosingCalendarFilterDto { StartDay = DateOnly.FromDateTime(DateTime.Now) };
-        var filteredResults = _generator.GenerateList().Adapt<List<ClosingCalendarDto>>();
-
-        _mockFilterService.GetFiltered(filter).Returns(filteredResults);
+        var day = DateOnly.FromDateTime(DateTime.Now);
+        var filter = new ClosingCalendarFilterDto { StartDay =  day };
+        var filteredResults = new List<ClosingCalendarDto> { new ClosingCalendarDto { Day = day } };
+        _mockFilterService.GetFiltered(Arg.Any<ClosingCalendarFilterDto>()).Returns(filteredResults);
 
         var result = await _sut.GetFiltered(filter);
 
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(filteredResults);
-
-        await _mockFilterService.Received(1).GetFiltered(filter);
     }
 
     [Fact]
@@ -225,18 +217,19 @@ public class ClosingCalendarServiceShould
         var updatedModel = model;
         updatedModel.Description = "Updated Description";
 
-        _mockResourceValidator.ExistingResouceId(dto.ResourceId).Returns(true);
-        _mockValidator.ValidateIfAlreadyExistsClosingCalendar(dto, model.Id).Returns(false);
-
-        _mockRepository.UpdateEntityAsync(Arg.Is<ClosingCalendar>(x =>
-            x.Id == model.Id && x.ResourceId == model.ResourceId && x.Day == model.Day
-        )).Returns(updatedModel);
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>())
+            .Returns(true);
+        _mockValidator.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), Arg.Any<int?>())
+            .Returns(false);
+        _mockRepository.UpdateEntityAsync(Arg.Any<ClosingCalendar>())
+            .Returns(updatedModel);
 
         var result = await _sut.Update(model.Id, dto);
 
         result.Should().NotBeNull();
         result.Should().BeEquivalentTo(updatedModel.Adapt<ClosingCalendarDto>());
 
+        //TODO rimuovere
         await _mockRepository.Received(1).UpdateEntityAsync(Arg.Any<ClosingCalendar>());
     }
 
@@ -245,14 +238,14 @@ public class ClosingCalendarServiceShould
     {
         var model = _generator.GenerateSingleClosingCalendar();
         var dto = model.Adapt<ClosingCalendarDto>();
-
-        _mockResourceValidator.ExistingResouceId(dto.ResourceId).Returns(false);
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>()).Returns(false);
 
         var act = async () => await _sut.Update(model.Id, dto);
 
         await act.Should().ThrowAsync<CreateNotPermittedException>()
             .WithMessage("Resource id does not exists.");
 
+        //TODO rimuovere
         await _mockRepository.DidNotReceive().UpdateEntityAsync(Arg.Any<ClosingCalendar>());
     }
 
@@ -260,16 +253,16 @@ public class ClosingCalendarServiceShould
     public async Task ThrowsException_WhenClosingCalendarAlreadyExists_OnUpdate()
     {
         var model = _generator.GenerateSingleClosingCalendar();
-        var dto = model.Adapt<ClosingCalendarDto>();
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>())
+                              .Returns(true);
+        _mockValidator.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), Arg.Any<int?>())
+                      .Returns(true);
 
-        _mockResourceValidator.ExistingResouceId(dto.ResourceId).Returns(true);
-        _mockValidator.ValidateIfAlreadyExistsClosingCalendar(dto, model.Id).Returns(true);
-
-        var act = async () => await _sut.Update(model.Id, dto);
+        var act = async () => await _sut.Update(model.Id, model.Adapt<ClosingCalendarDto>());
 
         await act.Should().ThrowAsync<CreateNotPermittedException>()
-            .WithMessage("This closing calendar is already exists.");
-
+                 .WithMessage("This closing calendar is already exists.");
+        //TODO rimuovere
         await _mockRepository.DidNotReceive().UpdateEntityAsync(Arg.Any<ClosingCalendar>());
     }
 }

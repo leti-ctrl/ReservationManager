@@ -45,7 +45,7 @@ namespace ReservationManager.Core.Services
             if (!await _resourceValidator.ExistingResouceId(closingCalendarDto.ResourceId))
                 throw new CreateNotPermittedException("Resource id does not exists.");
 
-            if (await _closingCalendarValidator.ValidateIfAlreadyExistsClosingCalendar(closingCalendarDto, null))
+            if (await _closingCalendarValidator.ExistingClosignCalendar(closingCalendarDto.ResourceId, closingCalendarDto.Day, null))
                 throw new CreateNotPermittedException("This closing calendar is already exists.");
 
             var model = closingCalendarDto.Adapt<ClosingCalendar>();
@@ -97,7 +97,7 @@ namespace ReservationManager.Core.Services
             if (!await _resourceValidator.ExistingResouceId(closingCalendarDto.ResourceId))
                 throw new CreateNotPermittedException("Resource id does not exists.");
 
-            if (await _closingCalendarValidator.ValidateIfAlreadyExistsClosingCalendar(closingCalendarDto, id))
+            if (await _closingCalendarValidator.ExistingClosignCalendar(closingCalendarDto.ResourceId, closingCalendarDto.Day, id))
                 throw new CreateNotPermittedException("This closing calendar is already exists.");
 
             var closingCalendar = closingCalendarDto.Adapt<ClosingCalendar>();

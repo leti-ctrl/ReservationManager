@@ -19,7 +19,7 @@ public class ClosingCalendarFilterServiceShould
     private readonly IClosingCalendarFilterValidator _mockValidator;
     private readonly IClosingCalendarRepository _mockRepository;
     
-    public readonly ClosingCalendarFilterGenerator _generator;
+    private readonly ClosingCalendarFilterGenerator _generator;
 
 
     public ClosingCalendarFilterServiceShould()
@@ -42,7 +42,7 @@ public class ClosingCalendarFilterServiceShould
         var act = async () => await _sut.GetFiltered(filter);
 
         await act.Should().ThrowAsync<InvalidFiltersException>()
-            .WithMessage("You cannot set end date without a start date.");
+                 .WithMessage("You cannot set end date without a start date.");
     }
 
     [Fact]
