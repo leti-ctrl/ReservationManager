@@ -29,7 +29,7 @@ public class ClosingCalendarValidatorShould
                                                Arg.Any<int?>())
                                   .Returns(existingClosingCalendar);
 
-        var result = await _sut.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), null);
+        var result = await _sut.ExistingClosignCalendar(1, new DateOnly(2020, 1, 1), null);
         
         Assert.True(result);
     }
@@ -44,7 +44,7 @@ public class ClosingCalendarValidatorShould
                                                Arg.Any<int?>())
                                   .Returns(Enumerable.Empty<ClosingCalendar>());
 
-        var result = await _sut.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), null);
+        var result = await _sut.ExistingClosignCalendar(1, new DateOnly(2020, 1, 1), null);
         
         Assert.False(result);
     }
@@ -52,17 +52,16 @@ public class ClosingCalendarValidatorShould
     [Fact]
     private async Task ReturnFalse_ExistingClosignCalendar_WhenCheckEqualsClosingCalendar()
     {
-        var id = 42;
-        var existingClosingCalendar = new List<ClosingCalendar>() { new ClosingCalendar() { Id = id } };
-        _closingCalendarRepository.GetFiltered(Arg.Any<int?>(), 
-                Arg.Any<DateOnly?>(), 
-                Arg.Any<DateOnly?>(), 
-                Arg.Any<int?>(), 
-                Arg.Any<int?>())
-            .Returns(existingClosingCalendar);
+        var closingCalendarId = 42;
+        var existingClosingCalendar = new List<ClosingCalendar>() { new ClosingCalendar() { Id = closingCalendarId } };
+        _closingCalendarRepository.GetFiltered( Arg.Any<int?>(),      
+            Arg.Any<DateOnly?>(),  
+            Arg.Any<DateOnly?>(),  
+            Arg.Any<int?>(),       
+            Arg.Any<int?>()).Returns(existingClosingCalendar);
 
-        var result = await _sut.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), 42);
-        
+        var result = await _sut.ExistingClosignCalendar(1, new DateOnly(2020, 1, 1), closingCalendarId);
+
         Assert.False(result);
     }
     
@@ -77,7 +76,7 @@ public class ClosingCalendarValidatorShould
                 Arg.Any<int?>())
             .Returns(existingClosingCalendar);
 
-        var result = await _sut.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), null);
+        var result = await _sut.ExistingClosignCalendar(1, new DateOnly(2020, 1, 1), null);
         
         Assert.True(result);
     }

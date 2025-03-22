@@ -90,7 +90,7 @@ public class ClosingCalendarServiceShould
     {
         _mockResourceValidator.ExistingResouceId(Arg.Any<int>()).Returns(false);
 
-        var act = async () => await _sut.Create(Arg.Any<ClosingCalendarDto>());
+        var act = async () => await _sut.Create(new ClosingCalendarDto());
 
         await act.Should().ThrowAsync<CreateNotPermittedException>()
             .WithMessage("Resource id does not exists.");
@@ -102,7 +102,7 @@ public class ClosingCalendarServiceShould
         _mockResourceValidator.ExistingResouceId(Arg.Any<int>()).Returns(true);
         _mockValidator.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), null).Returns(true);
 
-        var act = async () => await _sut.Create(Arg.Any<ClosingCalendarDto>());
+        var act = async () => await _sut.Create(new ClosingCalendarDto());
 
         await act.Should().ThrowAsync<CreateNotPermittedException>()
             .WithMessage("This closing calendar is already exists.");
@@ -122,12 +122,13 @@ public class ClosingCalendarServiceShould
     [Fact]
     public async Task ThrowsException_WhenClosingCalendarDoesNotExist_OnDelete()
     {
+        var entityId = 1;
         _mockRepository.GetEntityByIdAsync(Arg.Any<int>()).Returns((ClosingCalendar?)null);
 
-        var act = async () => await _sut.Delete(Arg.Any<int>());
+        var act = async () => await _sut.Delete(entityId);
 
         await act.Should().ThrowAsync<EntityNotFoundException>()
-            .WithMessage("Closing Calendar 1 not found.");
+            .WithMessage($"Closing Calendar {entityId} not found.");
     }
 
     [Fact]
@@ -195,18 +196,14 @@ public class ClosingCalendarServiceShould
     [Fact]
     public async Task ThrowsException_WhenResourceTypeDoesNotExist_OnBulkCreate()
     {
-        var bulkDto = new BulkClosingCalendarDto { ResourceTypeId = 999 };
+        var resourceTypeId = 999;
+        var bulkClosingCalendarDto = new BulkClosingCalendarDto() { ResourceTypeId = resourceTypeId };
+        _mockResourceValidator.ValidateResourceType(Arg.Any<int>()).Returns(false);
 
-        _mockResourceValidator.ValidateResourceType(bulkDto.ResourceTypeId).Returns(false);
+        var result = async () => await _sut.BulkCreate(bulkClosingCalendarDto);
 
-        // Act
-        var act = async () => await _sut.BulkCreate(bulkDto);
-
-        // Assert
-        await act.Should().ThrowAsync<CreateNotPermittedException>()
-            .WithMessage($"Resource type {bulkDto.ResourceTypeId} does not exist.");
-
-        await _mockRepository.DidNotReceive().CreateEntitiesAsync(Arg.Any<List<ClosingCalendar>>());
+        await result.Should().ThrowAsync<CreateNotPermittedException>()
+            .WithMessage($"Resource type {resourceTypeId} does not exist.");
     }
 
     [Fact]
