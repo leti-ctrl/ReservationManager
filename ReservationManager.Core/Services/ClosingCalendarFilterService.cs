@@ -1,3 +1,4 @@
+using FluentValidation;
 using Mapster;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
@@ -9,19 +10,19 @@ namespace ReservationManager.Core.Services;
 
 public class ClosingCalendarFilterService : IClosingCalendarFilterService
 {
-    private readonly IClosingCalendarFilterValidator _closingCalendarFilterValidator;
+    private readonly IClosingCalendarFilterDtoValidator _closingCalendarFilterDtoValidator;
     private readonly IClosingCalendarRepository _closingCalendarRepository;
 
 
-    public ClosingCalendarFilterService(IClosingCalendarFilterValidator closingCalendarFilterValidator, IClosingCalendarRepository closingCalendarRepository)
+    public ClosingCalendarFilterService(IClosingCalendarFilterDtoValidator closingCalendarFilterDtoValidator, IClosingCalendarRepository closingCalendarRepository)
     {
-        _closingCalendarFilterValidator = closingCalendarFilterValidator;
+        _closingCalendarFilterDtoValidator = closingCalendarFilterDtoValidator;
         _closingCalendarRepository = closingCalendarRepository;
     }
     
     public async Task<IEnumerable<ClosingCalendarDto>> GetFiltered(ClosingCalendarFilterDto filter)
     {
-        if (!_closingCalendarFilterValidator.IsLegalDateRange(filter))
+        if (!_closingCalendarFilterDtoValidator.Validate(filter).IsValid)
             throw new InvalidFiltersException("You cannot set end date without a start date.");
 
         var closingCalendars = (await _closingCalendarRepository.GetFiltered(filter.Id,

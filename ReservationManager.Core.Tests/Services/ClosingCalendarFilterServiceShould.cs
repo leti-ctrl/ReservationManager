@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.ComponentModel.DataAnnotations;
+using FluentAssertions;
 using NSubstitute;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
@@ -16,7 +17,7 @@ public class ClosingCalendarFilterServiceShould
 {
     private readonly IClosingCalendarFilterService _sut;
     
-    private readonly IClosingCalendarFilterValidator _mockValidator;
+    private readonly IClosingCalendarFilterDtoValidator _mockDtoValidator;
     private readonly IClosingCalendarRepository _mockRepository;
     
     private readonly ClosingCalendarFilterGenerator _generator;
@@ -24,10 +25,10 @@ public class ClosingCalendarFilterServiceShould
 
     public ClosingCalendarFilterServiceShould()
     {
-        _mockValidator = Substitute.For<IClosingCalendarFilterValidator>();
+        _mockDtoValidator = Substitute.For<IClosingCalendarFilterDtoValidator>();
         _mockRepository = Substitute.For<IClosingCalendarRepository>();
         
-        _sut = new ClosingCalendarFilterService(_mockValidator, _mockRepository);
+        _sut = new ClosingCalendarFilterService(_mockDtoValidator, _mockRepository);
         
         _generator = new ClosingCalendarFilterGenerator(); 
     }
@@ -36,8 +37,12 @@ public class ClosingCalendarFilterServiceShould
     public async Task ThrowsInvalidFiltersException_WhenInvalidDateRangePassed()
     {
         var filter = _generator.GenerateInvalidFilter();
+        _mockDtoValidator.Validate(filter)
+            .Returns(new FluentValidation.Results.ValidationResult(new List<FluentValidation.Results.ValidationFailure>
+            {
+                new FluentValidation.Results.ValidationFailure("StartDay", "StartDay must be before or equal to EndDay.")
+            }));
 
-        _mockValidator.IsLegalDateRange(filter).Returns(false);
 
         var act = async () => await _sut.GetFiltered(filter);
 
@@ -49,8 +54,7 @@ public class ClosingCalendarFilterServiceShould
     public async Task ReturnsEmptyList_WhenRepositoryReturnsNoResults()
     {
         var filter = _generator.GenerateValidFilter();
-
-        _mockValidator.IsLegalDateRange(filter).Returns(true);
+        _mockDtoValidator.Validate(filter).Returns(new FluentValidation.Results.ValidationResult());
         _mockRepository.GetFiltered(Arg.Any<int?>(), Arg.Any<DateOnly?>(), Arg.Any<DateOnly?>(), Arg.Any<int?>(), Arg.Any<int?>())
             .Returns(Enumerable.Empty<ClosingCalendar>());
 
@@ -65,8 +69,7 @@ public class ClosingCalendarFilterServiceShould
     {
         var filter = _generator.GenerateValidFilter();
         var dataFromRepo = new ClosingCalendarGenerator().GenerateList();
-
-        _mockValidator.IsLegalDateRange(filter).Returns(true);
+        _mockDtoValidator.Validate(filter).Returns(new FluentValidation.Results.ValidationResult());
         _mockRepository.GetFiltered(Arg.Any<int?>(), Arg.Any<DateOnly?>(), 
                 Arg.Any<DateOnly?>(), Arg.Any<int?>(), Arg.Any<int?>())
             .Returns(dataFromRepo);
@@ -82,8 +85,7 @@ public class ClosingCalendarFilterServiceShould
     public async Task CallsRepositoryWithCorrectParameters_WhenValidFilterIsPassed()
     {
         var filter = _generator.GenerateFilter();
-
-        _mockValidator.IsLegalDateRange(filter).Returns(true);
+        _mockDtoValidator.Validate(filter).Returns(new FluentValidation.Results.ValidationResult());
 
         await _sut.GetFiltered(filter);
 
