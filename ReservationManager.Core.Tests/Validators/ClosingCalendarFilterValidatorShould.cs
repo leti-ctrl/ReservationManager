@@ -15,36 +15,36 @@ public class ClosingCalendarFilterValidatorShould
         _sut = new ClosingCalendarFilterDtoValidator();
     }
 
-    // [Theory]
-    // [ClassData(typeof(ValidDateOnlyData))]
-    // public void ReturnTrue_IsLegalDateRange_WhenDateOnlyIsValid(DateOnly? start, DateOnly? end)
-    // {
-    //     var filter = new ClosingCalendarFilterDto()
-    //     {
-    //         StartDay = start,
-    //         EndDay = end,
-    //     };
-    //     
-    //     var result = _sut.IsLegalDateRange(filter);
-    //     
-    //     Assert.True(result);
-    // }
-    //
-    //
-    // [Theory]
-    // [ClassData(typeof(InvalidDateOnlyData))]
-    // public void ReturnFalse_IsLegalDateRange_WhenDateOnlyIsNotValid(DateOnly? start, DateOnly? end)
-    // {
-    //     var filter = new ClosingCalendarFilterDto()
-    //     {
-    //         StartDay = start,
-    //         EndDay = end,
-    //     };
-    //     
-    //     var result = _sut.IsLegalDateRange(filter);
-    //     
-    //     Assert.False(result);
-    // }
+    [Theory]
+    [ClassData(typeof(ValidDateOnlyData))]
+    public void ReturnTrue_IsLegalDateRange_WhenDateOnlyIsValid(DateOnly? start, DateOnly? end)
+    {
+        var filter = new ClosingCalendarFilterDto()
+        {
+            StartDay = start,
+            EndDay = end,
+        };
+        
+        var result = _sut.Validate(filter);
+        
+        Assert.True(result.IsValid);
+    }
+    
+    
+    [Theory]
+    [ClassData(typeof(InvalidDateOnlyData))]
+    public void ReturnFalse_IsLegalDateRange_WhenDateOnlyIsNotValid(DateOnly? start, DateOnly? end)
+    {
+        var filter = new ClosingCalendarFilterDto()
+        {
+            StartDay = start,
+            EndDay = end,
+        };
+        
+        var result = _sut.Validate(filter);
+        
+        Assert.False(result.IsValid);
+    }
 }
 
 public class ValidDateOnlyData : TheoryData<DateOnly?, DateOnly?>

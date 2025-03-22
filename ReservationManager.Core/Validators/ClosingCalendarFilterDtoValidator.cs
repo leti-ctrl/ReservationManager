@@ -8,8 +8,14 @@ namespace ReservationManager.Core.Validators
     {
         public ClosingCalendarFilterDtoValidator()
         {
-            RuleFor(x => x)
-                .Must(x => x.StartDay == null || x.EndDay == null || x.StartDay <= x.EndDay)
+            RuleFor(x => x.StartDay)
+                .NotNull()
+                .When(x => x.EndDay.HasValue)
+                .WithMessage("You cannot set an end date without a start date.");
+            
+            RuleFor(x => x.StartDay)
+                .LessThanOrEqualTo(x => x.EndDay)
+                .When(x => x.StartDay.HasValue && x.EndDay.HasValue)
                 .WithMessage("StartDay must be before or equal to EndDay.");
         }
 
