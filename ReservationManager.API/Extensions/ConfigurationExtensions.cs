@@ -67,7 +67,7 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IClosingCalendarFilterDtoValidator, ClosingCalendarFilterDtoValidator>();
             services.AddScoped<IClosingCalendarValidator, ClosingCalendarValidator>();
             services.AddScoped<IResourceValidator, ResourceValidator>();
-            services.AddScoped<IResourceFilterValidator, ResourceFilterValidator>();
+            services.AddScoped<IResourceFilterDtoValidator, ResourceFilterDtoValidator>();
             services.AddScoped<IReservationTypeValidator, ReservationTypeValidator>();
             services.AddScoped<IUpsertReservationValidator, UpsertReservationValidator>();
             

@@ -42,23 +42,27 @@ namespace Tests.Services
         [Fact]
         public async Task ReturnsUpdatedDto_WhenResourceTypeExists()
         {
+            var id = 1;
+            var name = "Updated Name";
+            var code = "RT1";
+            var updatedDto = new UpsertResourceTypeDto { Code = code, Name =  name};
             var existingResourceType = new ResourceTypeGenerator().GenerateSingle();
-            var updatedDto = new UpsertResourceTypeDto { Code = "RT1", Name = "Updated Name" };
-            _mockResourceTypeRepository.GetTypeById(1).Returns(existingResourceType);
-            _mockResourceTypeRepository.UpdateTypeAsync(existingResourceType).Returns(existingResourceType);
+            _mockResourceTypeRepository.GetTypeById(Arg.Any<int>()).Returns(existingResourceType);
+            _mockResourceTypeRepository.UpdateTypeAsync(Arg.Any<ResourceType>()).Returns(existingResourceType);
 
-            var result = await _sut.UpdateResourceType(1, updatedDto);
+            var result = await _sut.UpdateResourceType(id, updatedDto);
 
             result.Should().NotBeNull();
-            result.Name.Should().Be("Updated Name");
-            existingResourceType.Name.Should().Be("Updated Name");
+            result.Name.Should().Be(name);
+            result.Code.Should().Be(code);
+            result.Id.Should().Be(id);
         }
 
         [Fact]
         public async Task ReturnsNull_WhenResourceTypeDoesNotExist()
         {
             var updatedDto = new UpsertResourceTypeDto { Code = "RT1", Name = "Updated Name" };
-            _mockResourceTypeRepository.GetTypeById(1).Returns((ResourceType)null);
+            _mockResourceTypeRepository.GetTypeById(1).Returns((ResourceType)null!);
 
             var result = await _sut.UpdateResourceType(1, updatedDto);
 
@@ -68,15 +72,19 @@ namespace Tests.Services
         [Fact]
         public async Task ReturnsCreatedDto()
         {
-            var newResourceType = new ResourceTypeGenerator().GenerateSingle();
-            var newResourceDto = newResourceType.Adapt<UpsertResourceTypeDto>();
+            var id = 1;
+            var name = "Name";
+            var code = "RT1";
+            var newResourceType = new ResourceType { Id = id, Code = code, Name = name };
+            var newResourceDto = new UpsertResourceTypeDto { Code = code, Name = name };
             _mockResourceTypeRepository.CreateTypeAsync(Arg.Any<ResourceType>()).Returns(newResourceType);
 
             var result = await _sut.CreateResourceType(newResourceDto);
 
             result.Should().NotBeNull();
-            result.Code.Should().Be("RT1");
-            result.Name.Should().Be("Name");
+            result.Code.Should().Be(code);
+            result.Name.Should().Be(name);
+            result.Id.Should().Be(id);
         }
 
         [Fact]

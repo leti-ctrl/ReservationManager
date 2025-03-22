@@ -1,9 +1,11 @@
 ﻿using NSubstitute;
 using ReservationManager.Core.Validators;
 using ReservationManager.DomainModel.Meta;
+using Tests.EntityGenerators;
 
 namespace Tests.Validators;
 
+[Trait("Category", "Unit")]
 public class ReservationTypeValidatorShould
 {
     private readonly ReservationTypeValidator _sut;
@@ -30,7 +32,7 @@ public class ReservationTypeValidatorShould
     }
 
     [Theory]
-    [ClassData(typeof(ReservationTypeInvalidModel))]
+    [ClassData(typeof(ReservationTypeInvalidModelGenerator))]
     public void Validate_InvalidReservationType_ShouldReturnFalse(ReservationType reservationType)
     {
         var result = _sut.Validate(reservationType);
@@ -39,44 +41,3 @@ public class ReservationTypeValidatorShould
     }
 }
 
-public class ReservationTypeInvalidModel : TheoryData<ReservationType>
-{
-    public ReservationTypeInvalidModel()
-    {
-        Add(new ReservationType()
-        {
-            Code = "",
-            Name = "",
-            Start = new TimeOnly(15, 00, 00),
-            End = new TimeOnly(16, 00, 00)
-        });
-        Add(new ReservationType()
-        {
-            Code = null,
-            Name = "TestName",
-            Start = new TimeOnly(15, 00, 00),
-            End = new TimeOnly(16, 00, 00)
-        });
-        Add(new ReservationType()
-        {
-            Code = "TestCode",
-            Name = null,
-            Start = new TimeOnly(15, 00, 00),
-            End = new TimeOnly(16, 00, 00)
-        });
-        Add(new ReservationType()
-        {
-            Code = "TestCode",
-            Name = "TestName",
-            Start = new TimeOnly(18, 00, 00),
-            End = new TimeOnly(16, 00, 00)
-        });
-        Add(new ReservationType()
-        {
-            Code = "TestCode",
-            Name = "TestName",
-            Start = new TimeOnly(),
-            End = new TimeOnly()
-        });
-    }
-}

@@ -5,6 +5,7 @@ using ReservationManager.DomainModel.Operation;
 
 namespace Tests.Validators;
 
+[Trait("Category", "Unit")]
 public class ClosingCalendarValidatorShould
 {
     private readonly ClosingCalendarValidator _sut;

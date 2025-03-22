@@ -17,7 +17,7 @@ namespace Tests.Services
     {
         private readonly IResourceFilterService _sut;
         
-        private readonly IResourceFilterValidator _mockResourceFilterValidator;
+        private readonly IResourceFilterDtoValidator _mockResourceFilterValidator;
         private readonly IResourceRepository _mockResourceRepository;
         private readonly IReservationRepository _mockReservationRepository;
         private readonly IClosingCalendarFilterService _mockClosingCalendarFilterService;
@@ -27,7 +27,7 @@ namespace Tests.Services
 
         public ResourceFilterServiceShould()
         {
-            _mockResourceFilterValidator = Substitute.For<IResourceFilterValidator>();
+            _mockResourceFilterValidator = Substitute.For<IResourceFilterDtoValidator>();
             _mockResourceRepository = Substitute.For<IResourceRepository>();
             _mockReservationRepository = Substitute.For<IReservationRepository>();
             _mockClosingCalendarFilterService = Substitute.For<IClosingCalendarFilterService>();
