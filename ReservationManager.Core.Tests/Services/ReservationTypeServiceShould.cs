@@ -70,8 +70,10 @@ namespace Tests.Services
             var request = _generator.GenerateUpsertDto("A", "Test", new TimeOnly(8, 0), new TimeOnly(10, 0));
             var existingType = _generator.GenerateReservationType(2, "A", "Duplicate", new TimeOnly(9, 0), new TimeOnly(11, 0));
 
-            _mockValidator.ValidateAsync(Arg.Any<ReservationType>()).Returns(new FluentValidation.Results.ValidationResult());
-            _mockReservationTypeRepository.GetByCodeAsync("A").Returns(existingType);
+            _mockValidator.ValidateAsync(Arg.Any<ReservationType>())
+                .Returns(new FluentValidation.Results.ValidationResult());
+            _mockReservationTypeRepository.GetByCodeAsync("A")
+                .Returns(existingType);
 
             var act = async () => await _sut.CreateReservationType(request);
 

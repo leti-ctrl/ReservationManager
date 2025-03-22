@@ -42,7 +42,7 @@ public class ResourceValidadorShould
     private async Task ReturnFalse_ValidateResourceType_WhenResourceTypeNotExists()
     {
         var resourceTypeId = 1;
-        _resourceTypeRepository.GetTypeById(resourceTypeId).Returns((ResourceType)null);
+        _resourceTypeRepository.GetTypeById(resourceTypeId).Returns((ResourceType)null!);
         
         var result = await _sut.ValidateResourceType(resourceTypeId);
         

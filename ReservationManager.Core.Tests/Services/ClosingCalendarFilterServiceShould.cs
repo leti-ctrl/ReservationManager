@@ -55,7 +55,11 @@ public class ClosingCalendarFilterServiceShould
     {
         var filter = _generator.GenerateValidFilter();
         _mockDtoValidator.Validate(filter).Returns(new FluentValidation.Results.ValidationResult());
-        _mockRepository.GetFiltered(Arg.Any<int?>(), Arg.Any<DateOnly?>(), Arg.Any<DateOnly?>(), Arg.Any<int?>(), Arg.Any<int?>())
+        _mockRepository.GetFiltered(null, 
+                            filter.StartDay, 
+                            filter.EndDay, 
+                            null, 
+                            null)
             .Returns(Enumerable.Empty<ClosingCalendar>());
 
         var result = await _sut.GetFiltered(filter);
@@ -70,8 +74,11 @@ public class ClosingCalendarFilterServiceShould
         var filter = _generator.GenerateValidFilter();
         var dataFromRepo = new ClosingCalendarGenerator().GenerateList();
         _mockDtoValidator.Validate(filter).Returns(new FluentValidation.Results.ValidationResult());
-        _mockRepository.GetFiltered(Arg.Any<int?>(), Arg.Any<DateOnly?>(), 
-                Arg.Any<DateOnly?>(), Arg.Any<int?>(), Arg.Any<int?>())
+        _mockRepository.GetFiltered(null, 
+                filter.StartDay, 
+                filter.EndDay, 
+                null, 
+                null)
             .Returns(dataFromRepo);
 
         var result = await _sut.GetFiltered(filter);

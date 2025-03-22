@@ -22,15 +22,13 @@ public class ClosingCalendarValidatorShould
     [Fact]
     private async Task ReturnTrue_ExistingClosignCalendar_WhenExistingClosingCalendar()
     {
+        var resourceId = 1;
+        var fromDate = new DateOnly(2020, 1, 1);
         var existingClosingCalendar = new List<ClosingCalendar>() { new ClosingCalendar() };
-        _closingCalendarRepository.GetFiltered(Arg.Any<int?>(), 
-                                               Arg.Any<DateOnly?>(), 
-                                               Arg.Any<DateOnly?>(), 
-                                               Arg.Any<int?>(), 
-                                               Arg.Any<int?>())
+        _closingCalendarRepository.GetFiltered(null, fromDate, null, resourceId, null)
                                   .Returns(existingClosingCalendar);
 
-        var result = await _sut.ExistingClosignCalendar(1, new DateOnly(2020, 1, 1), null);
+        var result = await _sut.ExistingClosignCalendar(resourceId, fromDate, null);
         
         Assert.True(result);
     }
@@ -38,14 +36,12 @@ public class ClosingCalendarValidatorShould
     [Fact]
     private async Task ReturnFalse_ExistingClosignCalendar_WhenNotExistingClosingCalendar()
     {
-        _closingCalendarRepository.GetFiltered(Arg.Any<int?>(), 
-                                               Arg.Any<DateOnly?>(), 
-                                               Arg.Any<DateOnly?>(), 
-                                               Arg.Any<int?>(), 
-                                               Arg.Any<int?>())
+        var resourceId = 1;
+        var fromDate = new DateOnly(2020, 1, 1);
+        _closingCalendarRepository.GetFiltered(null, fromDate, null, resourceId, null)
                                   .Returns(Enumerable.Empty<ClosingCalendar>());
 
-        var result = await _sut.ExistingClosignCalendar(1, new DateOnly(2020, 1, 1), null);
+        var result = await _sut.ExistingClosignCalendar(resourceId, fromDate, null);
         
         Assert.False(result);
     }
@@ -54,14 +50,12 @@ public class ClosingCalendarValidatorShould
     private async Task ReturnFalse_ExistingClosignCalendar_WhenCheckEqualsClosingCalendar()
     {
         var closingCalendarId = 42;
+        var fromDate = new DateOnly(2020, 1, 1);
         var existingClosingCalendar = new List<ClosingCalendar>() { new ClosingCalendar() { Id = closingCalendarId } };
-        _closingCalendarRepository.GetFiltered( Arg.Any<int?>(),      
-            Arg.Any<DateOnly?>(),  
-            Arg.Any<DateOnly?>(),  
-            Arg.Any<int?>(),       
-            Arg.Any<int?>()).Returns(existingClosingCalendar);
+        _closingCalendarRepository.GetFiltered( closingCalendarId, fromDate, null, null, null )
+                                  .Returns(existingClosingCalendar);
 
-        var result = await _sut.ExistingClosignCalendar(1, new DateOnly(2020, 1, 1), closingCalendarId);
+        var result = await _sut.ExistingClosignCalendar(1, fromDate, closingCalendarId);
 
         Assert.False(result);
     }
@@ -69,15 +63,13 @@ public class ClosingCalendarValidatorShould
     [Fact]
     private async Task ReturnTrue_ExistingClosignCalendar_WhenMultipleClosingCalendarExists()
     {
+        var resourceId = 1;
+        var fromDate = new DateOnly(2020, 1, 1);
         var existingClosingCalendar = new List<ClosingCalendar>() { new ClosingCalendar() };
-        _closingCalendarRepository.GetFiltered(Arg.Any<int?>(), 
-                Arg.Any<DateOnly?>(), 
-                Arg.Any<DateOnly?>(), 
-                Arg.Any<int?>(), 
-                Arg.Any<int?>())
+        _closingCalendarRepository.GetFiltered(null, fromDate, null, resourceId, null)
             .Returns(existingClosingCalendar);
 
-        var result = await _sut.ExistingClosignCalendar(1, new DateOnly(2020, 1, 1), null);
+        var result = await _sut.ExistingClosignCalendar(resourceId, fromDate, null);
         
         Assert.True(result);
     }
