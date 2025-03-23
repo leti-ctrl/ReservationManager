@@ -22,9 +22,7 @@ public class ClosingCalendarServiceShould
     private readonly IClosingCalendarValidator _mockClosingCalendarValidator;
     private readonly IClosingCalendarFilterService _mockClosingCalendarFilterService;
     private readonly IResourceService _mockResourceService;
-
-    private readonly ClosingCalendarGenerator _generator;
-
+    
     public ClosingCalendarServiceShould()
     {
         _mockClosingCalendarRepository = Substitute.For<IClosingCalendarRepository>();
@@ -41,7 +39,6 @@ public class ClosingCalendarServiceShould
             _mockResourceService
         );
         
-        _generator = new ClosingCalendarGenerator();
     }
 
     [Fact]
@@ -74,7 +71,8 @@ public class ClosingCalendarServiceShould
         var day = DateOnly.FromDateTime(DateTime.Now);
         var filter = new ClosingCalendarFilterDto { StartDay =  day };
         var filteredResults = new List<ClosingCalendarDto> { new ClosingCalendarDto { Day = day } };
-        _mockClosingCalendarFilterService.GetFiltered(filter).Returns(filteredResults);
+        _mockClosingCalendarFilterService.GetFiltered(Arg.Any<ClosingCalendarFilterDto>())
+                                         .Returns(filteredResults);
 
         var result = await _sut.GetFiltered(filter);
 
@@ -89,7 +87,7 @@ public class ClosingCalendarServiceShould
         var day = new DateOnly(2020, 01, 01);
         var description = "test";
         var dto = new ClosingCalendarDto { ResourceId = resourceId, Day = day, Description =  description};
-        _mockResourceValidator.ExistingResouceId(resourceId)
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>())
                               .Returns(false);
 
         var act = async () => await _sut.Create(dto);
@@ -106,9 +104,9 @@ public class ClosingCalendarServiceShould
         var day = new DateOnly(2020, 01, 01);
         var description = "test";
         var dto = new ClosingCalendarDto { ResourceId = resourceId, Day = day, Description =  description};
-        _mockResourceValidator.ExistingResouceId(resourceId)
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>())
                               .Returns(true);
-        _mockClosingCalendarValidator.ExistingClosignCalendar(resourceId, day, null)
+        _mockClosingCalendarValidator.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), Arg.Any<int?>())
                       .Returns(true);
 
         var act = async () => await _sut.Create(dto);
@@ -123,19 +121,27 @@ public class ClosingCalendarServiceShould
     {
         var resourceId = 1;
         var description = "test";
+        var closingCalendarId = 42;
         var day = DateOnly.FromDateTime(DateTime.Now);
-        var entity = new ClosingCalendar { ResourceId = resourceId, Day = day, Description = description };
+        var entityCreated = new ClosingCalendar
+        {
+            Id = closingCalendarId, 
+            ResourceId = resourceId, 
+            Day = day, 
+            Description = description
+        };
         var dto = new ClosingCalendarDto { ResourceId = resourceId, Day = day, Description = description };
-        _mockResourceValidator.ExistingResouceId(resourceId)
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>())
                               .Returns(true);
-        _mockClosingCalendarValidator.ExistingClosignCalendar(resourceId, day, null)
+        _mockClosingCalendarValidator.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), Arg.Any<int?>())
                       .Returns(false);
-        _mockClosingCalendarRepository.CreateEntityAsync(Arg.Any<ClosingCalendar>())
-                       .Returns(entity);
+        _mockClosingCalendarRepository.CreateEntityAsync(Arg.Any<ClosingCalendar>(), Arg.Any<CancellationToken>())
+                       .Returns(entityCreated);
 
         var result = await _sut.Create(dto);
 
         result.Should().NotBeNull();
+        result.Id.Should().Be(closingCalendarId);
         result.ResourceId.Should().Be(resourceId);
         result.Day.Should().Be(day);
         result.Description.Should().Be(description);
@@ -155,7 +161,7 @@ public class ClosingCalendarServiceShould
             To =  to, 
             Description =  description
         };
-        _mockResourceValidator.ValidateResourceType(resourceTypeId)
+        _mockResourceValidator.ValidateResourceType(Arg.Any<int>())
             .Returns(false);
 
         var result = async () => await _sut.BulkCreate(dto);
@@ -180,10 +186,10 @@ public class ClosingCalendarServiceShould
             Description =  description
         };
         var resourceFilter = new ResourceFilterDto { TypeId = resourceTypeId };
-        _mockResourceValidator.ValidateResourceType(resourceTypeId)
+        _mockResourceValidator.ValidateResourceType(Arg.Any<int>())
             .Returns(true);
-        _mockResourceService.GetFilteredResources(resourceFilter)
-            .Returns(Enumerable.Empty<ResourceDto>());
+        _mockResourceService.GetFilteredResources(Arg.Any<ResourceFilterDto>())
+            .Returns(Enumerable.Empty<ResourceDto>().ToList());
         
         var result = await _sut.BulkCreate(dto);
 
@@ -226,7 +232,7 @@ public class ClosingCalendarServiceShould
             new ClosingCalendar { Day = to, Description = description, ResourceId = resourceId },
         };
         var resourceFilter = new ResourceFilterDto { TypeId = resourceTypeId };
-        _mockResourceValidator.ValidateResourceType(resourceTypeId)
+        _mockResourceValidator.ValidateResourceType(Arg.Any<int>())
             .Returns(true);
         _mockResourceService.GetFilteredResources(resourceFilter)
             .Returns(resourceList);
@@ -239,7 +245,7 @@ public class ClosingCalendarServiceShould
     }
 
     [Fact]
-    public async Task ReturnClosingCalendar_BulkCreate_WhenNotExistingClosingCalendars()
+    public async Task NotCreateDuplicateClosingCalendarEntries_BulkCreate_WhenNotExistingClosingCalendars()
     {
         var resourceTypeId = 1;
         var resourceTypeCode = "test";
@@ -273,13 +279,12 @@ public class ClosingCalendarServiceShould
             new ClosingCalendar { Day = from, Description = description, ResourceId = resourceId },
             new ClosingCalendar { Day = to, Description = description, ResourceId = resourceId },
         };
-        var resourceFilter = new ResourceFilterDto { TypeId = resourceTypeId };
-        _mockResourceValidator.ValidateResourceType(resourceTypeId)
+        _mockResourceValidator.ValidateResourceType(Arg.Any<int>())
             .Returns(true);
-        _mockResourceService.GetFilteredResources(resourceFilter)
+        _mockResourceService.GetFilteredResources(Arg.Any<ResourceFilterDto>())
             .Returns(resourceList);
-        _mockClosingCalendarRepository.GetExistingClosingCalendars(new List<int> { resourceId }, new List<DateOnly> { from, to })
-            .Returns(Enumerable.Empty<ClosingCalendar>());
+        _mockClosingCalendarRepository.GetExistingClosingCalendars(Arg.Any<List<int>>(), Arg.Any<List<DateOnly>>())
+            .Returns(Enumerable.Empty<ClosingCalendar>().ToList());
         _mockClosingCalendarRepository.CreateEntitiesAsync(Arg.Any<List<ClosingCalendar>>())
             .Returns(closingCalendar);
         
@@ -296,6 +301,76 @@ public class ClosingCalendarServiceShould
     }
 
     [Fact]
+public async Task ReturnClosingCalendar_BulkCreate_WhenNotExistingClosingCalendars()
+{
+    // Arrange
+    var resourceTypeId = 1;
+    var resourceTypeCode = "test";
+    var resourceId = 42;
+    var from = new DateOnly(2020, 01, 01);
+    var to = new DateOnly(2020, 01, 02);
+    var description = "test";
+    
+    var dto = new BulkClosingCalendarDto
+    {
+        ResourceTypeId = resourceTypeId, 
+        From = from, 
+        To = to, 
+        Description = description
+    };
+
+    var resourceList = new List<ResourceDto>
+    {
+        new ResourceDto
+        { 
+            Description = "", 
+            Id = resourceId, 
+            Type = new ResourceTypeDto
+            {
+                Id = resourceTypeId, 
+                Code = resourceTypeCode
+            }
+        }
+    };
+
+    var expectedClosingCalendars = new List<ClosingCalendar>
+    {
+        new ClosingCalendar { Day = from, Description = description, ResourceId = resourceId },
+        new ClosingCalendar { Day = to, Description = description, ResourceId = resourceId }
+    };
+
+    _mockResourceValidator.ValidateResourceType(resourceTypeId)
+        .Returns(true);
+
+    _mockResourceService.GetFilteredResources(Arg.Any<ResourceFilterDto>())
+        .Returns(resourceList);
+
+    _mockClosingCalendarRepository.GetExistingClosingCalendars(Arg.Any<List<int>>(), Arg.Any<List<DateOnly>>())
+        .Returns(Enumerable.Empty<ClosingCalendar>().ToList()); // Nessun calendario esistente
+
+    _mockClosingCalendarRepository.CreateEntitiesAsync(Arg.Any<List<ClosingCalendar>>())
+        .Returns(expectedClosingCalendars); // Simula il ritorno delle entità create
+
+    // Act
+    var result = await _sut.BulkCreate(dto);
+
+    // Assert
+    result.Should().NotBeEmpty();
+    result.Should().HaveCount(expectedClosingCalendars.Count);
+
+    result.First().Day.Should().Be(from);
+    result.First().Description.Should().Be(description);
+    result.First().ResourceId.Should().Be(resourceId);
+
+    result.Last().Day.Should().Be(to);
+    result.Last().Description.Should().Be(description);
+    result.Last().ResourceId.Should().Be(resourceId);
+
+    _mockClosingCalendarRepository.Received(1).CreateEntitiesAsync(Arg.Any<List<ClosingCalendar>>());
+}
+
+    
+    [Fact]
     public async Task ThrowsCreateNotPermittedException_Update_WhenResourceDoesNotExist()
     {
         var resourceId = -1;
@@ -303,7 +378,7 @@ public class ClosingCalendarServiceShould
         var day = new DateOnly(2020, 01, 01);
         var description = "test";
         var dto = new ClosingCalendarDto { ResourceId = resourceId, Day = day, Description =  description};
-        _mockResourceValidator.ExistingResouceId(resourceId)
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>())
             .Returns(false);
 
         var result = async () => await _sut.Update(closingCalendarId, dto);
@@ -321,9 +396,9 @@ public class ClosingCalendarServiceShould
         var day = new DateOnly(2020, 01, 01);
         var description = "test";
         var dto = new ClosingCalendarDto { ResourceId = resourceId, Day = day, Description =  description};
-        _mockResourceValidator.ExistingResouceId(resourceId)
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>())
             .Returns(true);
-        _mockClosingCalendarValidator.ExistingClosignCalendar(resourceId, day, closingCalendarId)
+        _mockClosingCalendarValidator.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), Arg.Any<int?>())
             .Returns(true);
 
         var result = async () => await _sut.Update(closingCalendarId, dto);
@@ -342,9 +417,9 @@ public class ClosingCalendarServiceShould
         var day = DateOnly.FromDateTime(DateTime.Now);
         var entity = new ClosingCalendar { Id = closingCalendarId, ResourceId = resourceId, Day = day, Description = description };
         var dto = new ClosingCalendarDto { ResourceId = resourceId, Day = day, Description = description };
-        _mockResourceValidator.ExistingResouceId(resourceId)
+        _mockResourceValidator.ExistingResouceId(Arg.Any<int>())
             .Returns(true);
-        _mockClosingCalendarValidator.ExistingClosignCalendar(resourceId, day, closingCalendarId)
+        _mockClosingCalendarValidator.ExistingClosignCalendar(Arg.Any<int>(), Arg.Any<DateOnly>(), Arg.Any<int?>())
             .Returns(false);
         _mockClosingCalendarRepository.UpdateEntityAsync(Arg.Any<ClosingCalendar>())
             .Returns(entity);
@@ -362,7 +437,7 @@ public class ClosingCalendarServiceShould
     public async Task ThrowsException_WhenClosingCalendarDoesNotExist_OnDelete()
     {
         var entityId = 1;
-        _mockClosingCalendarRepository.GetEntityByIdAsync(entityId).Returns((ClosingCalendar?)null);
+        _mockClosingCalendarRepository.GetEntityByIdAsync(Arg.Any<int>()).Returns((ClosingCalendar?)null);
 
         var act = async () => await _sut.Delete(entityId);
 
