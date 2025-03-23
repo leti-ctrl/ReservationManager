@@ -36,7 +36,11 @@ public class ClosingCalendarFilterServiceShould
     [Fact]
     public async Task ThrowsInvalidFiltersException_WhenInvalidDateRangePassed()
     {
-        var filter = _generator.GenerateInvalidFilter();
+        var filter = new ClosingCalendarFilterDto
+        {
+            StartDay = null,
+            EndDay = DateOnly.FromDateTime(DateTime.Now)
+        };
         _mockDtoValidator.Validate(filter)
             .Returns(new FluentValidation.Results.ValidationResult(new List<FluentValidation.Results.ValidationFailure>
             {
@@ -72,7 +76,12 @@ public class ClosingCalendarFilterServiceShould
     public async Task ReturnsFilteredAndOrderedResults_WhenRepositoryReturnsData()
     {
         var filter = _generator.GenerateValidFilter();
-        var dataFromRepo = new ClosingCalendarGenerator().GenerateList();
+        var dataFromRepo = new List<ClosingCalendar>
+        {
+            new ClosingCalendar { Day = DateOnly.FromDateTime(DateTime.Now.AddDays(2)) },
+            new ClosingCalendar { Day = DateOnly.FromDateTime(DateTime.Now.AddDays(1)) },
+            new ClosingCalendar { Day = DateOnly.FromDateTime(DateTime.Now) }
+        };
         _mockDtoValidator.Validate(filter).Returns(new FluentValidation.Results.ValidationResult());
         _mockRepository.GetFiltered(null, 
                 filter.StartDay, 
@@ -91,7 +100,14 @@ public class ClosingCalendarFilterServiceShould
     [Fact]
     public async Task CallsRepositoryWithCorrectParameters_WhenValidFilterIsPassed()
     {
-        var filter = _generator.GenerateFilter();
+        var filter = new ClosingCalendarFilterDto
+        {
+            Id = 1,
+            StartDay = DateOnly.FromDateTime(DateTime.Now),
+            EndDay = DateOnly.FromDateTime(DateTime.Now.AddDays(1)),
+            RescourceId = 2,
+            ResourceTypeId = 3
+        };
         _mockDtoValidator.Validate(filter).Returns(new FluentValidation.Results.ValidationResult());
 
         await _sut.GetFiltered(filter);
