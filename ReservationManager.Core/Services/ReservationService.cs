@@ -52,7 +52,7 @@ namespace ReservationManager.Core.Services
                 return null;
             
             if(reservation.UserId != user.Id)
-                throw new OperationNotPermittedException("Cannot update because user does not belong to this reservation.");
+                throw new OperationNotPermittedException("Cannot retrieve reservation because user does not belong to this reservation.");
 
             return reservation.Adapt<ReservationDto>();
         }
@@ -92,7 +92,7 @@ namespace ReservationManager.Core.Services
         {
             var user = await _userService.GetUserByEmail(session.UserEmail);
             if(user == null)
-                throw new OperationNotPermittedException("Cannot create reservation because user does not exist.");
+                throw new OperationNotPermittedException("Cannot update reservation because user does not exist.");
             
             var oldRez = await _reservationRepository.GetEntityByIdAsync(reservationId);
             if (oldRez == null)
@@ -145,7 +145,7 @@ namespace ReservationManager.Core.Services
         {
             var user = await _userService.GetUserByEmail(session.UserEmail);
             if(user == null)
-                throw new OperationNotPermittedException("Cannot create reservation because user does not exist.");
+                throw new OperationNotPermittedException("Cannot delete reservation because user does not exist.");
 
             
             var toDelete = await _reservationRepository.GetEntityByIdAsync(id);

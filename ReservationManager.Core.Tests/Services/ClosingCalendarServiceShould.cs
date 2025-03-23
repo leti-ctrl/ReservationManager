@@ -434,7 +434,7 @@ public async Task ReturnClosingCalendar_BulkCreate_WhenNotExistingClosingCalenda
     }
 
     [Fact]
-    public async Task ThrowsException_WhenClosingCalendarDoesNotExist_OnDelete()
+    public async Task ThrowsException_Delete_WhenClosingCalendarDoesNotExist()
     {
         var entityId = 1;
         _mockClosingCalendarRepository.GetEntityByIdAsync(Arg.Any<int>()).Returns((ClosingCalendar?)null);
@@ -443,5 +443,18 @@ public async Task ReturnClosingCalendar_BulkCreate_WhenNotExistingClosingCalenda
 
         await act.Should().ThrowAsync<EntityNotFoundException>()
             .WithMessage($"Closing Calendar {entityId} not found.");
+    }
+    
+    [Fact]
+    public async Task RemoveClosingCalendar_Delete_WhenClosingCalendarExist()
+    {
+        var entityId = 1;
+        var entity = new ClosingCalendar { Id = entityId };
+        _mockClosingCalendarRepository.GetEntityByIdAsync(Arg.Any<int>())
+            .Returns(entity);
+
+        var act = async () => await _sut.Delete(entityId);
+
+        await act.Should().NotThrowAsync();
     }
 }
