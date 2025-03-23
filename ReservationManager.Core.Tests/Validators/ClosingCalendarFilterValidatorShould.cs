@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using FluentAssertions;
+using NSubstitute;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Interfaces.Validators;
 using ReservationManager.Core.Validators;
@@ -17,7 +18,7 @@ public class ClosingCalendarFilterValidatorShould
     {
         var result = _sut.Validate(filter);
         
-        Assert.True(result.IsValid);
+        result.IsValid.Should().BeTrue();
     }
     
     
@@ -27,7 +28,7 @@ public class ClosingCalendarFilterValidatorShould
     {
         var result = _sut.Validate(filter);
         
-        Assert.False(result.IsValid);
+        result.IsValid.Should().BeFalse();
     }
 }
 

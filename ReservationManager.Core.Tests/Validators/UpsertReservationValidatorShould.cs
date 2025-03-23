@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using FluentAssertions;
+using NSubstitute;
 using ReservationManager.Core.Consts;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Validators;
@@ -23,7 +24,7 @@ public class UpsertReservationValidatorShould
         
         var result = _sut.IsDateRangeValid(upserRez, rezType);
         
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Theory]
@@ -41,7 +42,7 @@ public class UpsertReservationValidatorShould
         
         var result = _sut.IsDateRangeValid(upserRez, rezType);
         
-        Assert.False(result);
+        result.Should().BeFalse();
     }
     
     [Fact]
@@ -56,7 +57,7 @@ public class UpsertReservationValidatorShould
         
         var result = _sut.IsDateRangeValid(upserRez, rezType);
         
-        Assert.True(result);
+        result.Should().BeTrue();
     }
     
     [Fact]
@@ -73,7 +74,7 @@ public class UpsertReservationValidatorShould
         
         var result = _sut.IsDateRangeValid(upserRez, rezType);
         
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 }
 

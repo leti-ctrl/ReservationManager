@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using FluentAssertions;
+using NSubstitute;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Validators;
 using ReservationManager.DomainModel.Meta;
@@ -36,7 +37,7 @@ public class ResourceValidadorShould
         
         var result = await _sut.ValidateResourceType(resourceTypeId);
         
-        Assert.True(result);
+        result.Should().BeTrue();
     }
     
     [Fact]
@@ -48,7 +49,7 @@ public class ResourceValidadorShould
         
         var result = await _sut.ValidateResourceType(resourceTypeId);
         
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 
     [Fact]
@@ -61,7 +62,7 @@ public class ResourceValidadorShould
         
         var result = await _sut.ExistingResouceId(resourceId);
         
-        Assert.True(result);
+        result.Should().BeTrue();
     }
     
     [Fact]
@@ -73,6 +74,6 @@ public class ResourceValidadorShould
         
         var result = await _sut.ExistingResouceId(resourceId);
         
-        Assert.False(result);
+        result.Should().BeFalse();
     }
 }

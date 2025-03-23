@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Intrinsics.Arm;
+using FluentAssertions;
 using NSubstitute;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Validators;
@@ -36,7 +37,7 @@ public class ClosingCalendarValidatorShould
 
         var result = await _sut.ExistingClosignCalendar(resourceId, fromDate, null);
         
-        Assert.True(result);
+        result.Should().BeTrue();
     }
     
     [Fact]
@@ -54,7 +55,7 @@ public class ClosingCalendarValidatorShould
 
         var result = await _sut.ExistingClosignCalendar(resourceId, fromDate, null);
         
-        Assert.False(result);
+        result.Should().BeFalse();
     }
     
     [Fact]
@@ -73,7 +74,7 @@ public class ClosingCalendarValidatorShould
 
         var result = await _sut.ExistingClosignCalendar(1, fromDate, closingCalendarId);
 
-        Assert.False(result);
+        result.Should().BeFalse();
     }
     
     [Fact]
@@ -92,6 +93,6 @@ public class ClosingCalendarValidatorShould
 
         var result = await _sut.ExistingClosignCalendar(resourceId, fromDate, null);
         
-        Assert.True(result);
+        result.Should().BeTrue();
     }
 }

@@ -1,4 +1,5 @@
-﻿using ReservationManager.Core.Dtos;
+﻿using FluentAssertions;
+using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Validators;
 using Tests.EntityGenerators;
 
@@ -15,7 +16,7 @@ public class ResourceFilterValidatorShould
     {
         var result = _sut.Validate(resourceFilter);
         
-        Assert.True(result.IsValid);
+        result.IsValid.Should().BeTrue();
     }
 
     [Theory]
@@ -24,7 +25,7 @@ public class ResourceFilterValidatorShould
     {
         var result = _sut.Validate(resourceFilter);
         
-        Assert.False(result.IsValid);
+        result.IsValid.Should().BeFalse();
     }
 }
 

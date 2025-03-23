@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using FluentAssertions;
+using NSubstitute;
 using ReservationManager.Core.Validators;
 using ReservationManager.DomainModel.Meta;
 using Tests.EntityGenerators;
@@ -11,7 +12,7 @@ public class ReservationTypeValidatorShould
     private readonly ReservationTypeValidator _sut = new();
 
     [Fact]
-    public void Validate_ValidReservationType_ShouldReturnTrue()
+    public void ReturnTrue_Validate_WhenValidReservationType()
     {
         var reservationType = new ReservationType()
         {
@@ -23,16 +24,16 @@ public class ReservationTypeValidatorShould
         
         var result = _sut.Validate(reservationType);
         
-        Assert.True(result.IsValid);
+        result.IsValid.Should().BeTrue();
     }
 
     [Theory]
     [ClassData(typeof(ReservationTypeInvalidModelGenerator))]
-    public void Validate_InvalidReservationType_ShouldReturnFalse(ReservationType reservationType)
+    public void ReturnFalse_Validate_InvalidReservationType(ReservationType reservationType)
     {
         var result = _sut.Validate(reservationType);
         
-        Assert.False(result.IsValid);
+        result.IsValid.Should().BeFalse();
     }
 }
 
