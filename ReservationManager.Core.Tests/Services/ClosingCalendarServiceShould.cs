@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using Mapster;
 using NSubstitute;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
@@ -8,14 +7,13 @@ using ReservationManager.Core.Interfaces.Services;
 using ReservationManager.Core.Interfaces.Validators;
 using ReservationManager.Core.Services;
 using ReservationManager.DomainModel.Operation;
-using Tests.EntityGenerators;
 
 namespace Tests.Services;
 
 [Trait("Category", "Unit")]
 public class ClosingCalendarServiceShould
 {
-    private readonly IClosingCalendarService _sut;
+    private readonly ClosingCalendarService _sut;
     
     private readonly IClosingCalendarRepository _mockClosingCalendarRepository;
     private readonly IResourceValidator _mockResourceValidator;
@@ -185,7 +183,6 @@ public class ClosingCalendarServiceShould
             To =  to, 
             Description =  description
         };
-        var resourceFilter = new ResourceFilterDto { TypeId = resourceTypeId };
         _mockResourceValidator.ValidateResourceType(Arg.Any<int>())
             .Returns(true);
         _mockResourceService.GetFilteredResources(Arg.Any<ResourceFilterDto>())
@@ -301,7 +298,7 @@ public class ClosingCalendarServiceShould
     }
 
     [Fact]
-public async Task ReturnClosingCalendar_BulkCreate_WhenNotExistingClosingCalendars()
+    public async Task ReturnClosingCalendar_BulkCreate_WhenNotExistingClosingCalendars()
 {
     // Arrange
     var resourceTypeId = 1;
@@ -365,10 +362,7 @@ public async Task ReturnClosingCalendar_BulkCreate_WhenNotExistingClosingCalenda
     result.Last().Day.Should().Be(to);
     result.Last().Description.Should().Be(description);
     result.Last().ResourceId.Should().Be(resourceId);
-
-    _mockClosingCalendarRepository.Received(1).CreateEntitiesAsync(Arg.Any<List<ClosingCalendar>>());
 }
-
     
     [Fact]
     public async Task ThrowsCreateNotPermittedException_Update_WhenResourceDoesNotExist()

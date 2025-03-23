@@ -9,12 +9,7 @@ namespace Tests.Validators;
 [Trait("Category", "Unit")]
 public class UpsertReservationValidatorShould
 {
-    private readonly UpsertReservationValidator _sut;
-    
-    public UpsertReservationValidatorShould()
-    {
-        _sut = new UpsertReservationValidator();
-    }
+    private readonly UpsertReservationValidator _sut = new();
 
     [Fact]
     public void ReturnFalse_WhenReservationDateInThePast()
@@ -24,8 +19,9 @@ public class UpsertReservationValidatorShould
             Title = "title",
             Day = new DateOnly(2020, 01, 01) 
         };
+        var rezType = new ReservationType() { Code = "TEST" };
         
-        var result = _sut.IsDateRangeValid(upserRez, Arg.Any<ReservationType>());
+        var result = _sut.IsDateRangeValid(upserRez, rezType);
         
         Assert.False(result);
     }

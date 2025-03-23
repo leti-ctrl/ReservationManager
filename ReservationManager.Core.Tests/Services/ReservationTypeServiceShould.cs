@@ -14,14 +14,12 @@ namespace Tests.Services
     [Trait("Category", "Unit")]
     public class ReservationTypeServiceShould
     {
-        private readonly IReservationTypeService _sut;
+        private readonly ReservationTypeService _sut;
         
         private readonly IReservationTypeRepository _mockReservationTypeRepository;
         private readonly IReservationRepository _mockReservationRepository;
         private readonly IReservationTypeValidator _mockValidator;
         
-        private readonly ReservationTypeServiceGenerator _generator;
-
         public ReservationTypeServiceShould()
         {
             _mockReservationTypeRepository = Substitute.For<IReservationTypeRepository>();
@@ -32,27 +30,41 @@ namespace Tests.Services
                 _mockReservationRepository,
                 _mockValidator
             );
-            _generator = new ReservationTypeServiceGenerator();
         }
 
         [Fact]
         public async Task GetAllReservationType_ReturnsSortedReservationTypes()
         {
-            var types = _generator.GenerateReservationTypeList();
+            var start = new TimeOnly(10, 0);
+            var end = new TimeOnly(20, 30);
+            var types = new List<ReservationType>
+            {
+                ReservationTypeServiceGenerator.GenerateReservationType(1, "A", "Type A", start, end),
+                ReservationTypeServiceGenerator.GenerateReservationType(2, "B", "Type B", start, end)
+            };
             _mockReservationTypeRepository.GetAllTypesAsync().Returns(types);
 
             var result = await _sut.GetAllReservationType();
 
             result.Should().NotBeNullOrEmpty();
             result.Should().HaveCount(2);
+            result.First().Id.Should().Be(1);
+            result.Last().Id.Should().Be(2);
             result.First().Code.Should().Be("A");
+            result.Last().Code.Should().Be("B");
+            result.First().Name.Should().Be("Type A");
+            result.Last().Name.Should().Be("Type B");
+            result.First().Start.Should().Be(start);
+            result.Last().Start.Should().Be(start);
+            result.First().End.Should().Be(end);
+            result.Last().End.Should().Be(end);
         }
 
         [Fact]
-        public async Task CreateReservationType_ReturnsCreatedDto_WhenValidRequest()
+        public async Task ReturnsCreatedDto_CreateReservationType_WhenValidRequest()
         {
-            var request = _generator.GenerateUpsertDto("A", "Test", new TimeOnly(8, 0), new TimeOnly(10, 0));
-            var newType = _generator.GenerateReservationType(1, "A", "Test", new TimeOnly(8, 0), new TimeOnly(10, 0));
+            var request = ReservationTypeServiceGenerator.GenerateUpsertDto("A", "Test", new TimeOnly(8, 0), new TimeOnly(10, 0));
+            var newType = ReservationTypeServiceGenerator.GenerateReservationType(1, "A", "Test", new TimeOnly(8, 0), new TimeOnly(10, 0));
 
             _mockValidator.ValidateAsync(Arg.Any<ReservationType>()).Returns(new FluentValidation.Results.ValidationResult());
             _mockReservationTypeRepository.CreateTypeAsync(Arg.Any<ReservationType>()).Returns(newType);
@@ -65,10 +77,10 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task CreateReservationType_ThrowsInvalidCodeTypeException_WhenCodeExists()
+        public async Task ThrowsInvalidCodeTypeException_CreateReservationType_WhenCodeExists()
         {
-            var request = _generator.GenerateUpsertDto("A", "Test", new TimeOnly(8, 0), new TimeOnly(10, 0));
-            var existingType = _generator.GenerateReservationType(2, "A", "Duplicate", new TimeOnly(9, 0), new TimeOnly(11, 0));
+            var request = ReservationTypeServiceGenerator.GenerateUpsertDto("A", "Test", new TimeOnly(8, 0), new TimeOnly(10, 0));
+            var existingType = ReservationTypeServiceGenerator.GenerateReservationType(2, "A", "Duplicate", new TimeOnly(9, 0), new TimeOnly(11, 0));
 
             _mockValidator.ValidateAsync(Arg.Any<ReservationType>())
                 .Returns(new FluentValidation.Results.ValidationResult());
@@ -82,12 +94,12 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task UpdateReservationType_ReturnsUpdatedDto_WhenValidRequest()
+        public async Task ReturnsUpdatedDto_UpdateReservationType_WhenValidRequest()
         {
             var id = 1;
-            var request = _generator.GenerateUpsertDto("A", "Updated", new TimeOnly(9, 0), new TimeOnly(11, 0));
-            var existingType = _generator.GenerateReservationType(1, "A", "Old Name", new TimeOnly(8, 0), new TimeOnly(10, 0));
-            var updatedType = _generator.GenerateReservationType(1, "A", "Updated", new TimeOnly(9, 0), new TimeOnly(11, 0));
+            var request = ReservationTypeServiceGenerator.GenerateUpsertDto("A", "Updated", new TimeOnly(9, 0), new TimeOnly(11, 0));
+            var existingType = ReservationTypeServiceGenerator.GenerateReservationType(1, "A", "Old Name", new TimeOnly(8, 0), new TimeOnly(10, 0));
+            var updatedType = ReservationTypeServiceGenerator.GenerateReservationType(1, "A", "Updated", new TimeOnly(9, 0), new TimeOnly(11, 0));
 
             _mockReservationTypeRepository.GetTypeById(id).Returns(existingType);
             _mockValidator.ValidateAsync(Arg.Any<ReservationType>()).Returns(new FluentValidation.Results.ValidationResult());
@@ -100,10 +112,10 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task DeleteReservationType_ThrowsDeleteNotPermittedException_WhenFutureReservationsExist()
+        public async Task ThrowsDeleteNotPermittedException_DeleteReservationType_WhenFutureReservationsExist()
         {
             var id = 1;
-            var type = _generator.GenerateReservationType(1, "A", "Type A", new TimeOnly(10, 0), new TimeOnly(12, 0));
+            var type = ReservationTypeServiceGenerator.GenerateReservationType(1, "A", "Type A", new TimeOnly(10, 0), new TimeOnly(12, 0));
 
             _mockReservationTypeRepository.GetTypeById(id)
                 .Returns(type);
@@ -117,14 +129,14 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task DeleteReservationType_DeletesSuccessfully_WhenNoFutureReservationsExist()
+        public async Task DeletesSuccessfully_DeleteReservationType_WhenNoFutureReservationsExist()
         {
             var id = 1;
-            var type = _generator.GenerateReservationType(1, "A", "Type A", new TimeOnly(10, 0), new TimeOnly(12, 0));
+            var type = ReservationTypeServiceGenerator.GenerateReservationType(1, "A", "Type A", new TimeOnly(10, 0), new TimeOnly(12, 0));
             _mockReservationTypeRepository.GetTypeById(id)
                 .Returns(type);
             _mockReservationRepository.GetReservationByTypeIdAfterTodayAsync(id)
-                .Returns(Enumerable.Empty<Reservation>());
+                .Returns(Enumerable.Empty<Reservation>().ToList());
 
             await _sut.DeleteReservationType(id);
 

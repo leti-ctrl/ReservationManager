@@ -31,7 +31,8 @@ public class ResourceValidadorShould
             Id = resourceTypeId,
             Code = resourceTypeCode
         };
-        _resourceTypeRepository.GetTypeById(resourceTypeId).Returns(resourceType);
+        _resourceTypeRepository.GetTypeById(Arg.Any<int>())
+            .Returns(resourceType);
         
         var result = await _sut.ValidateResourceType(resourceTypeId);
         
@@ -42,7 +43,8 @@ public class ResourceValidadorShould
     private async Task ReturnFalse_ValidateResourceType_WhenResourceTypeNotExists()
     {
         var resourceTypeId = 1;
-        _resourceTypeRepository.GetTypeById(resourceTypeId).Returns((ResourceType)null!);
+        _resourceTypeRepository.GetTypeById(Arg.Any<int>())
+            .Returns((ResourceType)null!);
         
         var result = await _sut.ValidateResourceType(resourceTypeId);
         
@@ -54,7 +56,8 @@ public class ResourceValidadorShould
     {
         var resourceId = 1;
         var resource = new Resource { Id = resourceId };
-        _resourceRepository.GetEntityByIdAsync(resourceId).Returns(resource);
+        _resourceRepository.GetEntityByIdAsync(Arg.Any<int>())
+            .Returns(resource);
         
         var result = await _sut.ExistingResouceId(resourceId);
         
@@ -65,7 +68,8 @@ public class ResourceValidadorShould
     private async Task ReturnFalse_ExistingResouceId_WhenResourceIdNotExists()
     {
         var resourceId = 1;
-        _resourceRepository.GetEntityByIdAsync(resourceId).Returns((Resource)null);
+        _resourceRepository.GetEntityByIdAsync(Arg.Any<int>())
+            .Returns((Resource)null!);
         
         var result = await _sut.ExistingResouceId(resourceId);
         

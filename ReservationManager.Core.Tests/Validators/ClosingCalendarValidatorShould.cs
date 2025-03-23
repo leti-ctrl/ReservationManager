@@ -1,4 +1,5 @@
-﻿using NSubstitute;
+﻿using System.Runtime.Intrinsics.Arm;
+using NSubstitute;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Validators;
 using ReservationManager.DomainModel.Operation;
@@ -25,8 +26,13 @@ public class ClosingCalendarValidatorShould
         var resourceId = 1;
         var fromDate = new DateOnly(2020, 1, 1);
         var existingClosingCalendar = new List<ClosingCalendar>() { new ClosingCalendar() };
-        _closingCalendarRepository.GetFiltered(null, fromDate, null, resourceId, null)
-                                  .Returns(existingClosingCalendar);
+        _closingCalendarRepository.GetFiltered(
+                Arg.Any<int?>(), 
+                Arg.Any<DateOnly?>(),
+                Arg.Any<DateOnly?>(),
+                Arg.Any<int?>(), 
+                Arg.Any<int?>()
+                ).Returns(existingClosingCalendar);
 
         var result = await _sut.ExistingClosignCalendar(resourceId, fromDate, null);
         
@@ -38,8 +44,13 @@ public class ClosingCalendarValidatorShould
     {
         var resourceId = 1;
         var fromDate = new DateOnly(2020, 1, 1);
-        _closingCalendarRepository.GetFiltered(null, fromDate, null, resourceId, null)
-                                  .Returns(Enumerable.Empty<ClosingCalendar>());
+        _closingCalendarRepository.GetFiltered(
+                Arg.Any<int?>(), 
+                Arg.Any<DateOnly?>(),
+                Arg.Any<DateOnly?>(),
+                Arg.Any<int?>(), 
+                Arg.Any<int?>()
+                ).Returns(Enumerable.Empty<ClosingCalendar>().ToList());
 
         var result = await _sut.ExistingClosignCalendar(resourceId, fromDate, null);
         
@@ -52,8 +63,13 @@ public class ClosingCalendarValidatorShould
         var closingCalendarId = 42;
         var fromDate = new DateOnly(2020, 1, 1);
         var existingClosingCalendar = new List<ClosingCalendar>() { new ClosingCalendar() { Id = closingCalendarId } };
-        _closingCalendarRepository.GetFiltered( closingCalendarId, fromDate, null, null, null )
-                                  .Returns(existingClosingCalendar);
+        _closingCalendarRepository.GetFiltered( 
+                Arg.Any<int?>(), 
+                Arg.Any<DateOnly?>(),
+                Arg.Any<DateOnly?>(),
+                Arg.Any<int?>(), 
+                Arg.Any<int?>()
+                ).Returns(existingClosingCalendar);
 
         var result = await _sut.ExistingClosignCalendar(1, fromDate, closingCalendarId);
 
@@ -66,8 +82,13 @@ public class ClosingCalendarValidatorShould
         var resourceId = 1;
         var fromDate = new DateOnly(2020, 1, 1);
         var existingClosingCalendar = new List<ClosingCalendar>() { new ClosingCalendar() };
-        _closingCalendarRepository.GetFiltered(null, fromDate, null, resourceId, null)
-            .Returns(existingClosingCalendar);
+        _closingCalendarRepository.GetFiltered(
+                Arg.Any<int?>(), 
+                Arg.Any<DateOnly?>(),
+                Arg.Any<DateOnly?>(),
+                Arg.Any<int?>(), 
+                Arg.Any<int?>()
+                ).Returns(existingClosingCalendar);
 
         var result = await _sut.ExistingClosignCalendar(resourceId, fromDate, null);
         

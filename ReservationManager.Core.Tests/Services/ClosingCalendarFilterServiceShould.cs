@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NSubstitute;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;

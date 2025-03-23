@@ -8,12 +8,7 @@ namespace Tests.Validators;
 [Trait("Category", "Unit")]
 public class ReservationTypeValidatorShould
 {
-    private readonly ReservationTypeValidator _sut;
-
-    public ReservationTypeValidatorShould()
-    {
-        _sut = new ReservationTypeValidator();
-    }
+    private readonly ReservationTypeValidator _sut = new();
 
     [Fact]
     public void Validate_ValidReservationType_ShouldReturnTrue()

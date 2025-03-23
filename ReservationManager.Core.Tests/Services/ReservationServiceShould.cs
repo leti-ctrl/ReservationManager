@@ -1,8 +1,6 @@
 ﻿using FluentAssertions;
 using Mapster;
 using NSubstitute;
-using NSubstitute.Core;
-using ReservationManager.Core.Consts;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces.Repositories;
@@ -19,6 +17,7 @@ namespace Tests.Services;
 public class ReservationServiceShould
 {
     private readonly ReservationService _sut;
+    
     private readonly IReservationRepository _mockReservationRepository;
     private readonly IResourceService _mockResourceService;
     private readonly IUpsertReservationValidator _mockUpsertReservationValidator;
@@ -57,7 +56,7 @@ public class ReservationServiceShould
     [Fact]
     public async Task ReturnUserReservations_GetUserReservation_WhenUserExists()
     {
-        var rezId = new int [] {15, 38};
+        var rezId = new[] {15, 38};
         var userDto = UserDtoGenerator.GenerateValidUserDto();
         var session = new SessionInfo(userDto.Email);
         var reservations = new List<Reservation>
@@ -361,6 +360,7 @@ public class ReservationServiceShould
     public async Task ReturnReservation_CreateReservation_WhenResourceIsFreeAndOpen()
     {
         var rezId = 85;
+        var rezTitle = "Test title";
         var rezDescription = "Test Description";
         var rezTypeId = 25;
         var resourceId = 92;
@@ -390,6 +390,7 @@ public class ReservationServiceShould
         var reservation = new Reservation()
         {
             Id = rezId,
+            Title = rezTitle,
             Description = rezDescription,
             Day = rezDay,
             Start = rezTimeStart,
@@ -421,6 +422,7 @@ public class ReservationServiceShould
 
         result.Should().NotBeNull();
         result.Id.Should().Be(rezId);
+        result.Title.Should().Be(rezTitle);
         result.Description.Should().Be(rezDescription); 
         result.Day.Should().Be(rezDay);
         result.Start.Should().Be(rezTimeStart);
@@ -730,6 +732,7 @@ public class ReservationServiceShould
         var rezId = 93;
         var rezTypeId = 25;
         var resourceId = 92;
+        var rezTitle = "Test title";
         var rezDescription = "Test Description";
         var rezDay = new DateOnly(2025, 01, 23);
         var rezTimeStart = new TimeOnly(15, 00, 00);
@@ -752,7 +755,7 @@ public class ReservationServiceShould
         var session = new SessionInfo(sessionUser.Email);
         var upsertRez = new UpsertReservationDto()
         {
-            Title = "test" , 
+            Title = rezTitle, 
             Description = rezDescription,
             TypeId = rezTypeId,
             ResourceId = resourceId,
@@ -778,6 +781,7 @@ public class ReservationServiceShould
         var reservation = new Reservation()
         {
             Id = rezId,
+            Title = rezTitle,
             Description = rezDescription,
             Day = rezDay,
             Start = rezTimeStart,
@@ -806,6 +810,7 @@ public class ReservationServiceShould
 
         result.Should().NotBeNull();
         result.Id.Should().Be(rezId);
+        result.Title.Should().Be(rezTitle);
         result.Description.Should().Be(rezDescription); 
         result.Day.Should().Be(rezDay);
         result.Start.Should().Be(rezTimeStart);
@@ -820,7 +825,7 @@ public class ReservationServiceShould
     [Fact]
     public async Task DeleteReservation_DeleteReservation_WhenReservationExistsAndUserIsOwner()
     {
-        var user = UserDtoGenerator.GenerateValidUserDto();;
+        var user = UserDtoGenerator.GenerateValidUserDto();
         var session = new SessionInfo(user.Email);
         var reservation = new Reservation
         {

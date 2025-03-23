@@ -9,12 +9,7 @@ namespace Tests.Validators;
 [Trait("Category", "Unit")]
 public class ClosingCalendarFilterValidatorShould
 {
-    private readonly ClosingCalendarFilterDtoValidator _sut;
-
-    public ClosingCalendarFilterValidatorShould()
-    {
-        _sut = new ClosingCalendarFilterDtoValidator();
-    }
+    private readonly ClosingCalendarFilterDtoValidator _sut = new();
 
     [Theory]
     [ClassData(typeof(ClosingCalendarFilterDtoValidModelGenerator))]

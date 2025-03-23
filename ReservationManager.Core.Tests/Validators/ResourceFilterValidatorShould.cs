@@ -7,12 +7,7 @@ namespace Tests.Validators;
 [Trait("Category", "Unit")]
 public class ResourceFilterValidatorShould
 {
-    private readonly ResourceFilterDtoValidator _sut;
-
-    public ResourceFilterValidatorShould()
-    {
-        _sut = new ResourceFilterDtoValidator();
-    }
+    private readonly ResourceFilterDtoValidator _sut = new();
 
     [Theory]
     [ClassData(typeof(ResourceFilterDtoValidModelGenerator))]

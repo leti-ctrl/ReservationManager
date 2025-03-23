@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 namespace Tests.EntityGenerators;
 
-public class ReservationTypeServiceGenerator
+public static class ReservationTypeServiceGenerator
 {
-    public ReservationType GenerateReservationType(int id, string code, string name, TimeOnly start, TimeOnly end)
+    public static ReservationType GenerateReservationType(int id, string code, string name, TimeOnly start, TimeOnly end)
     {
         return new ReservationType
         {
@@ -19,7 +19,7 @@ public class ReservationTypeServiceGenerator
         };
     }
 
-    public UpsertReservationTypeDto GenerateUpsertDto(string code, string name, TimeOnly start, TimeOnly end)
+    public static UpsertReservationTypeDto GenerateUpsertDto(string code, string name, TimeOnly start, TimeOnly end)
     {
         return new UpsertReservationTypeDto
         {
@@ -27,15 +27,6 @@ public class ReservationTypeServiceGenerator
             Name = name,
             StartTime = start,
             EndTime = end
-        };
-    }
-
-    public IEnumerable<ReservationType> GenerateReservationTypeList()
-    {
-        return new List<ReservationType>
-        {
-            GenerateReservationType(1, "A", "Type A", new TimeOnly(10, 0), new TimeOnly(12, 0)),
-            GenerateReservationType(2, "B", "Type B", new TimeOnly(9, 0), new TimeOnly(10, 0))
         };
     }
 }
