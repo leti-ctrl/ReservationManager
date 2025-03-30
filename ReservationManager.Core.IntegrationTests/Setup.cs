@@ -29,6 +29,31 @@ public partial class Setup
     {
         return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IReservationTypeRepository>();
     }
+
+    public static IReservationRepository GetReservationRepository()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IReservationRepository>();
+    }
+
+    public static IReservationService GetReservationService()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IReservationService>();
+    }
+
+    public static IResourceRepository GetResourceRepository()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IResourceRepository>();
+    }
+
+    public static IResourceTypeRepository GetResourceTypeRepository()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IResourceTypeRepository>();
+    }
+
+    public static IUserRepository GetUserRepository()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IUserRepository>();
+    }
 }
 
 internal abstract class BaseSqlTestContainer
