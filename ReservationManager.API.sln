@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReservationManager.Persiste
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{71A090E4-599C-4537-AC4F-A08A27048DB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationManager.Core.Tests", "ReservationManager.Core.Tests\ReservationManager.Core.Tests.csproj", "{CB821952-04F4-4EBB-BA3F-33F1D0644938}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationManager.Core.UnitTests", "ReservationManager.Core.UnitTests\ReservationManager.Core.UnitTests.csproj", "{CB821952-04F4-4EBB-BA3F-33F1D0644938}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AC85706A-9B82-4C6C-9CE3-BC6E1BDC8119}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,5 +53,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AA516B61-EA24-4AE2-BAE1-DF7924A6BE15}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CB821952-04F4-4EBB-BA3F-33F1D0644938} = {AC85706A-9B82-4C6C-9CE3-BC6E1BDC8119}
 	EndGlobalSection
 EndGlobal

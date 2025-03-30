@@ -6,7 +6,7 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.X'
-  WORKING_FOLDER: './ReservationManager.Core.Tests'
+  WORKING_FOLDER: './ReservationManager.Core.UnitTests'
 
 jobs:
   build-and-test:
