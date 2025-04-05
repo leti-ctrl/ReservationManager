@@ -10,63 +10,55 @@ env:
   DOTNET_VERSION: '8.0.X'
 
 jobs:
-  determine-changes:
-    name: Determine Changed Directories
-    runs-on: ubuntu-latest
-    outputs:
-      services-changed: ${{ steps.changed_dirs.outputs.services-changed }}
-      validators-changed: ${{ steps.changed_dirs.outputs.validators-changed }}
-    steps:
-      - uses: actions/checkout@v3
+determine-changes:
+  name: Determine Changed Directories
+  runs-on: ubuntu-latest
+  outputs:
+    services-changed: ${{ steps.changed_dirs.outputs.services-changed }}
+    validators-changed: ${{ steps.changed_dirs.outputs.validators-changed }}
+  steps:
+    - uses: actions/checkout@v3
 
-      - name: Determine changed directories
-        id: changed_dirs
-        run: |
-          echo "Checking for changes in Services and Validators"
-
-          # Verifica se la variabile 'before' è presente per determinare il confronto
-          if [ -z "${{ github.event.before }}" ]; then
-            # Primo push o nessun commit precedente, confronta con HEAD
-            echo "No previous commit found, comparing to HEAD."
+    - name: Determine changed directories
+      id: changed_dirs
+      run: |
+        echo "Checking for changes in Services and Validators"
+        
+        # Verifica se la variabile 'before' è presente per determinare il confronto
+        if [ -z "${{ github.event.before }}" ]; then
+          # Primo push o nessun commit precedente, confronta con HEAD
+          echo "No previous commit found, comparing to HEAD."
+          changed_dirs=$(git diff --name-only HEAD | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
+        else
+          # Controlla se il commit 'before' è valido
+          echo "Comparing commits: ${{ github.event.before }} to ${{ github.sha }}"
+          git fetch --unshallow  # Aggiungi un fetch per assicurarci di avere la cronologia completa
+          # Prova a fare il confronto, gestendo il caso in cui 'before' non sia valido
+          changed_dirs=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
+          if [ $? -ne 0 ]; then
+            echo "Failed to find the diff between the commits. Falling back to HEAD."
             changed_dirs=$(git diff --name-only HEAD | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
-          else
-            # Controlla se il commit 'before' è valido
-            echo "Comparing commits: ${{ github.event.before }} to ${{ github.sha }}"
-            git fetch --unshallow  # Aggiungi un fetch per assicurarci di avere la cronologia completa
-            # Prova a fare il confronto, gestendo il caso in cui 'before' non sia valido
-            changed_dirs=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
-            if [ $? -ne 0 ]; then
-              echo "Failed to find the diff between the commits. Falling back to HEAD."
-              changed_dirs=$(git diff --name-only HEAD | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
-            fi
           fi
+        fi
 
-          # Debug: mostra il risultato di git diff
-          echo "git diff result: $changed_dirs"
+        # Debug: mostra il risultato di git diff
+        echo "git diff result: $changed_dirs"
 
-          # Controlla se ci sono cambiamenti
-          if [ -z "$changed_dirs" ]; then
-            echo "No directories changed."
-          fi
+        # Controlla se ci sono cambiamenti
+        if [ -z "$changed_dirs" ]; then
+          echo "No directories changed."
+        fi
 
-          echo "Changed directories: $changed_dirs"
+        echo "Changed directories: $changed_dirs"
+        
+        # Esporta le variabili di ambiente per Services e Validators
+        echo "services-changed=$(echo $changed_dirs | grep -o 'ReservationManager.Core.Services')" >> $GITHUB_ENV
+        echo "validators-changed=$(echo $changed_dirs | grep -o 'ReservationManager.Core.Validators')" >> $GITHUB_ENV
 
-          # Assicurati di identificare correttamente 'Services' e 'Validators'
-          services_changed=$(echo $changed_dirs | grep -o 'ReservationManager.Core.Services')
-          validators_changed=$(echo $changed_dirs | grep -o 'ReservationManager.Core.Validators')
+        # Debug: verifica se le variabili di ambiente sono state correttamente impostate
+        echo "services-changed variable set to: ${{ env.services-changed }}"
+        echo "validators-changed variable set to: ${{ env.validators-changed }}"
 
-          # Debug: Verifica le variabili per Services e Validators
-          echo "Services changed: $services_changed"
-          echo "Validators changed: $validators_changed"
-
-          # Esporta le variabili di ambiente per Services e Validators
-          echo "services-changed=$services_changed" >> $GITHUB_ENV
-          echo "validators-changed=$validators_changed" >> $GITHUB_ENV
-
-          # Debug: verifica se le variabili di ambiente sono state correttamente impostate
-          echo "services-changed variable set to: ${{ env.services-changed }}"
-          echo "validators-changed variable set to: ${{ env.validators-changed }}"
-  
   
   build:
     name: Build

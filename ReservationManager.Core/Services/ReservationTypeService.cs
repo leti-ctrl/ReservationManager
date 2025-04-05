@@ -10,23 +10,15 @@ using ReservationManager.DomainModel.Meta;
 
 namespace ReservationManager.Core.Services
 {
-    public class ReservationTypeService : IReservationTypeService
+    public class ReservationTypeService(
+        IReservationTypeRepository reservationTypeRepository,
+        IReservationRepository reservationRepository,
+        IReservationTypeValidator reservationTypeValidator)
+        : IReservationTypeService
     {
-        private readonly IReservationTypeRepository _reservationTypeRepository;
-        private readonly IReservationRepository _reservationRepository;
-        private readonly IReservationTypeValidator _reservationTypeValidator;
-
-        public ReservationTypeService(IReservationTypeRepository reservationTypeRepository, 
-            IReservationRepository reservationRepository, IReservationTypeValidator reservationTypeValidator)
-        {
-            _reservationTypeRepository = reservationTypeRepository;
-            _reservationRepository = reservationRepository;
-            _reservationTypeValidator = reservationTypeValidator;
-        }
-
         public async Task<IEnumerable<ReservationTypeDto>> GetAllReservationType()
         {
-            var reservationTypes = await _reservationTypeRepository.GetAllTypesAsync();
+            var reservationTypes = await reservationTypeRepository.GetAllTypesAsync();
            
             return reservationTypes.Select(rt => rt.Adapt<ReservationTypeDto>())
                 .OrderByDescending(t => t.End - t.Start);
@@ -38,14 +30,14 @@ namespace ReservationManager.Core.Services
             await ValidateModel(toCreate);
             await ValidateCode(0, toCreate);
 
-            var newReservationType = await _reservationTypeRepository.CreateTypeAsync(toCreate);
+            var newReservationType = await reservationTypeRepository.CreateTypeAsync(toCreate);
 
             return newReservationType.Adapt<ReservationTypeDto>();
         }
 
         public async Task<ReservationTypeDto?> UpdateReservationType(int id, UpsertReservationTypeDto model)
         {
-            var existingReservation = await _reservationTypeRepository.GetTypeById(id);
+            var existingReservation = await reservationTypeRepository.GetTypeById(id);
             if (existingReservation == null)
                 return null;
             
@@ -55,21 +47,21 @@ namespace ReservationManager.Core.Services
 
             toUpdate.Id = id;
             
-            var updated = await _reservationTypeRepository.UpdateTypeAsync(toUpdate);
+            var updated = await reservationTypeRepository.UpdateTypeAsync(toUpdate);
 
             return updated.Adapt<ReservationTypeDto>();
         }
 
         private async Task ValidateCode(int id, ReservationType toUpdate)
         {
-            var codeAlreadyExists = await _reservationTypeRepository.GetByCodeAsync(toUpdate.Code);
+            var codeAlreadyExists = await reservationTypeRepository.GetByCodeAsync(toUpdate.Code);
             if(codeAlreadyExists != null && codeAlreadyExists?.Id != id)
                 throw new InvalidCodeTypeException($"Reservation type with code {toUpdate.Code} already exists");
         }
 
         private async Task ValidateModel(ReservationType toUpdate)
         {
-            var validationResult = await _reservationTypeValidator.ValidateAsync(toUpdate);
+            var validationResult = await reservationTypeValidator.ValidateAsync(toUpdate);
             if (!validationResult.IsValid)
             {
                 var errorMsg = string.Join(", ", validationResult.Errors.Select(x => x.ErrorMessage));
@@ -79,14 +71,14 @@ namespace ReservationManager.Core.Services
 
         public async Task DeleteReservationType(int id)
         {
-            var toDelete = await _reservationTypeRepository.GetTypeById(id)
+            var toDelete = await reservationTypeRepository.GetTypeById(id)
                 ?? throw new EntityNotFoundException($"Reservation type with id {id} not found");
             
-            var exists = await _reservationRepository.GetReservationByTypeIdAfterTodayAsync(id);
+            var exists = await reservationRepository.GetReservationByTypeIdAfterTodayAsync(id);
             if (exists.Any())
                 throw new DeleteNotPermittedException($"Cannot delete {toDelete.Code} because exits future reservations with this type");
 
-            await _reservationTypeRepository.DeleteTypeAsync(toDelete);
+            await reservationTypeRepository.DeleteTypeAsync(toDelete);
         }
     }
 }
