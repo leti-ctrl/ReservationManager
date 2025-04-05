@@ -76,7 +76,6 @@ jobs:
     name: Run Integration Tests
     needs: detect-changes
     runs-on: ubuntu-latest
-    # Esegue il job solo se 'persistence-changed' è true
     if: ${{ needs.detect-changes.outputs.persistence-changed == 'true' }}
     steps:
       - uses: actions/checkout@v3
@@ -85,9 +84,18 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
+      
+      # Verifica che Docker sia disponibile, necessario per Testcontainers
+      - name: Check Docker availability
+        run: |
+          echo "Docker version:"
+          docker --version
+          echo "Docker info:"
+          docker info
 
-      - name: Restore, build, and run Integration Tests
+      - name: Restore, Build, and Run Integration Tests
         run: |
           dotnet restore ReservationManager.Persistence.IntegrationTests/ReservationManager.Persistence.IntegrationTests.csproj
           dotnet build ReservationManager.Persistence.IntegrationTests/ReservationManager.Persistence.IntegrationTests.csproj --configuration Release --no-restore
           dotnet test ReservationManager.Persistence.IntegrationTests/ReservationManager.Persistence.IntegrationTests.csproj --configuration Release --no-restore
+ 

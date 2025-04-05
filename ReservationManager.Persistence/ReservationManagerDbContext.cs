@@ -3,12 +3,8 @@ using ReservationManager.Persistence.Configurations;
 
 namespace ReservationManager.Persistence
 {
-    public class ReservationManagerDbContext : DbContext
+    public class ReservationManagerDbContext(DbContextOptions options) : DbContext(options)
     {
-        public ReservationManagerDbContext(DbContextOptions options) : base(options)
-        {
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new ReservationConfiguration());
