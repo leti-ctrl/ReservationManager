@@ -7,5 +7,5 @@ namespace ReservationManager.Core.Interfaces.Validators;
 
 public interface IUpsertReservationValidator 
 {
-    bool IsDateRangeValid(UpsertReservationDto reservation, ReservationType? rezType);
+    bool IsDateRangeValid(UpsertReservationDto reservation, ReservationType rezType);
 }

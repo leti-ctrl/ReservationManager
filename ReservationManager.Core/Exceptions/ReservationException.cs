@@ -1,8 +1,3 @@
 ﻿namespace ReservationManager.Core.Exceptions;
 
-public class ReservationException : Exception
-{
-    public ReservationException(string message) : base(message)
-    {
-    }
-}
+public class ReservationException(string message) : Exception(message);

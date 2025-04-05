@@ -1,42 +1,101 @@
-name: build and test
+name: Build and Test on Develop
 
 on:
   push:
-    branches: [ main, develop ]
-
-env:
-  DOTNET_VERSION: '7.0.X'
-  WORKING_FOLDER: './ReservationManager.Core.Tests'
+    branches: [ develop ]
 
 jobs:
-  build-and-test:
-    name: build-and-test
+  detect-changes:
+    name: Determine Changed Directories
     runs-on: ubuntu-latest
-    
+    outputs:
+      core-changed: ${{ steps.determine.outputs.core-changed }}
+      persistence-changed: ${{ steps.determine.outputs.persistence-changed }}
     steps:
-      - uses: actions/checkout@v3 #scarica da git il sorgente e lo mette nell'ambiente (nel caso ubuntu)
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3 #installa .net nell'ambiente
+      - uses: actions/checkout@v3
+
+      - name: Fetch complete history
+        run: |
+            echo "Eseguo il fetch completo della cronologia..."
+            git fetch --prune --unshallow || true
+
+      - name: Determine changed directories
+        id: determine
+        run: |
+          echo "Determino i file modificati..."
+          if [ -z "${{ github.event.before }}" ] || ! git cat-file -e ${{ github.event.before }} 2>/dev/null; then
+            echo "Commit 'before' non trovato, confronto con HEAD."
+            changed_files=$(git diff --name-only HEAD)
+          else
+            changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          fi
+          
+          echo "File modificati:"
+          echo "$changed_files"
+          
+          # Verifica se ci sono modifiche nella directory ReservationManager.Core
+          core_changed=$(echo "$changed_files" | grep -E '^ReservationManager\.Core/' || true)
+          
+          # Verifica se ci sono modifiche nella directory ReservationManager.Persistence
+          persistence_changed=$(echo "$changed_files" | grep -E '^ReservationManager\.Persistence/' || true)
+          
+          # Imposta gli output (true/false)
+          if [ -n "$core_changed" ]; then
+            echo "core-changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "core-changed=" >> $GITHUB_OUTPUT
+          fi
+                
+                if [ -n "$persistence_changed" ]; then
+                  echo "persistence-changed=true" >> $GITHUB_OUTPUT
+                else
+                  echo "persistence-changed=" >> $GITHUB_OUTPUT
+                fi
+
+  unit-tests:
+    name: Run Unit Tests
+    needs: detect-changes
+    runs-on: ubuntu-latest
+    # Esegue il job solo se 'core-changed' è true
+    if: ${{ needs.detect-changes.outputs.core-changed == 'true' }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-version: '8.0.x'
 
-      - name: Install dependencies #lancia comandi da cli per build e test
-        working-directory: ${{env.WORKING_FOLDER}}
-        run: dotnet restore
+      - name: Restore, build, and run Unit Tests
+        run: |
+          dotnet restore ReservationManager.Core.UnitTests/ReservationManager.Core.UnitTests.csproj
+          dotnet build ReservationManager.Core.UnitTests/ReservationManager.Core.UnitTests.csproj --configuration Release --no-restore
+          dotnet test ReservationManager.Core.UnitTests/ReservationManager.Core.UnitTests.csproj --configuration Release --no-restore
 
-      - name: Build
-        working-directory: ${{env.WORKING_FOLDER}}
-        run: dotnet build --configuration Release --no-restore
-
-      - name: Test
-        working-directory: ${{env.WORKING_FOLDER}}
-        run: dotnet test --no-restore --verbosity normal
-  
-  fake-deploy:
-    name: fake-deploy
+  integration-tests:
+    name: Run Integration Tests
+    needs: detect-changes
     runs-on: ubuntu-latest
-    needs: build-and-test  #se lo step precedente fallisce non viene fatto il deploy dell'applicazione
-    
+    if: ${{ needs.detect-changes.outputs.persistence-changed == 'true' }}
     steps:
-      - name: deploy
-        run: printf "deployed"
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+      
+      # Verifica che Docker sia disponibile, necessario per Testcontainers
+      - name: Check Docker availability
+        run: |
+          echo "Docker version:"
+          docker --version
+          echo "Docker info:"
+          docker info
+
+      - name: Restore, Build, and Run Integration Tests
+        run: |
+          dotnet restore ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj
+          dotnet build ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj --configuration Release --no-restore
+          dotnet test ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj --configuration Release --no-restore
+ 

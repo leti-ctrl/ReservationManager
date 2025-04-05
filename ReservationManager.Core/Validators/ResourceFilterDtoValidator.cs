@@ -4,9 +4,9 @@ using ReservationManager.Core.Interfaces.Validators;
 
 namespace ReservationManager.Core.Validators;
 
-public class ResourceFilterValidator : AbstractValidator<ResourceFilterDto>, IResourceFilterValidator
+public class ResourceFilterDtoValidator : AbstractValidator<ResourceFilterDto>, IResourceFilterDtoValidator
 {
-    public ResourceFilterValidator()
+    public ResourceFilterDtoValidator()
     {
         RuleFor(x => x.TypeId)
             .NotNull()

@@ -9,23 +9,16 @@ public class ClosingCalendarValidator : IClosingCalendarValidator
 {
     private readonly IClosingCalendarRepository _closingCalendarRepository;
 
-    public ClosingCalendarValidator(IResourceValidator resourceValidator, IClosingCalendarRepository closingCalendarRepository)
+    public ClosingCalendarValidator(IClosingCalendarRepository closingCalendarRepository)
     {
         _closingCalendarRepository = closingCalendarRepository;
     }
 
-    public async Task<bool> ValidateIfAlreadyExistsClosingCalendar(ClosingCalendarDto closingCalendarDto, int? id)
+    public async Task<bool> ExistingClosignCalendar(int resourceId, DateOnly day, int? closingCalendarId)
     {
-           
-        var closingCalendars = await _closingCalendarRepository.GetFiltered(null, 
-            closingCalendarDto.Day, null, closingCalendarDto.ResourceId, null);
-        if (id == null)
+        var closingCalendars = await _closingCalendarRepository.GetFiltered(null, day, null, resourceId, null);
+        if (closingCalendarId == null)
             return closingCalendars.Any(); 
-        return closingCalendars.Any(x => x.Id != id);
-    }
-
-    public bool ValidateClosingCalendarBucket(BulkClosingCalendarDto bulkClosingCalendar)
-    {
-        return bulkClosingCalendar.From <= bulkClosingCalendar.To;
+        return closingCalendars.Any(x => x.Id != closingCalendarId);
     }
 }
