@@ -62,7 +62,7 @@ jobs:
           dotnet tool install --global dotnet-stryker
 
       - name: Run Mutation Tests
-        run: dotnet stryker --config-file stryker-config.json --log-level info --reporters html
+        run: dotnet stryker --config-file stryker-config.json --mutation-level info --reporters html
 
       - name: Upload mutation test report
         uses: actions/upload-artifact@v4
