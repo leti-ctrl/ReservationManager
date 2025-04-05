@@ -30,9 +30,15 @@ jobs:
             echo "No previous commit found, comparing to HEAD."
             changed_dirs=$(git diff --name-only HEAD | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
           else
-            # Confronta il commit precedente con quello attuale
+            # Controlla se il commit 'before' è valido
             echo "Comparing commits: ${{ github.event.before }} to ${{ github.sha }}"
+            git fetch --unshallow  # Aggiungi un fetch per assicurarci di avere la cronologia completa
+            # Prova a fare il confronto, gestendo il caso in cui 'before' non sia valido
             changed_dirs=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
+            if [ $? -ne 0 ]; then
+              echo "Failed to find the diff between the commits. Falling back to HEAD."
+              changed_dirs=$(git diff --name-only HEAD | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
+            fi
           fi
   
           # Debug: mostra il risultato di git diff
