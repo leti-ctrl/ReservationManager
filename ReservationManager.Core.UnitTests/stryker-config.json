@@ -1,0 +1,6 @@
+﻿{
+  "stryker-config": {
+    "mutate": ["**/*.cs"],
+    "reporters": ["html", "progress"]
+  }
+}
