@@ -1,6 +1,8 @@
 ﻿using FluentAssertions;
 using ReservationManager.Core.Dtos;
 using ReservationManager.Core.Exceptions;
+using ReservationManager.Core.Interfaces.Repositories;
+using ReservationManager.Core.Interfaces.Services;
 using ReservationManager.DomainModel.Meta;
 using ReservationManager.DomainModel.Operation;
 
@@ -9,22 +11,29 @@ using static Setup;
 
 public class ReservationTypeServiceShould
 {
+    private IReservationTypeService _sut;
+    private IReservationTypeRepository _reservationTypeRepository;
+
+    public ReservationTypeServiceShould()
+    {
+        _sut = GetReservationTypeService();
+        
+        _reservationTypeRepository = GetReservationTypeRepository();
+    }
+    
     [Test]
     public async Task GetAllReservationType_ReturnsSortedReservationTypes()
     {
-        var sut = GetReservationTypeService();
-        var repository = GetReservationTypeRepository();
         var start = new TimeOnly(10, 0);
         var end = new TimeOnly(20, 30);
         var firstReservationType = new ReservationType(){ Code = "A", Name = "Type A",Start = start,End = end};
         var secondReservationType = new ReservationType(){ Code = "B", Name = "Type B",Start = start,End = end};
-        await repository.CreateTypeAsync(firstReservationType);
-        await repository.CreateTypeAsync(secondReservationType);
+        await _reservationTypeRepository.CreateTypeAsync(firstReservationType);
+        await _reservationTypeRepository.CreateTypeAsync(secondReservationType);
         
-        var result = await sut.GetAllReservationType();
+        var result = await _sut.GetAllReservationType();
 
         result.Should().NotBeNullOrEmpty();
-        result.Should().HaveCount(3);//tiene conto del seed
         
         var rezTypeA = result.FirstOrDefault(x => x.Code == "A");
         rezTypeA.Should().NotBeNull();
@@ -42,17 +51,16 @@ public class ReservationTypeServiceShould
     [Test]
     public async Task ReturnsCreatedDto_CreateReservationType_WhenValidRequest()
     {
-        var sut = GetReservationTypeService();
         var start = new TimeOnly(10, 0);
         var end = new TimeOnly(13, 00);
         var request = new UpsertReservationTypeDto() 
-            { Code = "NEW", Name = "Type NEW" , StartTime = start, EndTime = end };
+            { Code = "WFV", Name = "Type WFV" , StartTime = start, EndTime = end };
         
-        var result = await sut.CreateReservationType(request);
+        var result = await _sut.CreateReservationType(request);
 
         result.Should().NotBeNull();
-        result.Code.Should().Be("NEW");
-        result.Name.Should().Be("Type NEW");
+        result.Code.Should().Be("WFV");
+        result.Name.Should().Be("Type WFV");
         result.Start.Should().Be(start);
         result.End.Should().Be(end);
     }
@@ -65,15 +73,15 @@ public class ReservationTypeServiceShould
         var start = new TimeOnly(10, 0);
         var end = new TimeOnly(13, 00);
         var entity = new ReservationType() 
-            { Code = "NEW", Name = "Type NEW" , Start = start, End = end };
+            { Code = "PAW", Name = "Type PAW" , Start = start, End = end };
         await repository.CreateTypeAsync(entity);
         var request = new UpsertReservationTypeDto() 
-            { Code = "NEW", Name = "Type NEW" , StartTime = start, EndTime = end };
+            { Code = "PAW", Name = "Type PAW" , StartTime = start, EndTime = end };
         
         var result = async () => await sut.CreateReservationType(request);
 
         await result.Should().ThrowAsync<InvalidCodeTypeException>()
-            .WithMessage("Reservation type with code NEW already exists");
+            .WithMessage("Reservation type with code PAW already exists");
     }
     
     [Test]
@@ -81,23 +89,22 @@ public class ReservationTypeServiceShould
     {
         var sut = GetReservationTypeService();
         var repository = GetReservationTypeRepository();
-        var id = 999;
         var start = new TimeOnly(10, 0);
         var end = new TimeOnly(13, 00);
         var updatedStart = start.AddHours(2);
         var updatedEnd = end.AddHours(2);
         var request = new UpsertReservationTypeDto() 
-            { Code = "NEW", Name = "Updated type NEW" , StartTime = updatedStart, EndTime = updatedEnd };
+            { Code = "ANE", Name = "Updated type ANE" , StartTime = updatedStart, EndTime = updatedEnd };
         var entity = new ReservationType() 
-            { Id = id, Code = "NEW", Name = "Type NEW" , Start = start, End = end };
-        await repository.CreateTypeAsync(entity);
+            { Code = "ANE", Name = "Type ANE" , Start = start, End = end };
+        var id = (await repository.CreateTypeAsync(entity)).Id;
         
         var result = await sut.UpdateReservationType(id, request);
 
         result.Should().NotBeNull();
         result.Id.Should().Be(id);
-        result.Code.Should().Be("NEW");
-        result.Name.Should().Be("Updated type NEW");
+        result.Code.Should().Be("ANE");
+        result.Name.Should().Be("Updated type ANE");
         result.Start.Should().Be(updatedStart);
         result.End.Should().Be(updatedEnd);
     }
@@ -107,31 +114,26 @@ public class ReservationTypeServiceShould
     {
         var sut = GetReservationTypeService();
 
-        var userId = 55;
         var user = new User()
-            { Id = userId, Name = "Name", Surname = "Surname" , Email = "email@email.com" };
-        await GetUserRepository().CreateEntityAsync(user);
+            { Name = "Name", Surname = "Surname" , Email = "email@email.com" };
+        var userId = (await GetUserRepository().CreateEntityAsync(user)).Id;
         
-        var resourceTypeId = 85;
         var resourceType = new ResourceType()
-            { Id = resourceTypeId, Code = "RM", Name = "rooms" };
-        await GetResourceTypeRepository().CreateTypeAsync(resourceType);
+            { Code = "RM", Name = "rooms" };
+        var resourceTypeId = (await GetResourceTypeRepository().CreateTypeAsync(resourceType)).Id;
         
-        var resourceId = 1084;
         var resource = new Resource()
-            { Id = resourceId, Description = "White room", TypeId = resourceTypeId };
-        await GetResourceRepository().CreateEntityAsync(resource);
+            { Description = "RED room", TypeId = resourceTypeId };
+        var resourceId = (await GetResourceRepository().CreateEntityAsync(resource)).Id;
         
-        var reservationTypeId = 1648;
         var reservationType = new ReservationType()
         {
-            Id = reservationTypeId,
-            Code = "NEW",
-            Name = "Type NEW",
+            Code = "VBA",
+            Name = "Type VBA",
             Start = new TimeOnly(10, 0),
             End = new TimeOnly(13, 00)
         };
-        await GetReservationTypeRepository().CreateTypeAsync(reservationType);
+        var reservationTypeId = (await GetReservationTypeRepository().CreateTypeAsync(reservationType)).Id;
         
         var reservation = new Reservation()
         {
@@ -149,7 +151,7 @@ public class ReservationTypeServiceShould
         var act = async () => await sut.DeleteReservationType(reservationTypeId);
 
         await act.Should().ThrowAsync<DeleteNotPermittedException>()
-            .WithMessage("Cannot delete NEW because exits future reservations with this type");
+            .WithMessage("Cannot delete VBA because exits future reservations with this type");
     }
     
     [Test]
@@ -157,16 +159,14 @@ public class ReservationTypeServiceShould
     {
         var sut = GetReservationTypeService();
         var repository = GetReservationTypeRepository();
-        var reservationTypeId = 1648;
         var reservationType = new ReservationType()
         {
-            Id = reservationTypeId,
-            Code = "NEW",
+            Code = "B",
             Name = "Type NEW",
             Start = new TimeOnly(10, 0),
             End = new TimeOnly(13, 00)
         };
-        await repository.CreateTypeAsync(reservationType);
+        var reservationTypeId = (await repository.CreateTypeAsync(reservationType)).Id;
 
         await sut.DeleteReservationType(reservationTypeId);
 

@@ -27,36 +27,31 @@ public class ReservationServiceShould
     {
         var sut = GetReservationService();
 
-        var userId = 42;
-        var userEmail = "user@mail.com";
+        var userEmail = "username@mail.com";
         var user = new User()
-            { Id = userId, Name = "Name", Surname = "Surname" , Email = userEmail };
-        await GetUserRepository().CreateEntityAsync(user);
+            { Name = "Name", Surname = "Surname" , Email = userEmail };
+        var userId = (await GetUserRepository().CreateEntityAsync(user)).Id;
 
         var session = new SessionInfo(userEmail);
 
-        var resourceTypeId = 864;
         var resourceType = new ResourceType()
-            { Id = resourceTypeId, Code = "ROOM", Name = "rooms" };
-        await GetResourceTypeRepository().CreateTypeAsync(resourceType);
+            { Code = "RM", Name = "rms" };
+        var resourceTypeId = (await GetResourceTypeRepository().CreateTypeAsync(resourceType)).Id;
 
-        var resourceId = 6244;
         var resource = new Resource()
-            { Id = resourceId, Description = "White room", TypeId = resourceTypeId };
-        await GetResourceRepository().CreateEntityAsync(resource);
+            { Description = "Blabla", TypeId = resourceTypeId };
+        var resourceId = (await GetResourceRepository().CreateEntityAsync(resource)).Id;
 
         var reservationTypeStart = new TimeOnly(10, 0);
         var reservationTypeEnd = new TimeOnly(13, 0);
-        var reservationTypeId = 345;
         var reservationType = new ReservationType()
         {
-            Id = reservationTypeId,
-            Code = "REZC",
-            Name = "Type NEW",
+            Code = "REX",
+            Name = "Type REX",
             Start = reservationTypeStart,
             End = reservationTypeEnd
         };
-        await GetReservationTypeRepository().CreateTypeAsync(reservationType);
+        var reservationTypeId = (await GetReservationTypeRepository().CreateTypeAsync(reservationType)).Id;
         
         var reservation = new Reservation()
         {
@@ -86,7 +81,7 @@ public class ReservationServiceShould
     [Test]
     public async Task ThrowOperationNotPermittedException_GetById_WhenNonexistentUser()
     {
-        var rezId = 99;
+        var rezId = 99999;
         var sut = GetReservationService();
         var session = new SessionInfo("nonexistent@mail.com");
         
@@ -100,11 +95,10 @@ public class ReservationServiceShould
     public async Task ReturnNull_GetById_WhenNonexistentReservation()
     {
         var sut = GetReservationService();
-        var rezId = 99;
-        var userId = 42;
-        var userEmail = "user@mail.com";
+        var rezId = 999999;
+        var userEmail = "namesurname@mail.com";
         var user = new User()
-            { Id = userId, Name = "Name", Surname = "Surname" , Email = userEmail };
+            { Name = "Name", Surname = "Surname" , Email = userEmail };
         await GetUserRepository().CreateEntityAsync(user);
         var session = new SessionInfo(userEmail);
 
@@ -118,35 +112,30 @@ public class ReservationServiceShould
     {        
         var sut = GetReservationService();
 
-        var userId = 42;
-        var userEmail = "user@mail.com";
+        var userEmail = "ABC@mail.com";
         var user = new User()
-            { Id = userId, Name = "Name", Surname = "Surname" , Email = userEmail };
-        await GetUserRepository().CreateEntityAsync(user);
+            { Name = "Name", Surname = "Surname" , Email = userEmail };
+        var userId = (await GetUserRepository().CreateEntityAsync(user)).Id;
         var session = new SessionInfo(userEmail);
         
-        var resourceTypeId = 864;
         var resourceType = new ResourceType()
-            { Id = resourceTypeId, Code = "ROOM", Name = "rooms" };
-        await GetResourceTypeRepository().CreateTypeAsync(resourceType);
+            { Code = "ROOM", Name = "rooms" };
+        var resourceTypeId = (await GetResourceTypeRepository().CreateTypeAsync(resourceType)).Id;
 
-        var resourceId = 6244;
         var resource = new Resource()
-            { Id = resourceId, Description = "White room", TypeId = resourceTypeId };
-        await GetResourceRepository().CreateEntityAsync(resource);
+            { Description = "White room", TypeId = resourceTypeId };
+        var resourceId = (await GetResourceRepository().CreateEntityAsync(resource)).Id;
 
         var reservationTypeStart = new TimeOnly(10, 0);
         var reservationTypeEnd = new TimeOnly(13, 0);
-        var reservationTypeId = 345;
         var reservationType = new ReservationType()
         {
-            Id = reservationTypeId,
             Code = "REZC",
             Name = "Type NEW",
             Start = reservationTypeStart,
             End = reservationTypeEnd
         };
-        await GetReservationTypeRepository().CreateTypeAsync(reservationType);
+        var reservationTypeId = (await GetReservationTypeRepository().CreateTypeAsync(reservationType)).Id;
         
         var upsertRez = new UpsertReservationDto()
         {
