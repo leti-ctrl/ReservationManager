@@ -91,13 +91,23 @@ internal sealed class PostgresSqlServerTestcontainer : BaseSqlTestContainer
 {
     internal PostgresSqlServerTestcontainer()
     {
+        var randomPort = GetFreePort();
         PostgresContainer = new PostgreSqlBuilder()
             .WithHostname(DbHostname)
             .WithPassword(DbPassword)
-            .WithPortBinding(Port)
+            .WithPortBinding(randomPort, 5432)
             .WithImage("postgres")
             .Build();
 
         ConnectionString = "";
+    }
+    
+    private static int GetFreePort()
+    {
+        using var listener = new System.Net.Sockets.TcpListener(System.Net.IPAddress.Loopback, 0);
+        listener.Start();
+        int port = ((System.Net.IPEndPoint)listener.LocalEndpoint).Port;
+        listener.Stop();
+        return port;
     }
 }
