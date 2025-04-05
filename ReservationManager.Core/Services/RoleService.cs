@@ -6,18 +6,11 @@ using ReservationManager.Core.Interfaces.Services;
 
 namespace ReservationManager.Core.Services
 {
-    public class RoleService : IRoleService
+    public class RoleService(IRoleRepository roleRepository) : IRoleService
     {
-        private readonly IRoleRepository _roleRepository;
-
-        public RoleService(IRoleRepository roleRepository)
-        {
-            _roleRepository = roleRepository;
-        }
-
         public async Task<IEnumerable<RoleDto>> GetAllRoles()
         {
-            var roles = await _roleRepository.GetAllTypesAsync();
+            var roles = await roleRepository.GetAllTypesAsync();
             if (roles == null)
                 return Enumerable.Empty<RoleDto>();
 
