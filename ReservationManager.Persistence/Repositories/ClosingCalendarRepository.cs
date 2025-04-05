@@ -5,13 +5,10 @@ using ReservationManager.Persistence.Repositories.Base;
 
 namespace ReservationManager.Persistence.Repositories
 {
-    public class ClosingCalendarRepository : CrudBaseEntityRepository<ClosingCalendar>,
-        IClosingCalendarRepository
+    public class ClosingCalendarRepository(ReservationManagerDbContext dbContext)
+        : CrudBaseEntityRepository<ClosingCalendar>(dbContext),
+            IClosingCalendarRepository
     {
-        public ClosingCalendarRepository(ReservationManagerDbContext dbContext) : base(dbContext)
-        {
-        }
-
         public async Task<IEnumerable<ClosingCalendar>> GetAllFromToday()
         {
             return await Context.Set<ClosingCalendar>()
