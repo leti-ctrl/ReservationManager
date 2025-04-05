@@ -56,15 +56,14 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-  
+
       - name: Install Stryker.NET tool
         run: |
           dotnet tool install --global dotnet-stryker
-          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH # Aggiungi Stryker al PATH per poterlo eseguire
-  
+
       - name: Run Mutation Tests
-        run: stryker --configuration-file stryker-config.json --log-level info --reporters html
-  
+        run: $HOME/.dotnet/tools/stryker --configuration-file stryker-config.json --log-level info --reporters html
+      
       - name: Upload mutation test report
         uses: actions/upload-artifact@v4
         with:
