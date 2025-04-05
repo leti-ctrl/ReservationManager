@@ -21,13 +21,21 @@ jobs:
       - name: Determine changed directories
         id: changed_dirs
         run: |
-          # Verifica le modifiche nelle directory
           echo "Checking for changes in Services and Validators"
-          changed_dirs=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
+          # Usa git diff per ottenere le modifiche, considerando se 'before' è disponibile
+          if [ -z "${{ github.event.before }}" ]; then
+            # In caso di un primo push o nessun commit precedente
+            echo "No previous commit found, comparing to HEAD."
+            changed_dirs=$(git diff --name-only HEAD | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
+          else
+            # Confronta il commit precedente con il commit corrente
+            changed_dirs=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
+          fi
           echo "Changed directories: $changed_dirs"
-          echo "::set-output name=services-changed::$(echo $changed_dirs | grep -o 'ReservationManager.Core.Services')"
-          echo "::set-output name=validators-changed::$(echo $changed_dirs | grep -o 'ReservationManager.Core.Validators')"
-
+          # Salva la variabile nei file di ambiente
+          echo "services-changed=$(echo $changed_dirs | grep -o 'ReservationManager.Core.Services')" >> $GITHUB_ENV
+          echo "validators-changed=$(echo $changed_dirs | grep -o 'ReservationManager.Core.Validators')" >> $GITHUB_ENV
+  
   build:
     name: Build
     runs-on: ubuntu-latest
