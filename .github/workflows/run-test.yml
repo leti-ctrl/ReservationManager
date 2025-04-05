@@ -1,151 +1,88 @@
-name: build and test
+name: Build and Test on Develop
 
 on:
   push:
-    branches: [ main, develop ]
-    paths:
-      - '**/*.cs'  # Si triggera per modifiche nei file C# (modifica opzionale)
-
-env:
-  DOTNET_VERSION: '8.0.X'
+    branches: [ develop ]
 
 jobs:
-  determine-changes:
+  detect-changes:
     name: Determine Changed Directories
     runs-on: ubuntu-latest
     outputs:
-      services-changed: ${{ steps.changed_dirs.outputs.services-changed }}
-      validators-changed: ${{ steps.changed_dirs.outputs.validators-changed }}
+      core-changed: ${{ steps.determine.outputs.core-changed }}
+      persistence-changed: ${{ steps.determine.outputs.persistence-changed }}
     steps:
       - uses: actions/checkout@v3
-  
+
       - name: Determine changed directories
-        id: changed_dirs
+        id: determine
         run: |
-          echo "Checking for changes in Services and Validators"
-          
+          echo "Determino i file modificati..."
+          # Se non esiste un commit 'before' (primo push), confronta con HEAD
           if [ -z "${{ github.event.before }}" ]; then
-            echo "No previous commit found, comparing to HEAD."
-            changed_dirs=$(git diff --name-only HEAD | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
+            changed_files=$(git diff --name-only HEAD)
           else
-            echo "Comparing commits: ${{ github.event.before }} to ${{ github.sha }}"
-            git fetch --unshallow 
-            changed_dirs=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
-            if [ $? -ne 0 ]; then
-              echo "Failed to find the diff between the commits. Falling back to HEAD."
-              changed_dirs=$(git diff --name-only HEAD | grep -E '^ReservationManager.Core.(Services|Validators)' | cut -d'/' -f1 | sort -u)
-            fi
+            changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
           fi
-  
-          echo "git diff result: $changed_dirs"
-  
-          if [ -z "$changed_dirs" ]; then
-            echo "No directories changed."
+
+          echo "File modificati:"
+          echo "$changed_files"
+          
+          # Verifica se ci sono modifiche nella directory ReservationManager.Core
+          core_changed=$(echo "$changed_files" | grep -E '^ReservationManager\.Core/' || true)
+          
+          # Verifica se ci sono modifiche nella directory ReservationManager.Persistence
+          persistence_changed=$(echo "$changed_files" | grep -E '^ReservationManager\.Persistence/' || true)
+          
+          # Imposta gli output (true/false)
+          if [ -n "$core_changed" ]; then
+            echo "core-changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "core-changed=" >> $GITHUB_OUTPUT
           fi
-  
-          echo "Changed directories: $changed_dirs"
-          
-          # Assicurati di determinare correttamente 'Services' e 'Validators'
-          services_changed=$(echo $changed_dirs | grep -o 'ReservationManager.Core.Services')
-          validators_changed=$(echo $changed_dirs | grep -o 'ReservationManager.Core.Validators')
-          
-          # Debug: Verifica i risultati di 'Services' e 'Validators'
-          echo "Services changed: $services_changed"
-          echo "Validators changed: $validators_changed"
-          
-          # Esporta le variabili di ambiente
-          echo "services-changed=$services_changed" >> $GITHUB_ENV
-          echo "validators-changed=$validators_changed" >> $GITHUB_ENV
-          
-          # Debug: verifica se le variabili di ambiente sono state correttamente impostate
-          echo "services-changed variable set to: ${{ env.services-changed }}"
-          echo "validators-changed variable set to: ${{ env.validators-changed }}"
-  
-  build:
-    name: Build
+
+          if [ -n "$persistence_changed" ]; then
+            echo "persistence-changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "persistence-changed=" >> $GITHUB_OUTPUT
+          fi
+
+  unit-tests:
+    name: Run Unit Tests
+    needs: detect-changes
     runs-on: ubuntu-latest
-    needs: determine-changes
+    # Esegue il job solo se 'core-changed' è true
+    if: ${{ needs.detect-changes.outputs.core-changed == 'true' }}
     steps:
       - uses: actions/checkout@v3
-      - name: Setup .NET Core
+
+      - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Install dependencies
-        working-directory: ./ReservationManager.Core.UnitTests
-        run: dotnet restore
-      - name: Build
-        working-directory: ./ReservationManager.Core.UnitTests
-        run: dotnet build --configuration Release --no-restore
+          dotnet-version: '8.0.x'
 
-  test-services:
-    name: Test Services
-    runs-on: ubuntu-latest
-    needs: determine-changes
-    if: ${{ needs.determine-changes.outputs.services-changed == 'ReservationManager.Core.Services' }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Install dependencies
-        working-directory: ./ReservationManager.Core.UnitTests.Services
-        run: dotnet restore
-      - name: Test Services
-        working-directory: ./ReservationManager.Core.UnitTests.Services
-        run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
-
-  test-validators:
-    name: Test Validators
-    runs-on: ubuntu-latest
-    needs: determine-changes
-    if: ${{ needs.determine-changes.outputs.validators-changed == 'ReservationManager.Core.Validators' }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
-      - name: Install dependencies
-        working-directory: ./ReservationManager.Core.UnitTests.Validators
-        run: dotnet restore
-      - name: Test Validators
-        working-directory: ./ReservationManager.Core.UnitTests.Validators
-        run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
-
-  install-report-generator:
-    name: Install Report Generator
-    runs-on: ubuntu-latest
-    needs: [test-services, test-validators]
-    steps:
-      - name: Install ReportGenerator
-        run: dotnet tool install --global dotnet-reportgenerator-globaltool
-
-  generate-coverage-report:
-    name: Generate Coverage Report
-    runs-on: ubuntu-latest
-    needs: [test-services, test-validators, install-report-generator]
-    steps:
-      - name: Generate coverage report
+      - name: Restore, build, and run Unit Tests
         run: |
-          reportgenerator -reports:./coverage/**/coverage.cobertura.xml -targetdir:./coverage-report -reporttypes:Html
+          dotnet restore ReservationManager.Core.UnitTests/ReservationManager.Core.UnitTests.csproj
+          dotnet build ReservationManager.Core.UnitTests/ReservationManager.Core.UnitTests.csproj --configuration Release --no-restore
+          dotnet test ReservationManager.Core.UnitTests/ReservationManager.Core.UnitTests.csproj --configuration Release --no-restore
 
-  upload-coverage-report:
-    name: Upload Coverage Report
+  integration-tests:
+    name: Run Integration Tests
+    needs: detect-changes
     runs-on: ubuntu-latest
-    needs: generate-coverage-report
+    # Esegue il job solo se 'persistence-changed' è true
+    if: ${{ needs.detect-changes.outputs.persistence-changed == 'true' }}
     steps:
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
         with:
-          name: coverage-report
-          path: ./coverage-report
+          dotnet-version: '8.0.x'
 
-  fake-deploy:
-    name: Fake Deploy
-    runs-on: ubuntu-latest
-    needs: upload-coverage-report
-    steps:
-      - name: deploy
-        run: printf "deployed"
+      - name: Restore, build, and run Integration Tests
+        run: |
+          dotnet restore ReservationManager.Persistence.IntegrationTests/ReservationManager.Persistence.IntegrationTests.csproj
+          dotnet build ReservationManager.Persistence.IntegrationTests/ReservationManager.Persistence.IntegrationTests.csproj --configuration Release --no-restore
+          dotnet test ReservationManager.Persistence.IntegrationTests/ReservationManager.Persistence.IntegrationTests.csproj --configuration Release --no-restore
