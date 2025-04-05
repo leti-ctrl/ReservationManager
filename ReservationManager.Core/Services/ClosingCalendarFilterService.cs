@@ -31,5 +31,6 @@ public class ClosingCalendarFilterService : IClosingCalendarFilterService
         if (closingCalendars.Any())
             return closingCalendars.Select(x => x.Adapt<ClosingCalendarDto>()).OrderBy(x => x.Day);
         return Enumerable.Empty<ClosingCalendarDto>();
+        
     }
 }
