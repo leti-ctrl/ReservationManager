@@ -8,29 +8,17 @@ using ReservationManager.DomainModel.Operation;
 
 namespace ReservationManager.Core.Services;
 
-public class ResourceFilterService : IResourceFilterService
+public class ResourceFilterService(
+    IClosingCalendarFilterService closingCalendarFilterService,
+    IResourceFilterDtoValidator resourceFilterValidator,
+    IResourceReservedMapper resourceReservedMapper,
+    IResourceRepository resourceRepository,
+    IReservationRepository reservationRepository)
+    : IResourceFilterService
 {
-    private readonly IResourceFilterDtoValidator _resourceFilterValidator;
-    private readonly IResourceReservedMapper _resourceReservedMapper;
-    private readonly IResourceRepository _resourceRepository;
-    private readonly IReservationRepository _reservationRepository;
-    private readonly IClosingCalendarFilterService _closingCalendarFilterService;
-
-
-    public ResourceFilterService(IClosingCalendarFilterService closingCalendarFilterService, 
-        IResourceFilterDtoValidator resourceFilterValidator, IResourceReservedMapper resourceReservedMapper, 
-        IResourceRepository resourceRepository, IReservationRepository reservationRepository)
-    {
-        _closingCalendarFilterService = closingCalendarFilterService;
-        _resourceFilterValidator = resourceFilterValidator;
-        _resourceReservedMapper = resourceReservedMapper;
-        _resourceRepository = resourceRepository;
-        _reservationRepository = reservationRepository;
-    }
-    
     public async Task<IEnumerable<ResourceDto>> GetFilteredResources(ResourceFilterDto resourceFilters)
     {
-        var validationResult = await _resourceFilterValidator.ValidateAsync(resourceFilters);
+        var validationResult = await resourceFilterValidator.ValidateAsync(resourceFilters);
         if (!validationResult.IsValid)
         {
             var errorMsg = string.Join(", ", validationResult.Errors.Select(x => x.ErrorMessage));
@@ -48,7 +36,7 @@ public class ResourceFilterService : IResourceFilterService
 
         if (AreDateTimeFiltersApplied(resourceFilters))
         {
-            var closed = (await _closingCalendarFilterService.GetFiltered(new ClosingCalendarFilterDto()
+            var closed = (await closingCalendarFilterService.GetFiltered(new ClosingCalendarFilterDto()
             {
                 StartDay = resourceFilters.Day,
                 EndDay = resourceFilters.Day,
@@ -57,7 +45,7 @@ public class ResourceFilterService : IResourceFilterService
             })).ToList();
             var reservationFilteredList = await GetReservationFilteredResources(resourceList, resourceFilters);
             if (reservationFilteredList.Any() || closed.Any())
-                return _resourceReservedMapper.Map(resourceList, reservationFilteredList, closed.ToList());
+                return resourceReservedMapper.Map(resourceList, reservationFilteredList, closed.ToList());
         }
 
         return resourceList.Select(x => x.Adapt<ResourceDto>());
@@ -65,7 +53,7 @@ public class ResourceFilterService : IResourceFilterService
     
     private async Task<List<Resource>> GetBaseFilteredResources(ResourceFilterDto resourceFilters)
     {
-        return (await _resourceRepository.GetFiltered(resourceFilters.TypeId, resourceFilters.ResourceId)).ToList();
+        return (await resourceRepository.GetFiltered(resourceFilters.TypeId, resourceFilters.ResourceId)).ToList();
     }
 
     private static bool AreDateTimeFiltersApplied(ResourceFilterDto resourceFilters)
@@ -77,7 +65,7 @@ public class ResourceFilterService : IResourceFilterService
         ResourceFilterDto resourceFilters)
     {
         var resourceIds = resourceList.Select(x => x.Id).ToList();
-        return (await _reservationRepository.GetReservationByResourceDateTimeAsync(
+        return (await reservationRepository.GetReservationByResourceDateTimeAsync(
             resourceIds,
             resourceFilters.Day!.Value,
             resourceFilters.TimeFrom!.Value,
