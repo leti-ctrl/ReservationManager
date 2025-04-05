@@ -14,17 +14,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Fetch complete history
+        run: |
+            echo "Eseguo il fetch completo della cronologia..."
+            git fetch --prune --unshallow || true
+
       - name: Determine changed directories
         id: determine
         run: |
           echo "Determino i file modificati..."
-          # Se non esiste un commit 'before' (primo push), confronta con HEAD
-          if [ -z "${{ github.event.before }}" ]; then
+          if [ -z "${{ github.event.before }}" ] || ! git cat-file -e ${{ github.event.before }} 2>/dev/null; then
+            echo "Commit 'before' non trovato, confronto con HEAD."
             changed_files=$(git diff --name-only HEAD)
           else
             changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
           fi
-
+          
           echo "File modificati:"
           echo "$changed_files"
           
@@ -40,12 +45,12 @@ jobs:
           else
             echo "core-changed=" >> $GITHUB_OUTPUT
           fi
-
-          if [ -n "$persistence_changed" ]; then
-            echo "persistence-changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "persistence-changed=" >> $GITHUB_OUTPUT
-          fi
+                
+                if [ -n "$persistence_changed" ]; then
+                  echo "persistence-changed=true" >> $GITHUB_OUTPUT
+                else
+                  echo "persistence-changed=" >> $GITHUB_OUTPUT
+                fi
 
   unit-tests:
     name: Run Unit Tests
