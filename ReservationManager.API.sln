@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{AC85706A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationManager.Core.IntegrationTests", "ReservationManager.Core.IntegrationTests\ReservationManager.Core.IntegrationTests.csproj", "{4912F7D0-768A-4DEF-97E0-9A623BEA0EB8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReservationManager.LoadTests", "ReservationManager.LoadTests\ReservationManager.LoadTests.csproj", "{FE61E068-3A02-4CEB-8AF9-C6A1CA66EAE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{4912F7D0-768A-4DEF-97E0-9A623BEA0EB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4912F7D0-768A-4DEF-97E0-9A623BEA0EB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4912F7D0-768A-4DEF-97E0-9A623BEA0EB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE61E068-3A02-4CEB-8AF9-C6A1CA66EAE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE61E068-3A02-4CEB-8AF9-C6A1CA66EAE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE61E068-3A02-4CEB-8AF9-C6A1CA66EAE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE61E068-3A02-4CEB-8AF9-C6A1CA66EAE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,5 +69,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CB821952-04F4-4EBB-BA3F-33F1D0644938} = {AC85706A-9B82-4C6C-9CE3-BC6E1BDC8119}
 		{4912F7D0-768A-4DEF-97E0-9A623BEA0EB8} = {AC85706A-9B82-4C6C-9CE3-BC6E1BDC8119}
+		{FE61E068-3A02-4CEB-8AF9-C6A1CA66EAE3} = {AC85706A-9B82-4C6C-9CE3-BC6E1BDC8119}
 	EndGlobalSection
 EndGlobal
