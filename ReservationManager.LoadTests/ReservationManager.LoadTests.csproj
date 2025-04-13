@@ -21,4 +21,12 @@
         <Using Include="Xunit"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Reports\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ReservationManager.Core\ReservationManager.Core.csproj" />
+    </ItemGroup>
+
 </Project>

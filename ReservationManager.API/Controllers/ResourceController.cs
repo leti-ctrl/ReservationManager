@@ -12,7 +12,6 @@ namespace ReservationManager.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin , FixedUserRole.GeneralServices })]
     public class ResourceController : SessionController
     {
         private readonly IResourceService _resourceService;
@@ -26,6 +25,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin , FixedUserRole.GeneralServices })]
         public async Task<ActionResult<IEnumerable<ResourceDto>>> GetAllResources()
         {
             var resources = await _resourceService.GetAllResources();
@@ -54,6 +54,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin , FixedUserRole.GeneralServices })]
         public async Task<ActionResult<ResourceDto>> CreateResource(UpsertResourceDto resource)
         {
             var created = await _resourceService.CreateResource(resource);
@@ -65,6 +66,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin , FixedUserRole.GeneralServices })]
         public async Task<ActionResult<ResourceDto>> UpdateResource(int id, UpsertResourceDto resource)
         {
             var updated = await _resourceService.UpdateResource(id, resource);
@@ -79,6 +81,7 @@ namespace ReservationManager.API.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [RoleAuthorizationFilterFactory(new[] { FixedUserRole.Admin , FixedUserRole.GeneralServices })]
         public async Task<ActionResult> DeleteResource(int id)
         {
             await _resourceService.DeleteResource(id);

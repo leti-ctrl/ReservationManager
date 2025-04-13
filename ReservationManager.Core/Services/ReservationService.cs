@@ -26,7 +26,7 @@ namespace ReservationManager.Core.Services
 
             var reservationList = await reservationRepository.GetReservationByUserIdFromToday(user.Id);
             
-            return reservationList.ToList().Select(x => x.Adapt<ReservationDto>());
+            return reservationList.ToList().Select(x => x.Adapt<ReservationDto>()).OrderBy(x => x.Day);
         }
 
         public async Task<ReservationDto?> GetById(int id, SessionInfo session)
