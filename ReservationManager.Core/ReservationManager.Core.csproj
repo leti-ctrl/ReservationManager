@@ -13,6 +13,7 @@
     </PackageReference>
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="Mapster" Version="7.4.0" />
+    <PackageReference Include="NRedisStack" Version="0.13.2" />
   </ItemGroup>
 
   <ItemGroup>

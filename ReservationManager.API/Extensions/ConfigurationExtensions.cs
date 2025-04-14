@@ -1,4 +1,5 @@
-﻿using ReservationManager.Core.Exceptions;
+﻿using ReservationManager.API.Redis;
+using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Interfaces.Services;
@@ -16,6 +17,8 @@ namespace ReservationManager.API.Extensions
     {
         public static IServiceCollection ConfigureServices(this IServiceCollection services)
         {
+            services.AddSingleton<IRedisService, RedisService>();
+
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IResourceTypeService, ResourceTypeService>();
             services.AddScoped<IReservationTypeService, ReservationTypeService>();
