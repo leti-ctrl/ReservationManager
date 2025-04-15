@@ -1,4 +1,5 @@
-﻿using ReservationManager.API.Redis;
+﻿using ReservationManager.Cache.Redis;
+using ReservationManager.Cache.Repositories;
 using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Interfaces.Repositories;
@@ -42,7 +43,8 @@ namespace ReservationManager.API.Extensions
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IResourceRepository, ResourceRepository>();
-            services.AddScoped<IReservationRepository, ReservationRepository>();
+            services.AddScoped<IReservationRepository, ReservationCachedRepository>();
+            services.AddScoped<ReservationRepository>();
             services.AddScoped<IClosingCalendarRepository, ClosingCalendarRepository>();
 
             return services;
