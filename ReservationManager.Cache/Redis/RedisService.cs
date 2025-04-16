@@ -19,25 +19,13 @@ public class RedisService : IRedisService
         _db = redis.GetDatabase();
     }
 
-    public async Task SetAsync(string key, CacheItem cacheItem)
+    public async Task SetAsync(string key, string value)
     {
-        var value = JsonConvert.SerializeObject(cacheItem);
-        await _db.StringSetAsync(key, value, TimeSpan.FromSeconds(10));
+        await _db.StringSetAsync(key, value, TimeSpan.FromMinutes(2));
     }
 
-    public async Task<CacheItem?> GetAsync(string key)
+    public async Task<string?> GetAsync(string key)
     {
-        var item = await _db.StringGetAsync(key);
-        return !item.HasValue ? null : JsonConvert.DeserializeObject<CacheItem>(item!);
-    }
-
-    public async Task<bool> IsValid(string key)
-    {
-        var item = await _db.StringGetAsync(key);
-        if (!item.HasValue)
-            return false;
-        var cacheItem = JsonConvert.DeserializeObject<CacheItem>(item!);
-        var currentTimestamp = new TimeStamp(DateTime.Now.AddMinutes(5));
-        return cacheItem!.Timestamp < currentTimestamp;
+        return await _db.StringGetAsync(key);
     }
 }

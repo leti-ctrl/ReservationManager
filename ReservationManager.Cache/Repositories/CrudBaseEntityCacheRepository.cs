@@ -29,23 +29,17 @@ where T: BaseEntity
     public async Task<T?> GetEntityByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var redisKey = BuildRedisKeyHelper.BuildKey(typeof(T), id);
-        var isValid = await _redisService.IsValid(redisKey);
-        if (!isValid)
-        {
-            var data = await _repository.GetEntityByIdAsync(id, cancellationToken);
-            if (data == null)
-                return data;
-            var newCacheItem = new CacheItem()
-            {
-                Timestamp = new TimeStamp(DateTime.Now),
-                JsonObjectValue = JsonConvert.SerializeObject(data),
-            };
-            await _redisService.SetAsync(redisKey, newCacheItem);
-            return data;
-        }
-
-        var cacheItem = await _redisService.GetAsync(redisKey);
-        return JsonConvert.DeserializeObject<T>(cacheItem.JsonObjectValue.ToString());
+        var redisValue = await _redisService.GetAsync(redisKey);
+        if(redisValue != null)
+            return JsonConvert.DeserializeObject<T>(redisValue);
+       
+        var repositoryData = await _repository.GetEntityByIdAsync(id, cancellationToken);
+        if (repositoryData == null)
+            return null;
+        
+        var serializedData = JsonConvert.SerializeObject(repositoryData);
+        await _redisService.SetAsync(redisKey, serializedData);
+        return repositoryData;
     }
 
     public async Task<T> CreateEntityAsync(T entity, CancellationToken cancellationToken = default)
