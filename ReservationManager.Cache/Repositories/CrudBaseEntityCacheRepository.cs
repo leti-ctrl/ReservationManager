@@ -23,7 +23,19 @@ where T: BaseEntity
     
     public async Task<IEnumerable<T>> GetAllEntitiesAsync(CancellationToken cancellationToken = default)
     {
-        return await _repository.GetAllEntitiesAsync(cancellationToken);
+        var entities = await _repository.GetAllEntitiesAsync(cancellationToken);
+        foreach (var entity in entities)
+        {
+            var redisKey = BuildRedisKeyHelper.BuildKey(typeof(T), entity.Id);
+            
+            var redisValue = await _redisService.GetAsync(redisKey);
+            if (redisValue == null)
+            {
+                var serializedData = JsonConvert.SerializeObject(entity);
+                await _redisService.SetAsync(redisKey, serializedData);
+            }
+        }
+        return entities;
     }
 
     public async Task<T?> GetEntityByIdAsync(int id, CancellationToken cancellationToken = default)
@@ -44,7 +56,13 @@ where T: BaseEntity
 
     public async Task<T> CreateEntityAsync(T entity, CancellationToken cancellationToken = default)
     {
-        return await _repository.CreateEntityAsync(entity, cancellationToken);
+        var newEntity = await _repository.CreateEntityAsync(entity, cancellationToken);
+
+        var entityRedisKey = BuildRedisKeyHelper.BuildKey(typeof(T), newEntity.Id);
+        var serializedData = JsonConvert.SerializeObject(newEntity);
+        await _redisService.SetAsync(entityRedisKey, serializedData);
+        
+        return newEntity;
     }
 
     public async Task<T?> UpdateEntityAsync(T entity, CancellationToken cancellationToken = default)
@@ -55,5 +73,8 @@ where T: BaseEntity
     public async Task DeleteEntityAsync(T entity, CancellationToken cancellationToken = default)
     {
         await _repository.DeleteEntityAsync(entity, cancellationToken);
+        
+        var deletedEntity =  BuildRedisKeyHelper.BuildKey(typeof(T), entity.Id);
+        await _redisService.RemoveAsync(deletedEntity);
     }
 }

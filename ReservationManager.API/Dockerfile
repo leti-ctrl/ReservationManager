@@ -8,6 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["ReservationManager.API/ReservationManager.API.csproj", "ReservationManager.API/"]
 COPY ["ReservationManager.Core/ReservationManager.Core.csproj", "ReservationManager.Core/"]
+COPY ["ReservationManager.Core/ReservationManager.Cache.csproj", "ReservationManager.Cache/"]
 COPY ["ReservationManager.DomainModel/ReservationManager.DomainModel.csproj", "ReservationManager.DomainModel/"]
 COPY ["ReservationManager.Persistence/ReservationManager.Persistence.csproj", "ReservationManager.Persistence/"]
 RUN dotnet restore "ReservationManager.API/ReservationManager.API.csproj"
