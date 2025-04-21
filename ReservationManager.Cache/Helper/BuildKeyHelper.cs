@@ -1,6 +1,6 @@
 ﻿namespace ReservationManager.Cache.Helper;
 
-public static class BuildRedisKeyHelper
+public static class BuildKeyHelper
 {
     public static string BuildKey(Type type, int id)
     {
