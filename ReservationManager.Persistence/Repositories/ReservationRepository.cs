@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.DomainModel.Operation;
 using ReservationManager.Persistence.Repositories.Base;
@@ -9,6 +10,11 @@ namespace ReservationManager.Persistence.Repositories
     {
         public ReservationRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
+        }
+
+        public override Task<IEnumerable<Reservation>> GetAllEntitiesAsync(CancellationToken cancellationToken = default)
+        {
+            throw new OperationNotPermittedException("This operation is not permitted.");
         }
 
         public async Task<IEnumerable<Reservation>> GetReservationByUserIdFromToday(int userId)
