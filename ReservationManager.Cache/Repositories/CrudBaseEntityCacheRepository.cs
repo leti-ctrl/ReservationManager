@@ -26,21 +26,15 @@ where T: BaseEntity
         var entities = await _repository.GetAllEntitiesAsync(cancellationToken);
         foreach (var entity in entities)
         {
-            var redisKey = BuildKeyHelper.BuildKey(typeof(T), entity.Id);
-            
-            var redisValue = await _redisService.GetAsync(redisKey);
-            if (redisValue == null)
-            {
-                var serializedData = JsonConvert.SerializeObject(entity);
-                await _redisService.SetAsync(redisKey, serializedData);
-            }
+            var redisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(T), entity.Id);
+            await _redisService.SetIfNotExistsAsync(redisKey, JsonConvert.SerializeObject(entity));
         }
         return entities;
     }
 
     public async Task<T?> GetEntityByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        var redisKey = BuildKeyHelper.BuildKey(typeof(T), id);
+        var redisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(T), id);
         var redisValue = await _redisService.GetAsync(redisKey);
         if(redisValue != null)
             return JsonConvert.DeserializeObject<T>(redisValue);
@@ -58,7 +52,7 @@ where T: BaseEntity
     {
         var newEntity = await _repository.CreateEntityAsync(entity, cancellationToken);
 
-        var entityRedisKey = BuildKeyHelper.BuildKey(typeof(T), newEntity.Id);
+        var entityRedisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(T), newEntity.Id);
         var serializedData = JsonConvert.SerializeObject(newEntity);
         await _redisService.SetAsync(entityRedisKey, serializedData);
         
@@ -74,7 +68,7 @@ where T: BaseEntity
     {
         await _repository.DeleteEntityAsync(entity, cancellationToken);
         
-        var deletedEntity =  BuildKeyHelper.BuildKey(typeof(T), entity.Id);
+        var deletedEntity =  BuildKeyHelper.BuildKeyByTypeAndId(typeof(T), entity.Id);
         await _redisService.RemoveAsync(deletedEntity);
     }
 }

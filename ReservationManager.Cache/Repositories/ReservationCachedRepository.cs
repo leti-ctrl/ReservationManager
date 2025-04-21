@@ -1,5 +1,8 @@
-﻿using ReservationManager.Cache.Redis;
+﻿using Newtonsoft.Json;
+using ReservationManager.Cache.Helper;
+using ReservationManager.Cache.Redis;
 using ReservationManager.Core.Interfaces.Repositories;
+using ReservationManager.DomainModel.Meta;
 using ReservationManager.DomainModel.Operation;
 using ReservationManager.Persistence;
 using ReservationManager.Persistence.Repositories;
@@ -17,10 +20,22 @@ public class ReservationCachedRepository : CrudBaseEntityCacheRepository<Reserva
         _repository = repository;
         _redisService = redisService;
     }
+    
     public async Task<IEnumerable<Reservation>> GetReservationByUserIdFromToday(int userId)
     {
-        //var redisKey = BuildRedisKeyHelper.BuildKey(typeof(User), userId);
-        return await _repository.GetReservationByUserIdFromToday(userId);
+        return await GetOrSetCacheAsync(
+            BuildKeyHelper.BuildKeyByTypeIdAndValue(typeof(User), userId, typeof(Reservation)),
+            () => _repository.GetReservationByUserIdFromToday(userId)
+        );
+        
+        // var redisKey = BuildKeyHelper.BuildKeyByTypeIdAndValue(typeof(User), userId, typeof(Reservation));
+        // var redisValue = await _redisService.GetAsync(redisKey);
+        // if(redisValue != null)
+        //     return JsonConvert.DeserializeObject<IEnumerable<Reservation>>(redisValue) ?? new List<Reservation>();
+        //
+        // var reservationList = await _repository.GetReservationByUserIdFromToday(userId);
+        // await _redisService.SetAsync(redisKey, JsonConvert.SerializeObject(reservationList));
+        // return reservationList;
     }
 
     public async Task<IEnumerable<Reservation>> GetReservationByResourceDateTimeAsync(List<int> resourceIds, DateOnly startDate, TimeOnly startTime, TimeOnly endTime)
@@ -30,11 +45,47 @@ public class ReservationCachedRepository : CrudBaseEntityCacheRepository<Reserva
 
     public async Task<IEnumerable<Reservation>> GetReservationByResourceIdAfterTodayAsync(int resourceId)
     {
-        return await _repository.GetReservationByResourceIdAfterTodayAsync(resourceId);
+        return await GetOrSetCacheAsync(
+            BuildKeyHelper.BuildKeyByTypeIdAndValue(typeof(Resource), resourceId, typeof(Reservation)),
+            () => _repository.GetReservationByUserIdFromToday(resourceId)
+        );
+        
+        // var redisKey = BuildKeyHelper.BuildKeyByTypeIdAndValue(typeof(Resource), resourceId, typeof(Reservation));
+        // var redisValue = await _redisService.GetAsync(redisKey);
+        // if(redisValue != null)
+        //     return JsonConvert.DeserializeObject<IEnumerable<Reservation>>(redisValue) ?? new List<Reservation>();
+        //
+        // var reservationList = await _repository.GetReservationByResourceIdAfterTodayAsync(resourceId);
+        // await _redisService.SetAsync(redisKey, JsonConvert.SerializeObject(reservationList));
+        // return reservationList;
     }
 
     public async Task<IEnumerable<Reservation>> GetReservationByTypeIdAfterTodayAsync(int typeId)
     {
-        return await _repository.GetReservationByTypeIdAfterTodayAsync(typeId);
+        return await GetOrSetCacheAsync(
+            BuildKeyHelper.BuildKeyByTypeIdAndValue(typeof(ReservationType), typeId, typeof(Reservation)),
+            () => _repository.GetReservationByUserIdFromToday(typeId)
+        );
+        
+        // var redisKey = BuildKeyHelper.BuildKeyByTypeIdAndValue(typeof(ReservationType), typeId, typeof(Reservation));
+        // var redisValue = await _redisService.GetAsync(redisKey);
+        // if(redisValue != null)
+        //     return JsonConvert.DeserializeObject<IEnumerable<Reservation>>(redisValue) ?? new List<Reservation>();
+        //
+        // var reservationList =  await _repository.GetReservationByTypeIdAfterTodayAsync(typeId);
+        // await _redisService.SetAsync(redisKey, JsonConvert.SerializeObject(reservationList));
+        // return reservationList;
     }
+    
+    private async Task<IEnumerable<Reservation>> GetOrSetCacheAsync(string redisKey, Func<Task<IEnumerable<Reservation>>> getFromDb)
+    {
+        var redisValue = await _redisService.GetAsync(redisKey);
+        if (redisValue != null)
+            return JsonConvert.DeserializeObject<IEnumerable<Reservation>>(redisValue) ?? new List<Reservation>();
+
+        var result = await getFromDb();
+        await _redisService.SetAsync(redisKey, JsonConvert.SerializeObject(result));
+        return result;
+    }
+
 }

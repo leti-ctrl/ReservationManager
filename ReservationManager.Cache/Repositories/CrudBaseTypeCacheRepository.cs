@@ -1,4 +1,6 @@
-﻿using ReservationManager.Cache.Redis;
+﻿using Newtonsoft.Json;
+using ReservationManager.Cache.Helper;
+using ReservationManager.Cache.Redis;
 using ReservationManager.Core.Interfaces.Repositories.Base;
 using ReservationManager.DomainModel.Base;
 using ReservationManager.Persistence.Repositories.Base;
@@ -19,8 +21,16 @@ where T : BaseType
 
     public async Task<IEnumerable<T>> GetAllTypesAsync(CancellationToken cancellationToken = default)
     {
-        return await _repository.GetAllTypesAsync(cancellationToken);
+        var types = await _repository.GetAllTypesAsync(cancellationToken);
+        foreach (var type in types)
+        {
+            var redisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(T), type.Id);
+            await _redisService.SetIfNotExistsAsync(redisKey, JsonConvert.SerializeObject(type));
+        }
+        return types;
     }
+
+    
 
     public async Task<T?> GetTypeById(int id, CancellationToken cancellationToken = default)
     {
