@@ -11,7 +11,7 @@ namespace ReservationManager.Persistence.Repositories.Base
     {
         protected readonly ReservationManagerDbContext Context = dbContext;
 
-        public async Task<IEnumerable<T>> GetAllEntitiesAsync(CancellationToken cancellationToken = default)
+        public virtual async Task<IEnumerable<T>> GetAllEntitiesAsync(CancellationToken cancellationToken = default)
         {
             return await Context.Set<T>().ToListAsync(cancellationToken);
         }
