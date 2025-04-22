@@ -56,7 +56,7 @@ public class ReservationCachedRepository : CrudBaseEntityCacheRepository<Reserva
     {
         return await GetOrSetCacheAsync(
             BuildKeyHelper.BuildKeyByTypeIdAndValue(typeof(Resource), typeId, typeof(Reservation)),
-            () =>   _repository.GetReservationByUserIdFromToday(typeId)
+            () =>   _repository.GetReservationByTypeIdAfterTodayAsync(typeId)
         );
     }
     
