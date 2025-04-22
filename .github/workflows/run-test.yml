@@ -33,8 +33,8 @@ jobs:
           # Verifica se ci sono modifiche nella directory corrispondente
           core_changed=$(echo "$changed_files" | grep -E '^ReservationManager\.Core/' || true)
           persistence_changed=$(echo "$changed_files" | grep -E '^ReservationManager\.Persistence/' || true)
-          cache_changed = $(echo "$changed_files" | grep -E '^ReservationManager\.Cache/' || true)
-          
+          cache_changed=$(echo "$changed_files" | grep -E '^ReservationManager\.Cache/' || true)
+                    
           # Imposta gli output 
           if [ -n "$core_changed" ]; then
             echo "core-changed=true" >> $GITHUB_OUTPUT
