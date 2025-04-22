@@ -37,13 +37,17 @@ namespace ReservationManager.API.Extensions
 
         public static IServiceCollection ConfigureRepositories(this IServiceCollection services)
         {
-            services.AddScoped<IRoleRepository, RoleRepository>();
-            services.AddScoped<IResourceTypeRepository, ResourceTypeRepository>();
-            services.AddScoped<IReservationTypeRepository, ReservationTypeRepository>();
+            services.AddScoped<IRoleRepository, RoleCachedRepository>();
+            services.AddScoped<RoleRepository>();
+            services.AddScoped<IResourceTypeRepository, ResourceTypeCachedRepository>();
+            services.AddScoped<ResourceTypeRepository>();
+            services.AddScoped<IReservationTypeRepository, ReservationTypeCachedRepository>();
+            services.AddScoped<ReservationTypeRepository>();
 
             services.AddScoped<IUserRepository, UserCachedRepository>();
             services.AddScoped<UserRepository>();
-            services.AddScoped<IResourceRepository, ResourceRepository>();
+            services.AddScoped<IResourceRepository, ResourceCachedRepository>();
+            services.AddScoped<ResourceRepository>();
             services.AddScoped<IReservationRepository, ReservationCachedRepository>();
             services.AddScoped<ReservationRepository>();
             services.AddScoped<IClosingCalendarRepository, ClosingCalendarCachedRepository>();
