@@ -282,7 +282,7 @@ public class ClosingCalendarServiceShould
             .Returns(resourceList);
         _mockClosingCalendarRepository.GetExistingClosingCalendars(Arg.Any<List<int>>(), Arg.Any<List<DateOnly>>())
             .Returns(Enumerable.Empty<ClosingCalendar>().ToList());
-        _mockClosingCalendarRepository.CreateEntitiesAsync(Arg.Any<List<ClosingCalendar>>())
+        _mockClosingCalendarRepository.BulkCreateEntitiesAsync(Arg.Any<List<ClosingCalendar>>())
             .Returns(closingCalendar);
         
         var result = await _sut.BulkCreate(dto);
@@ -345,7 +345,7 @@ public class ClosingCalendarServiceShould
     _mockClosingCalendarRepository.GetExistingClosingCalendars(Arg.Any<List<int>>(), Arg.Any<List<DateOnly>>())
         .Returns(Enumerable.Empty<ClosingCalendar>().ToList()); // Nessun calendario esistente
 
-    _mockClosingCalendarRepository.CreateEntitiesAsync(Arg.Any<List<ClosingCalendar>>())
+    _mockClosingCalendarRepository.BulkCreateEntitiesAsync(Arg.Any<List<ClosingCalendar>>())
         .Returns(expectedClosingCalendars); // Simula il ritorno delle entità create
 
     // Act

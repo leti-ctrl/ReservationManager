@@ -45,7 +45,8 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IResourceRepository, ResourceRepository>();
             services.AddScoped<IReservationRepository, ReservationCachedRepository>();
             services.AddScoped<ReservationRepository>();
-            services.AddScoped<IClosingCalendarRepository, ClosingCalendarRepository>();
+            services.AddScoped<IClosingCalendarRepository, ClosingCalendarCachedRepository>();
+            services.AddScoped<ClosingCalendarRepository>();
 
             return services;
         }

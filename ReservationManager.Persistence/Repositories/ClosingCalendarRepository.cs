@@ -5,10 +5,12 @@ using ReservationManager.Persistence.Repositories.Base;
 
 namespace ReservationManager.Persistence.Repositories
 {
-    public class ClosingCalendarRepository(ReservationManagerDbContext dbContext)
-        : CrudBaseEntityRepository<ClosingCalendar>(dbContext),
-            IClosingCalendarRepository
+    public class ClosingCalendarRepository  : CrudBaseEntityRepository<ClosingCalendar>,IClosingCalendarRepository
     {
+        public ClosingCalendarRepository(ReservationManagerDbContext context) : base(context)
+        {
+        }
+        
         public async Task<IEnumerable<ClosingCalendar>> GetAllFromToday()
         {
             return await Context.Set<ClosingCalendar>()
@@ -35,12 +37,6 @@ namespace ReservationManager.Persistence.Repositories
             return await set.ToListAsync();
         }
 
-        public async Task<IEnumerable<ClosingCalendar>> GetByTypeId(int typeId)
-        {
-            return await Context.Set<ClosingCalendar>()
-                                .ToListAsync();    
-        }
-        
         public async Task<IEnumerable<ClosingCalendar>> GetExistingClosingCalendars(IEnumerable<int> resourceIds, IEnumerable<DateOnly> days)
         {
             return await Context.Set<ClosingCalendar>().AsQueryable()
@@ -48,7 +44,7 @@ namespace ReservationManager.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<ClosingCalendar>> CreateEntitiesAsync(IEnumerable<ClosingCalendar> entities)
+        public async Task<IEnumerable<ClosingCalendar>> BulkCreateEntitiesAsync(IEnumerable<ClosingCalendar> entities)
         {
             await Context.Set<ClosingCalendar>().AddRangeAsync(entities);
             await Context.SaveChangesAsync();

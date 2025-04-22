@@ -2,7 +2,6 @@
 using ReservationManager.Cache.Helper;
 using ReservationManager.Cache.Redis;
 using ReservationManager.Core.Interfaces.Repositories;
-using ReservationManager.DomainModel.Meta;
 using ReservationManager.DomainModel.Operation;
 using ReservationManager.Persistence;
 using ReservationManager.Persistence.Repositories;

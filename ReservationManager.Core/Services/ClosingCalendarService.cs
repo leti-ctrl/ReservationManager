@@ -75,7 +75,7 @@ namespace ReservationManager.Core.Services
                 }
             }
 
-            var createdEntities = await closingCalendarRepository.CreateEntitiesAsync(newClosingCalendars);
+            var createdEntities = await closingCalendarRepository.BulkCreateEntitiesAsync(newClosingCalendars);
             return createdEntities.Select(entity => entity.Adapt<ClosingCalendarDto>());
         }
 
