@@ -6,7 +6,7 @@ namespace ReservationManager.Core.Interfaces.Repositories
     public interface IReservationRepository : ICrudBaseEntityRepository<Reservation>
     {
         /// <summary>
-        /// Userd by ResourceFilterService for retrieve filtered resources.
+        /// Used by ResourceFilterService for retrieve filtered resources.
         /// Not cached because need always data from db. 
         /// </summary>
         /// <remarks>Not cached</remarks>

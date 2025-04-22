@@ -41,7 +41,8 @@ namespace ReservationManager.API.Extensions
             services.AddScoped<IResourceTypeRepository, ResourceTypeRepository>();
             services.AddScoped<IReservationTypeRepository, ReservationTypeRepository>();
 
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUserRepository, UserCachedRepository>();
+            services.AddScoped<UserRepository>();
             services.AddScoped<IResourceRepository, ResourceRepository>();
             services.AddScoped<IReservationRepository, ReservationCachedRepository>();
             services.AddScoped<ReservationRepository>();

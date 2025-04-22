@@ -29,7 +29,7 @@ public class RedisService : IRedisService
     {
         var alreadyCached = await GetAsync(itemKey);
         if(alreadyCached == null)
-            await SetAsync(itemKey, JsonConvert.SerializeObject(serializedItem));
+            await SetAsync(itemKey, serializedItem);
     }
 
     public async Task<string?> GetAsync(string key)

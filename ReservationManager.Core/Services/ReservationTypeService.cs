@@ -54,7 +54,7 @@ namespace ReservationManager.Core.Services
 
         private async Task ValidateCode(int id, ReservationType toUpdate)
         {
-            var codeAlreadyExists = await reservationTypeRepository.GetByCodeAsync(toUpdate.Code);
+            var codeAlreadyExists = await reservationTypeRepository.GetTypeByCode(toUpdate.Code);
             if(codeAlreadyExists != null && codeAlreadyExists?.Id != id)
                 throw new InvalidCodeTypeException($"Reservation type with code {toUpdate.Code} already exists");
         }
