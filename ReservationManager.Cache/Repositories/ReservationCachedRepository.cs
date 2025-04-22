@@ -28,15 +28,7 @@ public class ReservationCachedRepository : CrudBaseEntityCacheRepository<Reserva
         );
     }
 
-    /// <summary>
-    /// Userd by ResourceFilterService for retrieve filtered resources.
-    /// Not cached because need always data from db. 
-    /// </summary>
-    /// <param name="resourceIds"></param>
-    /// <param name="startDate"></param>
-    /// <param name="startTime"></param>
-    /// <param name="endTime"></param>
-    /// <returns>List of reservation</returns>
+
     public async Task<IEnumerable<Reservation>> GetReservationByResourceDateTimeAsync(List<int> resourceIds, DateOnly startDate, TimeOnly startTime, TimeOnly endTime)
     {
         return await _repository.GetReservationByResourceDateTimeAsync(resourceIds, startDate, startTime, endTime);

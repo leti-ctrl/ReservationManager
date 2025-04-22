@@ -20,7 +20,7 @@ where T : EditableType
         _repository = repository;
     }
 
-    public override async Task<T> CreateTypeAsync(T typeToCreate, CancellationToken cancellationToken = default)
+    public override  async Task<T> CreateTypeAsync(T typeToCreate, CancellationToken cancellationToken = default)
     {
         var createdType = await _repository.CreateTypeAsync(typeToCreate, cancellationToken);
         
