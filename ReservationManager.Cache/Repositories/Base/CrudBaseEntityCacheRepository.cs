@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NRedisStack.DataTypes;
 using ReservationManager.Cache.Helper;
 using ReservationManager.Cache.Redis;
 using ReservationManager.Core.Interfaces.Repositories.Base;

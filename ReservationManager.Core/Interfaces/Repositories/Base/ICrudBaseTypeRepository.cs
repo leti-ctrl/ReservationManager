@@ -12,8 +12,8 @@ namespace ReservationManager.Core.Interfaces.Repositories.Base
         Task<IEnumerable<T>> GetAllTypesAsync(CancellationToken cancellationToken = default);
         Task<T?> GetTypeById(int id, CancellationToken cancellationToken = default);
         Task<T?> GetTypeByCode(string code, CancellationToken cancellationToken = default);
-        Task<T> CreateTypeAsync(T entity, CancellationToken cancellationToken = default);
-        Task<T?> UpdateTypeAsync(T entity, CancellationToken cancellationToken = default);
-        Task DeleteTypeAsync(T entity, CancellationToken cancellationToken = default);
+        Task<T> CreateTypeAsync(T typeToCreate, CancellationToken cancellationToken = default);
+        Task<T?> UpdateTypeAsync(T typeToUpdate, CancellationToken cancellationToken = default);
+        Task DeleteTypeAsync(T typeToDelete, CancellationToken cancellationToken = default);
     }
 }

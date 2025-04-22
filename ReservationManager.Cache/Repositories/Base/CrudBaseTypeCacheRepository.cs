@@ -59,32 +59,32 @@ where T : BaseType
     /// <summary>
     /// Not editable type.
     /// </summary>
-    /// <param name="entity"></param>
+    /// <param name="typeToCreate"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<T> CreateTypeAsync(T entity, CancellationToken cancellationToken = default)
+    public virtual async Task<T> CreateTypeAsync(T typeToCreate, CancellationToken cancellationToken = default)
     {
-        return await _repository.CreateTypeAsync(entity, cancellationToken);
+        return await _repository.CreateTypeAsync(typeToCreate, cancellationToken);
     }
 
     /// <summary>
     /// Not editable type.
     /// </summary>
-    /// <param name="entity"></param>
+    /// <param name="typeToUpdate"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<T?> UpdateTypeAsync(T entity, CancellationToken cancellationToken = default)
+    public virtual async Task<T?> UpdateTypeAsync(T typeToUpdate, CancellationToken cancellationToken = default)
     {
-        return await _repository.UpdateTypeAsync(entity, cancellationToken);
+        return await _repository.UpdateTypeAsync(typeToUpdate, cancellationToken);
     }
 
     /// <summary>
     /// Not editable type.
     /// </summary>
-    /// <param name="entity"></param>
+    /// <param name="typeToDelete"></param>
     /// <param name="cancellationToken"></param>
-    public async Task DeleteTypeAsync(T entity, CancellationToken cancellationToken = default)
+    public virtual async Task DeleteTypeAsync(T typeToDelete, CancellationToken cancellationToken = default)
     {
-        await _repository.DeleteTypeAsync(entity, cancellationToken);
+        await _repository.DeleteTypeAsync(typeToDelete, cancellationToken);
     }
 }
