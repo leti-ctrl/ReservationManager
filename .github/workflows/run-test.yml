@@ -11,52 +11,53 @@ jobs:
     outputs:
       core-changed: ${{ steps.determine.outputs.core-changed }}
       persistence-changed: ${{ steps.determine.outputs.persistence-changed }}
+      cache-changed: ${{ steps.determine.outputs.cache-changed }}
     steps:
       - uses: actions/checkout@v3
 
       - name: Fetch complete history
         run: |
-            echo "Eseguo il fetch completo della cronologia..."
+            #Esegue il fetch completo della cronologia
             git fetch --prune --unshallow || true
 
       - name: Determine changed directories
         id: determine
         run: |
-          echo "Determino i file modificati..."
+          #Determina i file modificati
           if [ -z "${{ github.event.before }}" ] || ! git cat-file -e ${{ github.event.before }} 2>/dev/null; then
-            echo "Commit 'before' non trovato, confronto con HEAD."
             changed_files=$(git diff --name-only HEAD)
           else
             changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
           fi
           
-          echo "File modificati:"
-          echo "$changed_files"
-          
-          # Verifica se ci sono modifiche nella directory ReservationManager.Core
+          # Verifica se ci sono modifiche nella directory corrispondente
           core_changed=$(echo "$changed_files" | grep -E '^ReservationManager\.Core/' || true)
-          
-          # Verifica se ci sono modifiche nella directory ReservationManager.Persistence
           persistence_changed=$(echo "$changed_files" | grep -E '^ReservationManager\.Persistence/' || true)
+          cache_changed = $(echo "$changed_files" | grep -E '^ReservationManager\.Cache/' || true)
           
-          # Imposta gli output (true/false)
+          # Imposta gli output 
           if [ -n "$core_changed" ]; then
             echo "core-changed=true" >> $GITHUB_OUTPUT
           else
             echo "core-changed=" >> $GITHUB_OUTPUT
           fi
                 
-                if [ -n "$persistence_changed" ]; then
-                  echo "persistence-changed=true" >> $GITHUB_OUTPUT
-                else
-                  echo "persistence-changed=" >> $GITHUB_OUTPUT
-                fi
+          if [ -n "$persistence_changed" ]; then
+            echo "persistence-changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "persistence-changed=" >> $GITHUB_OUTPUT
+          fi
+          
+          if [ -n "$cache_changed" ]; then
+            echo "cache-changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "cache-changed=" >> $GITHUB_OUTPUT
+          fi
 
   unit-tests:
     name: Run Unit Tests
     needs: detect-changes
     runs-on: ubuntu-latest
-    # Esegue il job solo se 'core-changed' è true
     if: ${{ needs.detect-changes.outputs.core-changed == 'true' }}
     steps:
       - uses: actions/checkout@v3
@@ -76,7 +77,7 @@ jobs:
     name: Run Integration Tests
     needs: detect-changes
     runs-on: ubuntu-latest
-    if: ${{ needs.detect-changes.outputs.persistence-changed == 'true' }}
+    if: ${{ needs.detect-changes.outputs.persistence-changed == 'true' || needs.detect-changes.outputs.cache-changed == 'true'}}
     services:
       redis:
         image: redis
