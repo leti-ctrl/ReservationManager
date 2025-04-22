@@ -57,32 +57,30 @@ where T : BaseType
     }
 
     /// <summary>
-    /// Not editable type.
+    /// Not cached because is not editable type.
     /// </summary>
-    /// <param name="typeToCreate"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <remarks>Not cached</remarks>
+    /// <returns>throw notImplementedException</returns>
     public virtual async Task<T> CreateTypeAsync(T typeToCreate, CancellationToken cancellationToken = default)
     {
         return await _repository.CreateTypeAsync(typeToCreate, cancellationToken);
     }
 
     /// <summary>
-    /// Not editable type.
+    /// Not cached because is not editable type.
     /// </summary>
-    /// <param name="typeToUpdate"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <remarks>Not cached</remarks>
+    /// <returns>throw notImplementedException</returns>
     public virtual async Task<T?> UpdateTypeAsync(T typeToUpdate, CancellationToken cancellationToken = default)
     {
         return await _repository.UpdateTypeAsync(typeToUpdate, cancellationToken);
     }
 
     /// <summary>
-    /// Not editable type.
+    /// Not cached because is not editable type.
     /// </summary>
-    /// <param name="typeToDelete"></param>
-    /// <param name="cancellationToken"></param>
+    /// <remarks>Not cached</remarks>
+    /// <returns>throw notImplementedException</returns>
     public virtual async Task DeleteTypeAsync(T typeToDelete, CancellationToken cancellationToken = default)
     {
         await _repository.DeleteTypeAsync(typeToDelete, cancellationToken);

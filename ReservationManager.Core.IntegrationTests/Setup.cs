@@ -59,17 +59,9 @@ public partial class Setup
 internal abstract class BaseSqlTestContainer
 {
     public PostgreSqlContainer PostgresContainer { get; init; } = null!;
-
-    /// <summary>
-    /// Please use this ConnectionString instead of the ConnectionString from the Container itself
-    /// </summary>
     internal string ConnectionString { get; set; } = null!;
-
     internal const string DbPassword = "localpassword@!123";
-
-    //Arbitrary port since 1433 could be mapped to a local SQL Server so it can't bind the Docker Port
     internal const int Port = 1436;
-
     internal const string DbHostname = "sqlIntegration";
 
     public async Task InitializeAsync()

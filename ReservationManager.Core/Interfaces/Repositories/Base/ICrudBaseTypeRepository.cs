@@ -13,11 +13,16 @@ namespace ReservationManager.Core.Interfaces.Repositories.Base
         Task<T?> GetTypeById(int id, CancellationToken cancellationToken = default);
         Task<T?> GetTypeByCode(string code, CancellationToken cancellationToken = default);
         Task<T> CreateTypeAsync(T typeToCreate, CancellationToken cancellationToken = default);
+        
         /// <summary>
-        /// Not cached for teaching purposes
+        /// UpdateTypeAsync not cached for teaching purposes
         /// </summary>
         /// <remarks>Not cached</remarks>
+        /// <param name="typeToUpdate">T</param>
+        /// <param name="cancellationToken">default</param>
+        /// <returns>T</returns>
         Task<T?> UpdateTypeAsync(T typeToUpdate, CancellationToken cancellationToken = default);
+        
         Task DeleteTypeAsync(T typeToDelete, CancellationToken cancellationToken = default);
     }
 }
