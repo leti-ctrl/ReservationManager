@@ -34,7 +34,14 @@ where T : BaseType
 
     public async Task<T?> GetTypeById(int id, CancellationToken cancellationToken = default)
     {
-        return await _repository.GetTypeById(id, cancellationToken);
+        var redisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(T), id);
+        var redisValue = await _redisService.GetAsync(redisKey);
+        if(redisValue != null)
+            return JsonConvert.DeserializeObject<T>(redisValue);
+        
+        var typeValue = await _repository.GetTypeById(id, cancellationToken);
+        await _redisService.SetAsync(redisKey, JsonConvert.SerializeObject(typeValue));
+        return typeValue;
     }
 
     public async Task<T?> GetTypeByCode(string code, CancellationToken cancellationToken = default)
