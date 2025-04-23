@@ -39,7 +39,16 @@ services:
     restart: unless-stopped
     volumes:
       - redis-cache:/RSC
-
+   
+  loadtestrunner:
+    image: reservationmanagerloadtestrunner
+    build:
+      context: .
+      dockerfile: ReservationManager.LoadTestRunner/Dockerfile
+    depends_on:
+      - reservationmanager.api
+    environment:
+      API_BASE_URL: http://reservationmanager.api
 
 volumes:
   postgres-data:
