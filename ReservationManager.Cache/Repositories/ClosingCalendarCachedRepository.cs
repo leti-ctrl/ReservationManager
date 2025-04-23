@@ -27,8 +27,25 @@ public class ClosingCalendarCachedRepository : CrudBaseEntityCacheRepository<Clo
 
     public async Task<IEnumerable<ClosingCalendar>> GetFiltered(int? id, DateOnly? fromDate, DateOnly? toDate, int? resourceId, int? resourceTypeId)
     {
-        var closingCalendars = (await _repository.GetFiltered(id, fromDate, toDate, resourceId, resourceTypeId)).ToList();
-        await CacheClosingCalendars(closingCalendars);
+        var closingCalendars = new List<ClosingCalendar>();
+        if (id.HasValue && !fromDate.HasValue && !toDate.HasValue && !resourceId.HasValue && !resourceTypeId.HasValue)
+        {
+            var redisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(ClosingCalendar), (int)id);
+            var closingCalendar = await _redisService.GetAsync(redisKey);
+            if(closingCalendar != null)
+                closingCalendars.Add(JsonConvert.DeserializeObject<ClosingCalendar>(closingCalendar)!);
+            else
+            {
+                closingCalendars.AddRange((await _repository.GetFiltered(id, fromDate, toDate, resourceId, resourceTypeId)).ToList());
+                await CacheClosingCalendars(closingCalendars);
+            }
+        }
+        else
+        {
+            closingCalendars.AddRange((await _repository.GetFiltered(id, fromDate, toDate, resourceId, resourceTypeId)).ToList());
+            await CacheClosingCalendars(closingCalendars);
+        }
+            
         return closingCalendars;
     }
 
@@ -51,7 +68,7 @@ public class ClosingCalendarCachedRepository : CrudBaseEntityCacheRepository<Clo
         foreach (var calendar in calendars)
         {
             var redisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(ClosingCalendar), calendar.Id);
-            await _redisService.SetIfNotExistsAsync(redisKey, JsonConvert.SerializeObject(calendar));
+            await _redisService.RefreshOrAddValueAsync(redisKey, JsonConvert.SerializeObject(calendar));
         }
     }
 }

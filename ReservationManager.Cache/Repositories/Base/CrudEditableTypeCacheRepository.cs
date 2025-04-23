@@ -26,7 +26,7 @@ where T : EditableType
         
         var redisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(T), createdType.Id);
         var serializedData = JsonConvert.SerializeObject(createdType);
-        await _redisService.SetAsync(redisKey, serializedData);
+        await _redisService.RefreshOrAddValueAsync(redisKey, serializedData);
         
         return createdType;
     }

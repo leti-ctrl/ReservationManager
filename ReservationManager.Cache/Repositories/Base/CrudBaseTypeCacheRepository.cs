@@ -21,11 +21,11 @@ where T : BaseType
 
     public async Task<IEnumerable<T>> GetAllTypesAsync(CancellationToken cancellationToken = default)
     {
-        var types = await _repository.GetAllTypesAsync(cancellationToken);
+        var types = (await _repository.GetAllTypesAsync(cancellationToken)).ToList();
         foreach (var type in types)
         {
             var redisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(T), type.Id);
-            await _redisService.SetIfNotExistsAsync(redisKey, JsonConvert.SerializeObject(type));
+            await _redisService.RefreshOrAddValueAsync(redisKey, JsonConvert.SerializeObject(type));
         }
         return types;
     }
@@ -40,7 +40,7 @@ where T : BaseType
             return JsonConvert.DeserializeObject<T>(redisValue);
         
         var typeValue = await _repository.GetTypeById(id, cancellationToken);
-        await _redisService.SetAsync(redisKey, JsonConvert.SerializeObject(typeValue));
+        await _redisService.RefreshOrAddValueAsync(redisKey, JsonConvert.SerializeObject(typeValue));
         return typeValue;
     }
 
@@ -52,7 +52,7 @@ where T : BaseType
             return JsonConvert.DeserializeObject<T>(redisValue);
 
         var typeValue =  await _repository.GetTypeByCode(code, cancellationToken);
-        await _redisService.SetAsync(redisKey, JsonConvert.SerializeObject(typeValue));
+        await _redisService.RefreshOrAddValueAsync(redisKey, JsonConvert.SerializeObject(typeValue));
         return typeValue;
     }
 

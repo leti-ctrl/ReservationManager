@@ -2,8 +2,7 @@
 
 public interface IRedisService
 {
-    Task SetAsync(string key, string value);
-    Task SetIfNotExistsAsync(string itemKey, string serializedItem);
+    Task RefreshOrAddValueAsync(string itemKey, string serializedItem);
     Task<string?> GetAsync(string key);
     Task RemoveAsync(string key);
 }

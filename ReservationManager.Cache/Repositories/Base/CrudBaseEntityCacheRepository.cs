@@ -25,7 +25,7 @@ where T: BaseEntity
         foreach (var entity in entities)
         {
             var redisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(T), entity.Id);
-            await _redisService.SetIfNotExistsAsync(redisKey, JsonConvert.SerializeObject(entity));
+            await _redisService.RefreshOrAddValueAsync(redisKey, JsonConvert.SerializeObject(entity));
         }
         return entities;
     }
@@ -42,7 +42,7 @@ where T: BaseEntity
             return null;
         
         var serializedData = JsonConvert.SerializeObject(repositoryData);
-        await _redisService.SetAsync(redisKey, serializedData);
+        await _redisService.RefreshOrAddValueAsync(redisKey, serializedData);
         return repositoryData;
     }
 
@@ -52,7 +52,7 @@ where T: BaseEntity
 
         var entityRedisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(T), newEntity.Id);
         var serializedData = JsonConvert.SerializeObject(newEntity);
-        await _redisService.SetAsync(entityRedisKey, serializedData);
+        await _redisService.RefreshOrAddValueAsync(entityRedisKey, serializedData);
         
         return newEntity;
     }

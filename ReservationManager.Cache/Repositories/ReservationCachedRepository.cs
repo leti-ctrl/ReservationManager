@@ -22,8 +22,7 @@ public class ReservationCachedRepository : CrudBaseEntityCacheRepository<Reserva
     
     public async Task<IEnumerable<Reservation>> GetReservationByUserIdFromToday(int userId)
     {
-        return await GetOrSetCacheAsync(
-            BuildKeyHelper.BuildKeyByTypeIdAndValue(typeof(User), userId, typeof(Reservation)),
+        return await SetCacheAsync(
             () => _repository.GetReservationByUserIdFromToday(userId)
         );
     }
@@ -31,13 +30,14 @@ public class ReservationCachedRepository : CrudBaseEntityCacheRepository<Reserva
 
     public async Task<IEnumerable<Reservation>> GetReservationByResourceDateTimeAsync(List<int> resourceIds, DateOnly startDate, TimeOnly startTime, TimeOnly endTime)
     {
-        return await _repository.GetReservationByResourceDateTimeAsync(resourceIds, startDate, startTime, endTime);
+        return await SetCacheAsync(
+            () =>  _repository.GetReservationByResourceDateTimeAsync(resourceIds, startDate, startTime, endTime)
+        );
     }
 
     public async Task<IEnumerable<Reservation>> GetReservationByResourceIdAfterTodayAsync(int resourceId)
     {
-        return await GetOrSetCacheAsync(
-            BuildKeyHelper.BuildKeyByTypeIdAndValue(typeof(Resource), resourceId, typeof(Reservation)),
+        return await SetCacheAsync(
             () => _repository.GetReservationByUserIdFromToday(resourceId)
         );
     }
@@ -45,21 +45,22 @@ public class ReservationCachedRepository : CrudBaseEntityCacheRepository<Reserva
     
     public async Task<IEnumerable<Reservation>> GetReservationByTypeIdAfterTodayAsync(int typeId)
     {
-        return await GetOrSetCacheAsync(
-            BuildKeyHelper.BuildKeyByTypeIdAndValue(typeof(Resource), typeId, typeof(Reservation)),
+        return await SetCacheAsync(
             () =>   _repository.GetReservationByTypeIdAfterTodayAsync(typeId)
         );
     }
     
-    private async Task<IEnumerable<Reservation>> GetOrSetCacheAsync(string redisKey, Func<Task<IEnumerable<Reservation>>> getFromDb)
+    private async Task<IEnumerable<Reservation>> SetCacheAsync(Func<Task<IEnumerable<Reservation>>> getFromDb)
     {
-        var redisValue = await _redisService.GetAsync(redisKey);
-        if (redisValue != null)
-            return JsonConvert.DeserializeObject<IEnumerable<Reservation>>(redisValue) ?? new List<Reservation>();
+        var reservationList = (await getFromDb()).ToList();
 
-        var result = await getFromDb();
-        await _redisService.SetAsync(redisKey, JsonConvert.SerializeObject(result));
-        return result;
+        foreach (var reservation in reservationList)
+        {
+            var redisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(Reservation), reservation.Id);
+            await _redisService.RefreshOrAddValueAsync(redisKey, JsonConvert.SerializeObject(reservation));
+        }
+        
+        return reservationList;
     }
 
 }

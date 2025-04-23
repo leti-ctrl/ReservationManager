@@ -20,16 +20,18 @@ public class RedisService : IRedisService
         _db = redis.GetDatabase();
     }
 
-    public async Task SetAsync(string key, string value)
+    private async Task SetAsync(string key, string value)
     {
         await _db.StringSetAsync(key, value, TimeSpan.FromMinutes(2));
     }
     
-    public async Task SetIfNotExistsAsync(string itemKey, string serializedItem)
+    public async Task RefreshOrAddValueAsync(string itemKey, string serializedItem)
     {
         var alreadyCached = await GetAsync(itemKey);
-        if(alreadyCached == null)
-            await SetAsync(itemKey, serializedItem);
+        if(alreadyCached != null)
+            await RemoveAsync(itemKey);
+        
+        await SetAsync(itemKey, serializedItem);
     }
 
     public async Task<string?> GetAsync(string key)

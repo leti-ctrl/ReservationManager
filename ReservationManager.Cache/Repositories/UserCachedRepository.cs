@@ -27,7 +27,13 @@ public class UserCachedRepository : CrudBaseEntityCacheRepository<User>, IUserRe
 
     public async Task<User?> GetUserByEmailAsync(string email)
     {
-        return await _repository.GetUserByEmailAsync(email);
+        var user = await _repository.GetUserByEmailAsync(email);
+        if (user != null)
+        {
+            var redisKey = BuildKeyHelper.BuildKeyByTypeAndId(typeof(User), user.Id);
+            await _redisService.RefreshOrAddValueAsync(redisKey, JsonConvert.SerializeObject(user));
+        }
+        return user;
     }
 
     public async Task<User?> GetUserByIdWithRoleAsync(int userId)
@@ -42,7 +48,7 @@ public class UserCachedRepository : CrudBaseEntityCacheRepository<User>, IUserRe
             });
         
         var user = await _repository.GetUserByIdWithRoleAsync(userId);
-        await _redisService.SetAsync(redisKey, JsonConvert.SerializeObject(user));
+        await _redisService.RefreshOrAddValueAsync(redisKey, JsonConvert.SerializeObject(user));
         return user;
     }
 }
