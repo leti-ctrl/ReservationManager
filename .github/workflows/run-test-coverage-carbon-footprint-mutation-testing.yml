@@ -2,74 +2,87 @@ name: coverage, carbon footprint and mutation testing
 
 on:
   push:
-    branches: [ main , develop ]
+    branches: [ main, develop ]
 
 env:
   DOTNET_VERSION: '8.0.X'
   WORKING_FOLDER: './ReservationManager.Core.UnitTests'
 
 jobs:
-  # Job per la build e i test unitari
   build-and-test:
-    name: Build and Unit Test
+    name: Build, Test & Energy Measurement
     runs-on: ubuntu-latest
-    
+    permissions:
+      # Necessario per post-comment PR se usi `pr-comment: true`
+      pull-requests: write
+      actions: read
+
     steps:
       - uses: actions/checkout@v3
+
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      # === Eco CI: Inizia la misurazione ===
+      - name: Eco CI – Start Measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          task: start-measurement
+          # branch: ${{ github.ref_name }}      # opzionale
+          # project: 'ReservationManager'       # opzionale
+          # machine: 'ubuntu-latest'            # opzionale
+        continue-on-error: true
+
       - name: Install dependencies
-        working-directory: ${{env.WORKING_FOLDER}}
+        working-directory: ${{ env.WORKING_FOLDER }}
         run: dotnet restore
 
       - name: Build
-        working-directory: ${{env.WORKING_FOLDER}}
+        working-directory: ${{ env.WORKING_FOLDER }}
         run: dotnet build --configuration Release --no-restore
 
       - name: Test
-        working-directory: ${{env.WORKING_FOLDER}}
+        working-directory: ${{ env.WORKING_FOLDER }}
         run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+      # === Eco CI: Primo spot measurement ===
+      - name: Eco CI – Get Measurement (tests)
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          task: get-measurement
+          label: 'unit tests'
+          # json-output: true                # opzionale: per consumare i dati in JSON
+        continue-on-error: true
 
       - name: Install ReportGenerator
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
       - name: Generate coverage report
         run: |
-          reportgenerator -reports:${{env.WORKING_FOLDER}}/coverage/**/coverage.cobertura.xml -targetdir:${{env.WORKING_FOLDER}}/coverage-report -reporttypes:Html
+          reportgenerator \
+            -reports:${{ env.WORKING_FOLDER }}/coverage/**/coverage.cobertura.xml \
+            -targetdir:${{ env.WORKING_FOLDER }}/coverage-report \
+            -reporttypes:Html
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: ${{env.WORKING_FOLDER}}/coverage-report
+          path: ${{ env.WORKING_FOLDER }}/coverage-report
 
-  carbon-footprint:
-    name: Calculate Carbon Footprint
-    runs-on: ubuntu-latest
-    needs: build-and-test  # Dipende dal job build-and-test
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup GitHub Action for Eco CI Energy Estimation
-        uses: green-coding-solutions/eco-ci-energy-estimation@v1.0.1
+      # === Eco CI: Visualizza e commenta i risultati ===
+      - name: Eco CI – Display Results
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
-          # Variabili obbligatorie
-          action: 'run'  # Azione da eseguire, 'run' per eseguire il calcolo
+          task: display-results
+          display-badge: true
+          display-table: true
+          pr-comment: false          # o true per commentare in PR
+          # send-data: false        # disattiva invio al dashboard se vuoi
+        continue-on-error: true
 
-          # Puoi anche configurare queste variabili opzionali in base alle tue necessità
-          # project: 'ReservationManager'  # Nome del progetto
-          # region: 'EU'  # Regione (EU, US, etc.)
-          # power-consumption: 200  # Consumo energetico in watt, puoi adattarlo in base al tipo di server
-          # estimated-power-consumption: 'true'  # Se vuoi una stima delle risorse
-
-      - name: Upload carbon footprint report
-        uses: actions/upload-artifact@v4
-        with:
-          name: carbon-footprint-report
-          path: eco-ci-energy-estimation-report.html
-          
   mutation-testing:
     name: Mutation Testing
     runs-on: ubuntu-latest
