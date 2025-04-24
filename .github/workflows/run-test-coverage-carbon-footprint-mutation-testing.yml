@@ -1,4 +1,4 @@
-name: build and test
+name: coverage, carbon footprint and mutation testing
 
 on:
   push:
@@ -49,26 +49,26 @@ jobs:
   carbon-footprint:
     name: Calculate Carbon Footprint
     runs-on: ubuntu-latest
-    needs: build-and-test  
+    needs: build-and-test  # Dipende dal job build-and-test
     steps:
       - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - name: Setup GitHub Action for Eco CI Energy Estimation
+        uses: green-coding-solutions/eco-ci-energy-estimation@v1.0.1
         with:
-          node-version: '16' 
+          # Variabili obbligatorie
+          action: 'run'  # Azione da eseguire, 'run' per eseguire il calcolo
 
-      - name: Install carbon-now
-        run: npm install -g carbon-now
-
-      - name: Run Carbon Footprint Analysis
-        run: |
-          carbon-now --output=carbon-footprint-report.html
+          # Puoi anche configurare queste variabili opzionali in base alle tue necessità
+          # project: 'ReservationManager'  # Nome del progetto
+          # region: 'EU'  # Regione (EU, US, etc.)
+          # power-consumption: 200  # Consumo energetico in watt, puoi adattarlo in base al tipo di server
+          # estimated-power-consumption: 'true'  # Se vuoi una stima delle risorse
 
       - name: Upload carbon footprint report
         uses: actions/upload-artifact@v4
         with:
           name: carbon-footprint-report
-          path: carbon-footprint-report.html
+          path: eco-ci-energy-estimation-report.html
           
   mutation-testing:
     name: Mutation Testing
