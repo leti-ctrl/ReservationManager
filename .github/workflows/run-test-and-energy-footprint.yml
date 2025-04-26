@@ -1,7 +1,8 @@
 ﻿name: Energy Footprint Measuring
+
 on:
   workflow_dispatch:
-    
+
 env:
   DOTNET_VERSION: '8.0.X'
   UNIT_WORKING_FOLDER: './ReservationManager.Core.UnitTests'
