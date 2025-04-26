@@ -1,4 +1,4 @@
-name: coverage, carbon footprint and mutation testing
+name: build and test
 
 on:
   push:
@@ -10,13 +10,9 @@ env:
 
 jobs:
   build-and-test:
-    name: Build, Test & Energy Measurement
+    name: Build, Test & Coverage
     runs-on: ubuntu-latest
-    permissions:
-      # Necessario per post-comment PR se usi `pr-comment: true`
-      pull-requests: write
-      actions: read
-
+    
     steps:
       - uses: actions/checkout@v3
 
@@ -24,17 +20,7 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      # === Eco CI: Inizia la misurazione ===
-      - name: Eco CI – Start Measurement
-        uses: green-coding-solutions/eco-ci-energy-estimation@v4
-        with:
-          task: start-measurement
-          # branch: ${{ github.ref_name }}      # opzionale
-          # project: 'ReservationManager'       # opzionale
-          # machine: 'ubuntu-latest'            # opzionale
-        continue-on-error: true
-
+      
       - name: Install dependencies
         working-directory: ${{ env.WORKING_FOLDER }}
         run: dotnet restore
@@ -46,15 +32,6 @@ jobs:
       - name: Test
         working-directory: ${{ env.WORKING_FOLDER }}
         run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
-
-      # === Eco CI: Primo spot measurement ===
-      - name: Eco CI – Get Measurement (tests)
-        uses: green-coding-solutions/eco-ci-energy-estimation@v4
-        with:
-          task: get-measurement
-          label: 'unit tests'
-          # json-output: true                # opzionale: per consumare i dati in JSON
-        continue-on-error: true
 
       - name: Install ReportGenerator
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
@@ -72,21 +49,10 @@ jobs:
           name: coverage-report
           path: ${{ env.WORKING_FOLDER }}/coverage-report
 
-      # === Eco CI: Visualizza e commenta i risultati ===
-      - name: Eco CI – Display Results
-        uses: green-coding-solutions/eco-ci-energy-estimation@v4
-        with:
-          task: display-results
-          display-badge: true
-          display-table: true
-          pr-comment: false          # o true per commentare in PR
-          # send-data: false        # disattiva invio al dashboard se vuoi
-        continue-on-error: true
-
   mutation-testing:
     name: Mutation Testing
     runs-on: ubuntu-latest
-    needs: build-and-test  # Dipende dal job build-and-test
+    needs: build-and-test  
     steps:
       - uses: actions/checkout@v3
       - name: Setup .NET Core
@@ -107,12 +73,10 @@ jobs:
           name: mutation-report
           path: ${{github.workspace}}/StrykerOutput/**/**/*.html
   
-  
-  # Job per il deploy (finto)
   fake-deploy:
     name: Fake Deploy
     runs-on: ubuntu-latest
-    needs: mutation-testing  # Dipende dal job mutation-testing
+    needs: mutation-testing 
     steps:
       - name: deploy
         run: printf "deployed"
