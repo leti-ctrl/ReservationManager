@@ -104,4 +104,3 @@ jobs:
           dotnet restore ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj
           dotnet build ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj --configuration Release --no-restore
           dotnet test ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj --configuration Release --no-restore
- 

@@ -5,12 +5,10 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.X'
-  UNIT_WORKING_FOLDER: './ReservationManager.Core.UnitTests'
-  INTEGRATION_WORKING_FOLDER: './ReservationManager.Core.IntegrationTests'
 
 jobs:
   build:
-    name: Build
+    name: Measuring Energy Footprint
     runs-on: ubuntu-latest
     
     permissions:
@@ -31,7 +29,7 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Eco CI – Start Measurement
+      - name: Start Measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
           task: start-measurement
@@ -52,13 +50,13 @@ jobs:
           echo "Docker info:"
           docker info
 
-      - name: Restore, Build, and Run Integration Tests
+      - name: Run Integration Tests
         run: |
           dotnet restore ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj
           dotnet build ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj --configuration Release --no-restore
           dotnet test ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj --configuration Release --no-restore
     
-      - name: Eco CI – Get Measurement (tests)
+      - name: Get Measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
           task: get-measurement
@@ -67,7 +65,7 @@ jobs:
         continue-on-error: true
 
       
-      - name: Eco CI – Display Results
+      - name: Display Results
         uses: green-coding-solutions/eco-ci-energy-estimation@v4
         with:
           task: display-results
