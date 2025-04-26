@@ -38,17 +38,17 @@ namespace ReservationManager.Persistence.Repositories.Base
             return entity;
         }
 
-        public virtual Task<T> CreateTypeAsync(T entity, CancellationToken cancellationToken = default)
+        public virtual Task<T> CreateTypeAsync(T typeToCreate, CancellationToken cancellationToken = default)
         {
             throw new NotEditableTypeException("Create not permitted");
         }
 
-        public virtual Task<T?> UpdateTypeAsync(T entity, CancellationToken cancellationToken = default)
+        public virtual Task<T?> UpdateTypeAsync(T typeToUpdate, CancellationToken cancellationToken = default)
         {
             throw new NotEditableTypeException("Update not permitted");
         }
 
-        public virtual Task DeleteTypeAsync(T entity, CancellationToken cancellationToken = default)
+        public virtual Task DeleteTypeAsync(T typeToDelete, CancellationToken cancellationToken = default)
         {
             throw new NotEditableTypeException("Delete not permitted");
         }

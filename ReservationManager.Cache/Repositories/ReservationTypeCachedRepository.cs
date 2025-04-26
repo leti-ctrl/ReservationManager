@@ -1,0 +1,15 @@
+﻿using ReservationManager.Cache.Redis;
+using ReservationManager.Cache.Repositories.Base;
+using ReservationManager.Core.Interfaces.Repositories;
+using ReservationManager.DomainModel.Meta;
+using ReservationManager.Persistence.Repositories;
+using ReservationManager.Persistence.Repositories.Base;
+
+namespace ReservationManager.Cache.Repositories;
+
+public class ReservationTypeCachedRepository : CrudEditableTypeCacheRepository<ReservationType>, IReservationTypeRepository
+{
+    public ReservationTypeCachedRepository(ReservationTypeRepository repository, IRedisService redisService) 
+        : base(repository, redisService)
+    { }
+}

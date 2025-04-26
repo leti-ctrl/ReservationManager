@@ -13,30 +13,30 @@ namespace ReservationManager.Persistence.Repositories.Base
         }
 
 
-        public override async Task<T> CreateTypeAsync(T entity, CancellationToken cancellationToken = default)
+        public override async Task<T> CreateTypeAsync(T typeToCreate, CancellationToken cancellationToken = default)
         {
-            return await base.AddAsync(entity, cancellationToken);
+            return await base.AddAsync(typeToCreate, cancellationToken);
         }
 
 
-        public override async Task<T?> UpdateTypeAsync(T entity, CancellationToken cancellationToken = default)
+        public override async Task<T?> UpdateTypeAsync(T typeToUpdate, CancellationToken cancellationToken = default)
         {
-            var getEntity = await base.GetByIdAsync(entity.Id, cancellationToken);
+            var getEntity = await base.GetByIdAsync(typeToUpdate.Id, cancellationToken);
             if (getEntity == null)
                 return null;
 
             var entry = Context.Entry(getEntity);
-            entry.CurrentValues.SetValues(entity);
+            entry.CurrentValues.SetValues(typeToUpdate);
 
             await base.UpdateAsync(getEntity, cancellationToken);
 
             return getEntity;
         }
 
-        public override async Task DeleteTypeAsync(T dbEntity, CancellationToken cancellationToken = default)
+        public override async Task DeleteTypeAsync(T typeToDelete, CancellationToken cancellationToken = default)
         {
-            dbEntity.IsDeleted = DateTime.UtcNow;
-            await base.UpdateAsync(dbEntity, cancellationToken);
+            typeToDelete.IsDeleted = DateTime.UtcNow;
+            await base.UpdateAsync(typeToDelete, cancellationToken);
         }
 
 

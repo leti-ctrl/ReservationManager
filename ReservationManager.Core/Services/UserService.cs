@@ -42,7 +42,7 @@ namespace ReservationManager.Core.Services
             var userModel = userDto.Adapt<User>();
             userModel.Roles.Add(employeeRole!);
 
-            var user = await userRepository.AddUserAsync(userModel);
+            var user = await userRepository.CreateEntityAsync(userModel);
 
             return user.Adapt<UserDto>();
         }

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ReservationManager.API;
 using ReservationManager.API.Extensions;
 using ReservationManager.Persistence;
+using StackExchange.Redis;
 using ConfigurationExtensions = ReservationManager.API.Extensions.ConfigurationExtensions;
 
 TypeAdapterConfig.GlobalSettings.Apply(new MapperConfiguration());
@@ -53,6 +54,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
 
 
 

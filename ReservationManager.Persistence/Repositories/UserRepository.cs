@@ -11,14 +11,6 @@ namespace ReservationManager.Persistence.Repositories
         public UserRepository(ReservationManagerDbContext dbContext) : base(dbContext)
         {
         }
-        
-        public async Task<User> AddUserAsync(User user)
-        {
-            var addedUser = await Context.Set<User>().AddAsync(user);
-            await Context.SaveChangesAsync();
-
-            return addedUser.Entity;
-        }
 
         public async Task<User> UpdateUserRolesAsync(User user, Role[] roles)
         {

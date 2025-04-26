@@ -1,4 +1,6 @@
-﻿using ReservationManager.Core.Exceptions;
+﻿using ReservationManager.Cache.Redis;
+using ReservationManager.Cache.Repositories;
+using ReservationManager.Core.Exceptions;
 using ReservationManager.Core.Interfaces;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Interfaces.Services;
@@ -16,6 +18,8 @@ namespace ReservationManager.API.Extensions
     {
         public static IServiceCollection ConfigureServices(this IServiceCollection services)
         {
+            services.AddSingleton<IRedisService, RedisService>();
+
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IResourceTypeService, ResourceTypeService>();
             services.AddScoped<IReservationTypeService, ReservationTypeService>();
@@ -33,14 +37,21 @@ namespace ReservationManager.API.Extensions
 
         public static IServiceCollection ConfigureRepositories(this IServiceCollection services)
         {
-            services.AddScoped<IRoleRepository, RoleRepository>();
-            services.AddScoped<IResourceTypeRepository, ResourceTypeRepository>();
-            services.AddScoped<IReservationTypeRepository, ReservationTypeRepository>();
+            services.AddScoped<IRoleRepository, RoleCachedRepository>();
+            services.AddScoped<RoleRepository>();
+            services.AddScoped<IResourceTypeRepository, ResourceTypeCachedRepository>();
+            services.AddScoped<ResourceTypeRepository>();
+            services.AddScoped<IReservationTypeRepository, ReservationTypeCachedRepository>();
+            services.AddScoped<ReservationTypeRepository>();
 
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IResourceRepository, ResourceRepository>();
-            services.AddScoped<IReservationRepository, ReservationRepository>();
-            services.AddScoped<IClosingCalendarRepository, ClosingCalendarRepository>();
+            services.AddScoped<IUserRepository, UserCachedRepository>();
+            services.AddScoped<UserRepository>();
+            services.AddScoped<IResourceRepository, ResourceCachedRepository>();
+            services.AddScoped<ResourceRepository>();
+            services.AddScoped<IReservationRepository, ReservationCachedRepository>();
+            services.AddScoped<ReservationRepository>();
+            services.AddScoped<IClosingCalendarRepository, ClosingCalendarCachedRepository>();
+            services.AddScoped<ClosingCalendarRepository>();
 
             return services;
         }

@@ -28,7 +28,21 @@ services:
         - '5432'
     volumes:
         - postgres-data:/PSG
+          
+  redis:
+    image: redis:latest 
+    container_name: ReservationManagerRedisCache
+    ports:
+      - 6379:6379
+    expose:
+      - '6379'
+    restart: unless-stopped
+    volumes:
+      - redis-cache:/RSC
+
 
 volumes:
   postgres-data:
     name: reservation-manager-database
+  redis-cache:
+    name: reservation-manager-cache

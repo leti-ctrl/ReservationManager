@@ -84,7 +84,7 @@ namespace Tests.Services
 
             _mockValidator.ValidateAsync(Arg.Any<ReservationType>())
                 .Returns(new FluentValidation.Results.ValidationResult());
-            _mockReservationTypeRepository.GetByCodeAsync("A")
+            _mockReservationTypeRepository.GetTypeByCode("A")
                 .Returns(existingType);
 
             var act = async () => await _sut.CreateReservationType(request);

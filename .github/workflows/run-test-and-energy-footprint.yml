@@ -1,0 +1,78 @@
+﻿name: Energy Footprint Measuring
+
+on:
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: '8.0.X'
+  UNIT_WORKING_FOLDER: './ReservationManager.Core.UnitTests'
+  INTEGRATION_WORKING_FOLDER: './ReservationManager.Core.IntegrationTests'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    
+    permissions:
+      pull-requests: write
+      actions: read
+      
+    services:
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Eco CI – Start Measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          task: start-measurement
+          project: 'ReservationManager'       
+          machine: 'ubuntu-latest'           
+        continue-on-error: true
+        
+      - name: Run Unit Tests
+        run: |
+          dotnet restore ReservationManager.Core.UnitTests/ReservationManager.Core.UnitTests.csproj
+          dotnet build ReservationManager.Core.UnitTests/ReservationManager.Core.UnitTests.csproj --configuration Release --no-restore
+          dotnet test ReservationManager.Core.UnitTests/ReservationManager.Core.UnitTests.csproj --configuration Release --no-restore
+          
+      - name: Check Docker availability
+        run: |
+          echo "Docker version:"
+          docker --version
+          echo "Docker info:"
+          docker info
+
+      - name: Restore, Build, and Run Integration Tests
+        run: |
+          dotnet restore ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj
+          dotnet build ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj --configuration Release --no-restore
+          dotnet test ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj --configuration Release --no-restore
+    
+      - name: Eco CI – Get Measurement (tests)
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          task: get-measurement
+          label: 'Unit and Integration Tests'
+          json-output: true              
+        continue-on-error: true
+
+      
+      - name: Eco CI – Display Results
+        uses: green-coding-solutions/eco-ci-energy-estimation@v4
+        with:
+          task: display-results
+          display-badge: true
+          display-table: true
+          pr-comment: false          
+          send-data: false      
+        continue-on-error: true
