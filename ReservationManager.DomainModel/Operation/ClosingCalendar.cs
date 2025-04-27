@@ -12,7 +12,7 @@ namespace ReservationManager.DomainModel.Operation
     {
         public DateOnly Day { get; set; }
         public int ResourceId { get; set; }
-        public Resource Resource { get; set; }
+        public virtual Resource Resource { get; set; }
         public string? Description { get; set; }
     }
 }

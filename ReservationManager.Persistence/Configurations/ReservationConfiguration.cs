@@ -36,7 +36,7 @@ namespace ReservationManager.Persistence.Configurations
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(x => x.Resource)
-                .WithMany()
+                .WithMany(r => r.Reservations)
                 .IsRequired()
                 .HasForeignKey(x => x.ResourceId)
                 .OnDelete(DeleteBehavior.NoAction);

@@ -11,10 +11,10 @@ namespace ReservationManager.DomainModel.Operation
         public TimeOnly Start { get; set; }
         public TimeOnly End { get; set; }
         public int UserId { get; set; }
-        public User User { get; set; }
+        public virtual User User { get; set; }
         public int ResourceId { get; set; }
-        public Resource Resource { get; set; }
+        public virtual Resource Resource { get; set; }
         public int TypeId { get; set; }
-        public ReservationType Type { get; set; }
+        public virtual ReservationType Type { get; set; }
     }
 }

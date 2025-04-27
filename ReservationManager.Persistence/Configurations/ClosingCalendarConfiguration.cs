@@ -21,7 +21,7 @@ namespace ReservationManager.Persistence.Configurations
                    .IsRequired();
             
             builder.HasOne(x => x.Resource)
-                   .WithMany()
+                   .WithMany(r => r.ClosingCalendars)
                    .IsRequired()
                    .HasForeignKey(x => x.ResourceId)
                    .OnDelete(DeleteBehavior.NoAction);

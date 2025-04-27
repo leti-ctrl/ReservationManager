@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Data.Common;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using ReservationManager.Persistence.Configurations;
 
 namespace ReservationManager.Persistence
@@ -15,6 +17,5 @@ namespace ReservationManager.Persistence
             modelBuilder.ApplyConfiguration(new RoleConfigration());
             modelBuilder.ApplyConfiguration(new ClosingCalendarConfiguration());
         }
-
     }
 }

@@ -7,6 +7,9 @@ namespace ReservationManager.DomainModel.Operation
     {
         public string Description { get; set; }
         public int TypeId { get; set; }
-        public ResourceType Type { get; set; }
+        public virtual ResourceType Type { get; set; }
+        
+        public virtual List<Reservation> Reservations { get; set; } = new();
+        public virtual List<ClosingCalendar> ClosingCalendars { get; set; } = new();
     }
 }
