@@ -8,43 +8,40 @@ namespace ReservationManager.BenchmarkEagerVsLazy;
 
 public class LazyVsEagerBenchmark
 {
-    private const string EagerFile = "./querycount_eager.txt";
-    private const string LazyFile  = "./querycount_lazy.txt";
-    private readonly LazyVsEagerRepository _repository;
-    private readonly ReservationManagerDbContext _context;
-
-    public LazyVsEagerBenchmark()
+    [Benchmark(Baseline = true)]
+    public void EagerLoading()
     {
-        _context = new ReservationManagerDbContext(
+        using var context = new ReservationManagerDbContext(
             new DbContextOptionsBuilder<ReservationManagerDbContext>()
                 .UseNpgsql("Host=localhost;Username=postgres;Password=RM123!;Database=ReservationManager;Port=5432")
                 .UseLazyLoadingProxies()
-                .AddInterceptors(new QueryCountingInterceptor()) 
+                .AddInterceptors(new QueryCountingInterceptor())
                 .Options);
-        _repository = new LazyVsEagerRepository(_context);
-    }
+        var repository = new LazyVsEagerRepository(context);
 
-    [Benchmark(Baseline = true)]
-    public int EagerLoading()
-    {
         QueryCounter.StartEager();
 
-        _repository.EagerGetAllResourcesAsDtoAsync().GetAwaiter().GetResult();;
-        
-        QueryCounter.DumpToFile(EagerFile);
-        return QueryCounter.EagerCount;
+        repository.EagerGetAllResourcesAsDtoAsync().GetAwaiter().GetResult();
+    
+        QueryCounter.DumpToFile(QueryCounter.EagerFile);
     }
 
     [Benchmark]
-    public int LazyLoading()
+    public void LazyLoading()
     {
-        QueryCounter.StartLazy();
-        
-        _repository.LazyGetAllResourcesAsDtoAsync().GetAwaiter().GetResult();;
-        
-        QueryCounter.DumpToFile(LazyFile);
-        return QueryCounter.LazyCount;
-    }
+        using var context = new ReservationManagerDbContext(
+            new DbContextOptionsBuilder<ReservationManagerDbContext>()
+                .UseNpgsql("Host=localhost;Username=postgres;Password=RM123!;Database=ReservationManager;Port=5432")
+                .UseLazyLoadingProxies()
+                .AddInterceptors(new QueryCountingInterceptor())
+                .Options);
+        var repository = new LazyVsEagerRepository(context);
 
+        QueryCounter.StartLazy();
+    
+        repository.LazyGetAllResourcesAsDtoAsync().GetAwaiter().GetResult();
+    
+        QueryCounter.DumpToFile(QueryCounter.LazyFile);
+    }
 }
 

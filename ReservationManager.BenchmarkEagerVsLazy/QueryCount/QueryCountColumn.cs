@@ -6,41 +6,39 @@ using BenchmarkDotNet.Running;
 public class QueryCountColumn : IColumn
 {
     public string Id => nameof(QueryCountColumn);
-    public string ColumnName => "QueryCount";
+    public string ColumnName => "TotalQueryCount";
 
     public bool AlwaysShow => true;
     public ColumnCategory Category => ColumnCategory.Custom;
     public int PriorityInCategory => 0;
     public bool IsNumeric => true;
     public UnitType UnitType => UnitType.Size;
-    public string Legend => "Number of SQL queries executed";
+    public string Legend => "Total number of queries executed";
 
     public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
     {
-        // Scegli il file in base al metodo
         var file = benchmarkCase.Descriptor.WorkloadMethod.Name == nameof(LazyVsEagerBenchmark.EagerLoading)
-            ? "querycount_eager.txt"
-            : "querycount_lazy.txt";
+            ? QueryCounter.EagerFile
+            : QueryCounter.LazyFile;
 
         if (!File.Exists(file))
             return "N/A";
 
-        // Legge tutte le righe in un array di stringhe :contentReference[oaicite:4]{index=4}
         var lines = File.ReadAllLines(file);
-        int countLines = lines.Length;
-        if (countLines == 0)
+        if (lines.Length == 0)
             return "0";
 
-        // Parse dell'ultima riga
-        if (!int.TryParse(lines[countLines - 1], out var totalQueries))
-            return "err";
+        var numbers = lines
+            .Select(line => int.TryParse(line, out var n) ? n : 0)
+            .ToList();
 
-        // Media = totale / numero di iterazioni
-        double avg = (double)totalQueries / countLines;
-        return avg.ToString("F2");
+        if (numbers.Count == 0)
+            return "0";
+
+        var average = numbers.Average(); // Calcola la media
+        return average.ToString("F2");    // Formatta con 2 cifre decimali
     }
 
-    // Overload per SummaryStyle, se necessario
     public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
         => GetValue(summary, benchmarkCase);
 
