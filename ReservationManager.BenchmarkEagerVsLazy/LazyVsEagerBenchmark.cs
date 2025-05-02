@@ -14,7 +14,6 @@ public class LazyVsEagerBenchmark
         using var context = new ReservationManagerDbContext(
             new DbContextOptionsBuilder<ReservationManagerDbContext>()
                 .UseNpgsql("Host=localhost;Username=postgres;Password=RM123!;Database=ReservationManager;Port=5432")
-                .UseLazyLoadingProxies()
                 .AddInterceptors(new QueryCountingInterceptor())
                 .Options);
         var repository = new LazyVsEagerRepository(context);
