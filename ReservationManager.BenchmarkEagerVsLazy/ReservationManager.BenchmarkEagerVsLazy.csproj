@@ -15,4 +15,8 @@
       <ProjectReference Include="..\ReservationManager.Persistence\ReservationManager.Persistence.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="BenchmarkDotNet.Artifacts\20250602_results\" />
+    </ItemGroup>
+
 </Project>

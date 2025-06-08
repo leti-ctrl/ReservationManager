@@ -17,10 +17,32 @@ public class QueryCountColumn : IColumn
 
     public string GetValue(Summary summary, BenchmarkCase benchmarkCase)
     {
-        var file = benchmarkCase.Descriptor.WorkloadMethod.Name == nameof(LazyVsEagerBenchmark.EagerLoading)
-            ? QueryCounter.EagerFile
-            : QueryCounter.LazyFile;
-
+        var file = "N/A";
+        switch (benchmarkCase.Descriptor.WorkloadMethod.Name)
+        {
+            case nameof(LazyVsEagerBenchmark.Eager_GetAllBusyResourcesFromToday):
+                file = QueryCounter.AllResourceEagerFilePath;
+                break;
+            case nameof(LazyVsEagerBenchmark.Lazy_GetAllBusyResourcesFromToday):
+                file = QueryCounter.AllResourceLazyFilePath;
+                break;
+            case nameof(LazyVsEagerBenchmark.Eager_GetBusyResource_ByResourceIdAndDay):
+                file = QueryCounter.ResourceByIdEagerFilePath;
+                break;
+            case nameof(LazyVsEagerBenchmark.Lazy_GetBusyResource_ByResourceIdAndDay):
+                file = QueryCounter.ResourceByIdLazyFilePath;
+                break;
+            case nameof(LazyVsEagerBenchmark.Eager_GetBusyResource_ByResourceTypeIdAndDay):
+                file = QueryCounter.TypeIdEagerFilePath;
+                break;
+            case nameof(LazyVsEagerBenchmark.Lazy_GetBusyResource_ByResourceTypeIdAndDay):
+                file = QueryCounter.TypeIdLazyFilePath;
+                break;
+            default:
+                file = "N/A";
+                break;
+        }
+        
         if (!File.Exists(file))
             return "N/A";
 

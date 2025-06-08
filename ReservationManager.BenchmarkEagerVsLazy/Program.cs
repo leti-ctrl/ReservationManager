@@ -11,6 +11,7 @@ public class Program
 
         var config = ManualConfig
             .Create(DefaultConfig.Instance)
+            .WithArtifactsPath(@"C:\Users\angiu\Documents\ReservationManager\ReservationManager.BenchmarkEagerVsLazy\BenchmarkDotNet.Artifacts\20250602_results")
             .WithOptions(ConfigOptions.DisableOptimizationsValidator) // utile per evitare warning in debug
             .AddColumn(new QueryCountColumn()); 
         

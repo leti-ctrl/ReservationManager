@@ -20,7 +20,7 @@ namespace ReservationManager.LoadTests
         public void Test_GetReservations_Load()
         {
             var reportFileName =
-                $"{DateTime.Now.ToString("yyyy-MM-dd").Replace("-", "")}_RetrieveResourceAndCreateReservations";
+                $"RetrieveResourceAndCreateReservations_{DateTime.Now.ToString("yyyy-MM-dd").Replace("-", "")}";
             
             var scenario = Scenario.Create(reportFileName, async context =>
                 {
@@ -30,7 +30,7 @@ namespace ReservationManager.LoadTests
 
                     var userEmail = GetUser();
                     
-                    var day = DateOnly.FromDateTime(DateTime.Now).AddDays(new Random().Next(1, 365));
+                    var day = DateOnly.FromDateTime(DateTime.Now).AddDays(new Random().Next(800, 900));
                     
                     var filterContent = GetFilterBody(day);
                     var filterResourceUrl = _resourceFilteredUrl + userEmail;
@@ -48,7 +48,7 @@ namespace ReservationManager.LoadTests
                 .WithLoadSimulations(
                     Simulation.Inject(rate: 5,
                         interval: TimeSpan.FromSeconds(10),
-                        during: TimeSpan.FromSeconds(30))
+                        during: TimeSpan.FromSeconds(240))
                 );
 
             var result = NBomberRunner

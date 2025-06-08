@@ -1,15 +1,15 @@
 ﻿using ReservationManager.DomainModel.Operation;
 
-namespace ReservationManager.DomainModel.Dtos;
+namespace ReservationManager.DomainModel.Daos;
 
-public class ResourceRepoDto
+public class ResourceRepoDao
 {
     public int Id { get; set; }  // solo Id
     public string Description { get; set; }
-    public List<ResourceReservedRepoDto>? ResourceReservedDtos { get; set; }
+    public List<ResourceReservedRepoDao>? ResourceReservedDtos { get; set; }
 }
 
-public class ResourceReservedRepoDto
+public class ResourceReservedRepoDao
 {
     public bool IsClosed { get; set; }
     public DateOnly Day { get; set; }
