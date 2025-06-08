@@ -19,41 +19,94 @@ public partial class Setup
         _scopeFactory = factory.Services.GetRequiredService<IServiceScopeFactory>();
     }
 
-
-    public static IReservationTypeService GetReservationTypeService()
+    #region Reservation
+    public static IReservationService GetReservationService()
     {
-        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IReservationTypeService>();
-    }
-
-    public static IReservationTypeRepository GetReservationTypeRepository()
-    {
-        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IReservationTypeRepository>();
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IReservationService>();
     }
 
     public static IReservationRepository GetReservationRepository()
     {
         return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IReservationRepository>();
     }
+    #endregion
 
-    public static IReservationService GetReservationService()
+    #region ReservationType
+    public static IReservationTypeService GetReservationTypeService()
     {
-        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IReservationService>();
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IReservationTypeService>();
     }
-
+    
+    public static IReservationTypeRepository GetReservationTypeRepository()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IReservationTypeRepository>();
+    }
+    #endregion
+    
+    #region Resource
+    public static IResourceService GetResourceService()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IResourceService>();
+    }
+    
     public static IResourceRepository GetResourceRepository()
     {
         return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IResourceRepository>();
     }
-
+    #endregion
+    
+    #region ResourceType
+    public static IResourceTypeService GetResourceTypeService()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IResourceTypeService>();
+    }
+    
     public static IResourceTypeRepository GetResourceTypeRepository()
     {
         return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IResourceTypeRepository>();
+    }
+    #endregion
+
+    #region User
+    public static IUserService GetUserService()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IUserService>();
     }
 
     public static IUserRepository GetUserRepository()
     {
         return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IUserRepository>();
     }
+    #endregion
+
+    #region Role
+    public static IRoleService GetRoleService()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IRoleService>();
+    }
+
+    public static IRoleRepository GetRoleRepository()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IRoleRepository>();
+    }
+    #endregion
+
+    #region ClosingCalendar
+    public static IClosingCalendarService GetClosingCalendarService()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IClosingCalendarService>();
+    }
+
+    public static IClosingCalendarFilterService GetClosingCalendarFilterService()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IClosingCalendarFilterService>();
+    }
+
+    public static IClosingCalendarRepository GetClosingCalendarRepository()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IClosingCalendarRepository>();
+    }
+    #endregion
 }
 
 internal abstract class BaseSqlTestContainer
