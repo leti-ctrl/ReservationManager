@@ -29,9 +29,22 @@ jobs:
         working-directory: ${{ env.WORKING_FOLDER }}
         run: dotnet build --configuration Release --no-restore
 
-      - name: Test
+      - name: Unit Test
         working-directory: ${{ env.WORKING_FOLDER }}
         run: dotnet test --no-restore --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+      - name: Check Docker availability
+        run: |
+          echo "Docker version:"
+          docker --version
+          echo "Docker info:"
+          docker info
+
+      - name: Restore, Build, and Run Integration Tests
+        run: |
+          dotnet restore ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj
+          dotnet build ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj --configuration Release --no-restore
+          dotnet test ReservationManager.Core.IntegrationTests/ReservationManager.Core.IntegrationTests.csproj --configuration Release --no-restore --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
 
       - name: Install ReportGenerator
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
