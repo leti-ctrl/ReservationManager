@@ -22,7 +22,7 @@ public class ReservationTypeServiceShould
     }
     
     [Test]
-    public async Task GetAllReservationType_ReturnsSortedReservationTypes()
+    public async Task ReturnsSortedReservationTypes_OnGetAll()
     {
         var start = new TimeOnly(10, 0);
         var end = new TimeOnly(20, 30);
@@ -49,7 +49,7 @@ public class ReservationTypeServiceShould
     }
     
     [Test]
-    public async Task ReturnsCreatedDto_CreateReservationType_WhenValidRequest()
+    public async Task ReturnsCreatedDto_OnCreate_WhenValidDataIsPassed()
     {
         var start = new TimeOnly(10, 0);
         var end = new TimeOnly(13, 00);
@@ -66,7 +66,7 @@ public class ReservationTypeServiceShould
     }
     
     [Test]
-    public async Task ThrowsInvalidCodeTypeException_CreateReservationType_WhenCodeExists()
+    public async Task ThrowsInvalidCodeTypeException_OnCreate_WhenCodeExists()
     {
         var sut = GetReservationTypeService();
         var repository = GetReservationTypeRepository();
@@ -85,7 +85,7 @@ public class ReservationTypeServiceShould
     }
     
     [Test]
-    public async Task ReturnsUpdatedDto_UpdateReservationType_WhenValidRequest()
+    public async Task ReturnsUpdatedDto_OnUpdate_WhenValidDataIsPassed()
     {
         var sut = GetReservationTypeService();
         var repository = GetReservationTypeRepository();
@@ -110,7 +110,7 @@ public class ReservationTypeServiceShould
     }
     
     [Test]
-    public async Task ThrowsDeleteNotPermittedException_DeleteReservationType_WhenFutureReservationsExist()
+    public async Task ThrowsDeleteNotPermittedException_OnDelete_WhenFutureReservationsExist()
     {
         var sut = GetReservationTypeService();
 
@@ -155,7 +155,7 @@ public class ReservationTypeServiceShould
     }
     
     [Test]
-    public async Task DeletesSuccessfully_DeleteReservationType_WhenNoFutureReservationsExist()
+    public async Task DeletesSuccessfully_OnDelete_WhenNoFutureReservationsExist()
     {
         var sut = GetReservationTypeService();
         var repository = GetReservationTypeRepository();

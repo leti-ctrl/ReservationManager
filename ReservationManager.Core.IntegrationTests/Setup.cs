@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ReservationManager.Core.Interfaces.Repositories;
 using ReservationManager.Core.Interfaces.Services;
+using ReservationManager.Persistence;
 using Testcontainers.PostgreSql;
 
 namespace ReservationManager.Core.IntegrationTests;
@@ -47,6 +48,11 @@ public partial class Setup
     public static IResourceService GetResourceService()
     {
         return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IResourceService>();
+    }
+
+    public static IResourceFilterService GetResourceFilterService()
+    {
+        return _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<IResourceFilterService>();
     }
     
     public static IResourceRepository GetResourceRepository()

@@ -11,7 +11,7 @@ using static Setup;
 public class ReservationServiceShould
 {
     [Test]
-    public async Task ThrowOperationNotPermittedException_GetUserReservation_WhenNonexistentUser()
+    public async Task ThrowOperationNotPermittedException_OnGetUserReservation_WhenNonexistentUser()
     {
         var sut = GetReservationService();
         var session = new SessionInfo("nonexistent@mail.com");
@@ -23,7 +23,7 @@ public class ReservationServiceShould
     }
     
     [Test]
-    public async Task ReturnUserReservations_GetUserReservation_WhenUserExists()
+    public async Task ReturnUserReservations_OnGetUserReservation_WhenUserExists()
     {
         var sut = GetReservationService();
 
@@ -79,7 +79,7 @@ public class ReservationServiceShould
     }
     
     [Test]
-    public async Task ThrowOperationNotPermittedException_GetById_WhenNonexistentUser()
+    public async Task ThrowOperationNotPermittedException_OnGetById_WhenNonexistentUser()
     {
         var rezId = 99999;
         var sut = GetReservationService();
@@ -92,7 +92,7 @@ public class ReservationServiceShould
     }
     
     [Test]
-    public async Task ReturnNull_GetById_WhenNonexistentReservation()
+    public async Task ReturnNull_OnGetById_WhenNonexistentReservation()
     {
         var sut = GetReservationService();
         var rezId = 999999;
@@ -108,7 +108,7 @@ public class ReservationServiceShould
     }
     
     [Test]
-    public async Task ReturnReservation_CreateReservation_WhenResourceIsFreeAndOpen()
+    public async Task ReturnReservation_OnCreateReservation_WhenResourceIsFreeAndOpen()
     {        
         var sut = GetReservationService();
 
