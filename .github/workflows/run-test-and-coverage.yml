@@ -82,8 +82,8 @@ jobs:
           dotnet tool install --global dotnet-stryker
 
       - name: Run Mutation Tests
-        run: dotnet stryker
-        working-directory: './ReservationManager.Core'
+        run: dotnet stryker --project-file ../ReservationManager.Core/ReservationManager.Core.csproj
+        working-directory: ./ReservationManager.Core.UnitTests
 
       - name: Upload mutation test report
         uses: actions/upload-artifact@v4
