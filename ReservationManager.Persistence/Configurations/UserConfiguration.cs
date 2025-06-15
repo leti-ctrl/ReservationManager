@@ -28,8 +28,8 @@ namespace ReservationManager.Persistence.Configurations
             builder.HasMany(x => x.Roles)
                 .WithMany()
                 .UsingEntity<RoleUser>(
-                    x => x.HasOne<Role>().WithMany().OnDelete(DeleteBehavior.NoAction),
-                    x => x.HasOne<User>().WithMany().OnDelete(DeleteBehavior.NoAction)
+                    x => x.HasOne<Role>().WithMany().OnDelete(DeleteBehavior.Cascade),
+                    x => x.HasOne<User>().WithMany().OnDelete(DeleteBehavior.Cascade)
                 );
             
             builder.HasQueryFilter(x => !x.IsDeleted.HasValue);
