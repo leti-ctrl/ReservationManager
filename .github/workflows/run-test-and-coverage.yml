@@ -79,8 +79,9 @@ jobs:
 
       - name: Install Stryker.NET tool
         run: |
-          dotnet tool install --global dotnet-stryker
-
+            dotnet tool install --global dotnet-stryker
+            echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+          
       - name: Run Mutation Tests
         run: dotnet stryker --project-file ../ReservationManager.Core/ReservationManager.Core.csproj
         working-directory: ./ReservationManager.Core.UnitTests
