@@ -8,6 +8,8 @@ using ReservationManager.DomainModel.Operation;
 namespace ReservationManager.Core.IntegrationTests.Tests;
 using static Setup;
 
+[TestFixture]
+[Category("Integration")]
 public class ReservationServiceShould
 {
     [Test]
