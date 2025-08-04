@@ -23,21 +23,28 @@ namespace ReservationManager.Persistence.Repositories.Base
 
         public async Task<T> CreateEntityAsync(T entity, CancellationToken cancellationToken = default)
         {
+            entity.CreatedOn = DateTime.UtcNow;
             return await base.AddAsync(entity, cancellationToken);
         }
 
         public async Task DeleteEntityAsync(T dbEntity, CancellationToken cancellationToken = default)
         {
+            dbEntity.ModifiedOn = DateTime.UtcNow;
             dbEntity.IsDeleted = DateTime.UtcNow;
             await base.UpdateAsync(dbEntity, cancellationToken);
         }
 
         public async Task<T?> UpdateEntityAsync(T entity, CancellationToken cancellationToken = default)
         {
+            entity.ModifiedOn = DateTime.UtcNow;
+            
             var getEntity = await base.GetByIdAsync(entity.Id, cancellationToken);
-            if (getEntity == null) return null;
+            if (getEntity == null) 
+                return null;
+            
             var entry = Context.Entry(getEntity);
             entry.CurrentValues.SetValues(entity);
+            
             await base.UpdateAsync(getEntity, cancellationToken);
             return getEntity;
         }

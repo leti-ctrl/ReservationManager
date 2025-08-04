@@ -15,12 +15,15 @@ namespace ReservationManager.Persistence.Repositories.Base
 
         public override async Task<T> CreateTypeAsync(T typeToCreate, CancellationToken cancellationToken = default)
         {
+            typeToCreate.CreatedOn = DateTime.UtcNow;
             return await base.AddAsync(typeToCreate, cancellationToken);
         }
 
 
         public override async Task<T?> UpdateTypeAsync(T typeToUpdate, CancellationToken cancellationToken = default)
         {
+            typeToUpdate.ModifiedOn = DateTime.UtcNow;
+            
             var getEntity = await base.GetByIdAsync(typeToUpdate.Id, cancellationToken);
             if (getEntity == null)
                 return null;
@@ -35,6 +38,7 @@ namespace ReservationManager.Persistence.Repositories.Base
 
         public override async Task DeleteTypeAsync(T typeToDelete, CancellationToken cancellationToken = default)
         {
+            typeToDelete.ModifiedOn = DateTime.UtcNow;
             typeToDelete.IsDeleted = DateTime.UtcNow;
             await base.UpdateAsync(typeToDelete, cancellationToken);
         }
