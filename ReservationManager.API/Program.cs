@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using ReservationManager.API;
 using ReservationManager.API.Extensions;
 using ReservationManager.Persistence;
-using StackExchange.Redis;
 using ConfigurationExtensions = ReservationManager.API.Extensions.ConfigurationExtensions;
 
 TypeAdapterConfig.GlobalSettings.Apply(new MapperConfiguration());
@@ -35,6 +34,17 @@ builder.Services.ConfigureRepositories()
 
 var app = builder.Build();
 
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path == "/")
+    {
+        context.Response.Redirect("/swagger/index.html", permanent: false);
+        return;
+    }
+
+    await next();
+});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -54,7 +64,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
 
 
 
