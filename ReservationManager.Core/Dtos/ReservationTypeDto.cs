@@ -7,5 +7,7 @@
         public string Name { get; set; }
         public TimeOnly Start { get; set; }
         public TimeOnly End { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime? ModifiedOn { get; set; }
     }
 }

@@ -11,5 +11,7 @@
         public required ResourceDto Resource { get; set; }
         public required UserDto User { get; set; }
         public required ReservationTypeDto Type { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public DateTime? ModifiedOn { get; set; }
     }
 }

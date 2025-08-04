@@ -7,6 +7,8 @@
         public required string Surname { get; set; }
         public required string Email { get; set; }
         public RoleDto[] Roles { get; set; } = null!;    
+        public DateTime CreatedOn { get; set; }
+        public DateTime? ModifiedOn { get; set; }
         
         public string RolesWithSeparator => String.Join(",", Roles.Select(x => x.Code));
 
