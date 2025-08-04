@@ -15,7 +15,7 @@ public class RedisService : IRedisService
 
     public RedisService(IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("ReservationManagerCache");
+        var connectionString = configuration.GetConnectionString("ReservationManagerRedisCache");
         var redis = ConnectionMultiplexer.Connect(connectionString!);
         _db = redis.GetDatabase();
     }
