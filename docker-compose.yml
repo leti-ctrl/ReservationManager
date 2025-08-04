@@ -13,7 +13,9 @@ services:
       - postgres
     environment:
       ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:80"
       ConnectionStrings__ReservationManagerDb: "Host=postgres;Database=ReservationManager;Username=postgres;Password=RM123!"
+      ConnectionStrings__ReservationManagerRedisCache: "redis:6379,abortConnect=false"
 
   postgres:
     image: postgres:15.3
@@ -27,7 +29,7 @@ services:
     expose:
         - '5432'
     volumes:
-        - postgres-data:/PSG
+      - postgres-data:/var/lib/postgresql/data
           
   redis:
     image: redis:latest 
@@ -38,7 +40,7 @@ services:
       - '6379'
     restart: unless-stopped
     volumes:
-      - redis-cache:/RSC
+      - redis-cache:/data
 
 
 volumes:
